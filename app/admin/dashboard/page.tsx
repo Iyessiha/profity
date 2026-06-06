@@ -42,7 +42,7 @@ interface User {
   subscriptions: { status: string; amount: number }[]
 }
 
-type AdminTab = 'overview' | 'users' | 'subscriptions' | 'treasury' | 'notifications' | 'broadcast' | 'logs'
+type AdminTab = 'overview' | 'users' | 'subscriptions' | 'treasury' | 'notifications' | 'export' | 'broadcast' | 'logs'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -302,15 +302,13 @@ export default function AdminDashboard() {
 
   const TABS: { key: AdminTab; icon: string; label: string }[] = [
     { key: 'overview',      icon: 'ti-dashboard',    label: 'OVERVIEW'      },
-    { key: 'users',         icon: 'ti-users',         label: 'UTILISATEURS' },
-    { key: 'subscriptions', icon: 'ti-credit-card',   label: 'ABONNEMENTS'  },
-    { key: 'treasury',      icon: 'ti-cash',          label: 'TRÉSORERIE'   },
-    { key: 'broadcast',     icon: 'ti-speakerphone',  label: 'BROADCAST'    },
-    { key: 'notifications', icon: 'ti-bell',           label: 'NOTIFS'       },
-    { key: 'logs',          icon: 'ti-file-analytics', label: 'LOGS'        },
-    { key: 'subscriptions', icon: 'ti-credit-card',   label: 'ABONNEMENTS'  },
-    { key: 'broadcast',     icon: 'ti-speakerphone',  label: 'BROADCAST'    },
-    { key: 'logs',          icon: 'ti-file-text',     label: 'LOGS'         },
+    { key: 'users',         icon: 'ti-users',          label: 'UTILISATEURS' },
+    { key: 'subscriptions', icon: 'ti-credit-card',    label: 'ABONNEMENTS'  },
+    { key: 'treasury',      icon: 'ti-cash',           label: 'TRÉSORERIE'   },
+    { key: 'notifications', icon: 'ti-bell',            label: 'NOTIFS'       },
+    { key: 'broadcast',     icon: 'ti-speakerphone',   label: 'BROADCAST'    },
+    { key: 'export',        icon: 'ti-file-download',  label: 'EXPORT'       },
+    { key: 'logs',          icon: 'ti-file-analytics', label: 'LOGS'         },
   ]
 
   return (
@@ -842,6 +840,9 @@ export default function AdminDashboard() {
           {tab === 'notifications' && (
             <NotifSenderPanel token={token} showToast={showToast} />
           )}
+
+          {/* ══ EXPORT ═══════════════════════════════════ */}
+          {tab === 'export' && <ExportPanel token={token} />}
 
           {tab === 'logs' && <LogsPanel token={token} />}
 
@@ -1428,6 +1429,145 @@ function TreasuryPanel({ token }: { token: string }) {
 
       {/* Diagnostic GeniusPay */}
       <GeniusPayDiag token={token} />
+    </div>
+  )
+}
+
+// ─── Panneau Export ────────────────────────────────────────
+function ExportPanel({ token }: { token: string }) {
+  const HUD  = "'Orbitron', monospace"
+  const BODY = "'Rajdhani', sans-serif"
+
+  const [loading, setLoading] = useState<string | null>(null)
+  const [lastExport, setLastExport] = useState<Record<string, string>>({})
+
+  const download = async (type: string, format: 'csv' | 'json') => {
+    const key = `${type}_${format}`
+    setLoading(key)
+    try {
+      const res = await fetch(`/api/admin/export?type=${type}&format=${format}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) { alert('Erreur export'); setLoading(null); return }
+
+      const blob     = await res.blob()
+      const ext      = format === 'json' ? 'json' : 'csv'
+      const filename = `profityx_${type}_${new Date().toISOString().slice(0,10)}.${ext}`
+      const url      = URL.createObjectURL(blob)
+      const a        = document.createElement('a')
+      a.href = url; a.download = filename; a.click()
+      URL.revokeObjectURL(url)
+      setLastExport(prev => ({ ...prev, [key]: new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' }) }))
+    } catch { alert('Erreur réseau') }
+    setLoading(null)
+  }
+
+  const EXPORTS = [
+    {
+      type: 'users',
+      label: 'Utilisateurs',
+      icon: 'ti-users',
+      color: 'var(--ac)',
+      desc: 'Profils complets : email, plan, streak, analyses, pays, broker, préférences',
+      fields: ['public_id', 'email', 'plan', 'analyses_used', 'streak', 'xp', 'pays', 'inscription'],
+    },
+    {
+      type: 'subscriptions',
+      label: 'Abonnements',
+      icon: 'ti-credit-card',
+      color: 'var(--ac2)',
+      desc: 'Tous les abonnements avec statut, montant, dates de période et référence paiement',
+      fields: ['email', 'plan', 'statut', 'montant_fcfa', 'ref_paiement', 'debut', 'fin'],
+    },
+    {
+      type: 'credits',
+      label: 'Transactions crédits',
+      icon: 'ti-coin',
+      color: 'var(--ac3)',
+      desc: 'Historique complet des mouvements de crédits avec coût Anthropic calculé',
+      fields: ['email', 'montant', 'type', 'description', 'cout_usd', 'cout_fcfa', 'date'],
+    },
+    {
+      type: 'analyses',
+      label: 'Analyses charts',
+      icon: 'ti-chart-candle',
+      color: 'var(--ok)',
+      desc: 'Toutes les analyses IA : paire, timeframe, direction, entrée, SL, TP, R/R',
+      fields: ['email', 'paire', 'timeframe', 'direction', 'entree', 'sl', 'tp1', 'tp2', 'tp3'],
+    },
+    {
+      type: 'treasury',
+      label: 'Rapport trésorerie',
+      icon: 'ti-report-money',
+      color: 'var(--ora)',
+      desc: 'Snapshot financier : MRR, ARR, coûts Anthropic réels, marge nette, crédits',
+      fields: ['mrr_fcfa', 'arr_fcfa', 'coût_anthropic_usd', 'marge_nette_fcfa', 'appels_api'],
+    },
+  ]
+
+  return (
+    <div>
+      <div style={{ fontFamily:HUD, fontSize:13, color:'var(--ac)', letterSpacing:2, marginBottom:'0.5rem' }}>
+        📥 EXPORT DES DONNÉES
+      </div>
+      <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)', marginBottom:'1.5rem' }}>
+        Téléchargez les données en CSV (Excel) ou JSON. Fichiers horodatés, encodés UTF-8.
+      </div>
+
+      <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+        {EXPORTS.map(exp => (
+          <div key={exp.type} style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.1rem', display:'flex', alignItems:'center', gap:16, flexWrap:'wrap' }}>
+            {/* Icône */}
+            <div style={{ width:44, height:44, borderRadius:9, background:`color-mix(in srgb, ${exp.color} 10%, transparent)`, border:`1px solid color-mix(in srgb, ${exp.color} 20%, transparent)`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              <i className={'ti '+exp.icon} style={{ fontSize:20, color:exp.color }} />
+            </div>
+
+            {/* Info */}
+            <div style={{ flex:1, minWidth:200 }}>
+              <div style={{ fontFamily:HUD, fontSize:10, color:'var(--tx0)', letterSpacing:0.5, marginBottom:3 }}>{exp.label}</div>
+              <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', lineHeight:1.4, marginBottom:5 }}>{exp.desc}</div>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
+                {exp.fields.map(f => (
+                  <span key={f} style={{ fontFamily:HUD, fontSize:7, letterSpacing:0.5, color:'var(--tx3)', background:'var(--bg3)', border:'1px solid var(--bd)', borderRadius:3, padding:'2px 6px' }}>{f}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Boutons */}
+            <div style={{ display:'flex', flexDirection:'column', gap:6, alignItems:'flex-end', flexShrink:0 }}>
+              <div style={{ display:'flex', gap:8 }}>
+                <button
+                  onClick={() => download(exp.type, 'csv')}
+                  disabled={loading === `${exp.type}_csv`}
+                  style={{ display:'flex', alignItems:'center', gap:6, background:'var(--ac)', color:'#020408', border:'none', borderRadius:5, padding:'8px 14px', fontFamily:HUD, fontSize:8, letterSpacing:1, fontWeight:700, cursor:'pointer', opacity: loading === `${exp.type}_csv` ? 0.6 : 1 }}>
+                  <i className="ti ti-file-spreadsheet" style={{ fontSize:13 }} />
+                  {loading === `${exp.type}_csv` ? 'Export...' : 'CSV'}
+                </button>
+                <button
+                  onClick={() => download(exp.type, 'json')}
+                  disabled={loading === `${exp.type}_json`}
+                  style={{ display:'flex', alignItems:'center', gap:6, background:'transparent', color:'var(--ac2)', border:'1px solid var(--bd2)', borderRadius:5, padding:'8px 14px', fontFamily:HUD, fontSize:8, letterSpacing:1, cursor:'pointer', opacity: loading === `${exp.type}_json` ? 0.6 : 1 }}>
+                  <i className="ti ti-code" style={{ fontSize:13 }} />
+                  {loading === `${exp.type}_json` ? 'Export...' : 'JSON'}
+                </button>
+              </div>
+              {(lastExport[`${exp.type}_csv`] || lastExport[`${exp.type}_json`]) && (
+                <div style={{ fontFamily:BODY, fontSize:10, color:'var(--ok)' }}>
+                  ✓ Exporté à {lastExport[`${exp.type}_csv`] || lastExport[`${exp.type}_json`]}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Note */}
+      <div style={{ marginTop:'1.25rem', background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:8, padding:'0.875rem', display:'flex', gap:10, alignItems:'flex-start' }}>
+        <i className="ti ti-shield-lock" style={{ fontSize:16, color:'var(--ac)', flexShrink:0, marginTop:2 }} />
+        <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', lineHeight:1.6 }}>
+          Les exports sont réservés aux administrateurs. Les données sensibles (mots de passe, tokens) ne sont jamais incluses. Fichiers conformes RGPD — traitez-les avec précaution.
+        </div>
+      </div>
     </div>
   )
 }
