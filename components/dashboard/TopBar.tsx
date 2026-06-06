@@ -4,6 +4,7 @@ import { useTheme } from '@/lib/theme'
 import { useMenu } from '@/lib/menu-context'
 import { supabasePublic } from '@/lib/supabase'
 import NotificationBell from '@/components/dashboard/NotificationBell'
+import CreditBalance from '@/components/dashboard/CreditBalance'
 
 interface TopBarProps {
   user?: { email?: string; id: string } | null
@@ -84,6 +85,9 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
         <div style={{ fontFamily: HUD, fontSize: 9, color: 'var(--ac2)', background: 'color-mix(in srgb, var(--ac2) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--ac2) 18%, transparent)', borderRadius: 3, padding: '4px 8px', letterSpacing: 1 }}>
           {currency}
         </div>
+
+        {/* Crédits */}
+        {token && <CreditBalance token={token} locale={locale} />}
 
         {/* Notifications */}
         {token && <NotificationBell token={token} />}
