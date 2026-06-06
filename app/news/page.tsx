@@ -293,6 +293,7 @@ export default function NewsPage() {
       const { data: { session } } = await supabasePublic.auth.getSession()
       if (!session) { window.location.href = '/auth/login'; return }
       setUser(session.user as {id:string;email?:string})
+      setToken(session.access_token)
       const [{ data: p }, { data: ev }] = await Promise.all([
         supabasePublic.from('profiles').select('*').eq('id', session.user.id).single(),
         supabasePublic.from('scheduled_events').select('*').gte('event_date', new Date(Date.now() - 86400000*3).toISOString()).order('event_date').limit(40),
@@ -310,7 +311,7 @@ export default function NewsPage() {
       <Sidebar tab="calendar" setTab={()=>{}} plan={plan} locale={locale} />
       <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'var(--bg0)', width:'100%', overflow:'hidden' }}>
         <TopBar locale={locale} profile={profile} />
-        <QuotaBar profile={profile} locale={locale} plan={plan} />
+        <QuotaBar token={token} locale={locale} plan={plan} />
 
         <div className="resp-pad" style={{ padding:'1.25rem 1.5rem', flex:1, width:'100%', overflowX:'hidden' }}>
           {/* En-tête */}

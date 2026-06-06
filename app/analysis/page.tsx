@@ -98,7 +98,7 @@ export default function AnalysisPage() {
       <Sidebar tab="chart" setTab={() => {}} plan={plan} locale={locale} />
       <div className="app-main" style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'var(--bg0)', width:'100%', overflow:'hidden' }}>
         <TopBar locale={locale} profile={profile} />
-        <QuotaBar profile={profile} locale={locale} plan={plan} />
+        <QuotaBar token={token} locale={locale} plan={plan} />
 
         <div className="resp-pad" style={{ padding:'1.25rem 1.5rem', flex:1, width:'100%', overflowX:'hidden' }}>
           {/* Header */}

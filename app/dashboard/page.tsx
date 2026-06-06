@@ -26,6 +26,7 @@ export default function DashboardPage() {
       const { data: { session } } = await supabasePublic.auth.getSession()
       if (!session) { window.location.href = '/auth/login'; return }
       setUser(session.user as { id: string; email?: string })
+      setToken(session.access_token)
       const { data: p } = await supabasePublic.from('profiles').select('*').eq('id', session.user.id).single()
       if (p) { setProfile(p); setPlan(p.user_plan as string || 'free'); setLocale(p.locale as string || 'fr') }
     })()
@@ -55,7 +56,7 @@ export default function DashboardPage() {
       <Sidebar tab="chart" setTab={() => {}} plan={plan} locale={locale} />
       <div className="app-main" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg0)', width: '100%', overflow: 'hidden' }}>
         <TopBar locale={locale} profile={profile} />
-        <QuotaBar profile={profile} locale={locale} plan={plan} />
+        <QuotaBar token={token} locale={locale} plan={plan} />
 
         <div className="resp-pad" style={{ padding: '1.25rem 1.5rem', flex: 1, width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
 

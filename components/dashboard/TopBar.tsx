@@ -113,46 +113,56 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
   )
 }
 
-/* ── QuotaBar ─────────────────────────────────────────────── */
-const PLAN_LIMITS: Record<string, { analyses: number; news: number }> = {
-  free:  { analyses: 3,      news: 5      },
-  pro:   { analyses: 100,    news: 999999 },
-  elite: { analyses: 999999, news: 999999 },
-}
+/* ── CreditBar : remplace l'ancienne QuotaBar ─────────────── */
+interface CreditBarProps { token: string; plan: string; locale: string }
 
-interface QuotaBarProps { profile: Record<string,unknown>|null; locale: string; plan: string }
-
-export function QuotaBar({ profile, locale, plan }: QuotaBarProps) {
-  if (!profile) return null
-  const limits = PLAN_LIMITS[plan] ?? PLAN_LIMITS.free
-  const aUsed = (profile.analyses_used as number) ?? 0
-  const nUsed = (profile.news_used as number) ?? 0
-  const aPct  = Math.min(100, (aUsed / limits.analyses) * 100)
-  const nPct  = Math.min(100, (nUsed / limits.news) * 100)
-  const isElite = plan === 'elite', isPro = plan === 'pro'
+export function QuotaBar({ token, plan, locale }: CreditBarProps) {
+  const [balance, setBalance] = useState<number | null>(null)
+  const [total,   setTotal]   = useState<number>(0)
   const HUD = "'Orbitron', monospace"
+  const BODY = "'Rajdhani', sans-serif"
+
+  useEffect(() => {
+    if (!token) return
+    fetch('/api/credits', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(j => { if (j.success) { setBalance(j.balance); setTotal(j.earned) } })
+      .catch(() => {})
+  }, [token])
+
+  if (balance === null) return null
+
+  const planCredits  = plan === 'elite' ? 600 : plan === 'pro' ? 150 : 10
+  const used         = Math.max(0, total - balance)
+  const pct          = total > 0 ? Math.min(100, (used / total) * 100) : 0
+  const remaining    = balance
+  const isLow        = remaining <= Math.ceil(planCredits * 0.1)  // < 10%
+  const isEmpty      = remaining === 0
+  const color        = isEmpty ? 'var(--red)' : isLow ? 'var(--ora)' : 'var(--ac)'
 
   return (
-    <div style={{ display:'flex', alignItems:'center', gap:14, padding:'7px 1rem', background:'color-mix(in srgb, var(--ac) 3%, transparent)', borderBottom:'1px solid var(--bd)', flexWrap:'wrap', transition:'background .3s, border-color .3s' }}>
-      <div style={{ display:'flex', alignItems:'center', gap:8, flex:1, minWidth:140 }}>
-        <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', whiteSpace:'nowrap' }}>ANALYSES</span>
+    <div style={{ display:'flex', alignItems:'center', gap:12, padding:'6px 1rem', background:'color-mix(in srgb, var(--ac) 2%, transparent)', borderBottom:'1px solid var(--bd)', flexWrap:'wrap' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:8, flex:1, minWidth:180 }}>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7" fill={color} fillOpacity="0.2" stroke={color} strokeWidth="1.2"/>
+          <path d="M8 4v4l2.5 2.5" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+        <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', whiteSpace:'nowrap' }}>CRÉDITS</span>
         <div style={{ flex:1, height:3, background:'var(--bd)', borderRadius:2, overflow:'hidden' }}>
-          <div style={{ height:'100%', borderRadius:2, width:isElite?'5%':`${aPct}%`, background:aPct>80?'var(--red)':'var(--ac)', transition:'width .5s' }} />
+          <div style={{ height:'100%', borderRadius:2, width:`${pct}%`, background:`linear-gradient(90deg, var(--ac), ${color})`, transition:'width .6s ease' }} />
         </div>
-        <span style={{ fontFamily:HUD, fontSize:9, color:aPct>80?'var(--red)':'var(--ac)', whiteSpace:'nowrap', minWidth:40 }}>
-          {isElite?'∞':`${aUsed}/${limits.analyses}`}
+        <span style={{ fontFamily:HUD, fontSize:9, fontWeight:700, color, whiteSpace:'nowrap', minWidth:28 }}>
+          {remaining}
+        </span>
+        <span style={{ fontFamily:BODY, fontSize:10, color:'var(--tx3)', whiteSpace:'nowrap' }}>
+          {isEmpty ? '— rechargez' : isLow ? '— solde bas' : `restant${remaining > 1 ? 's' : ''}`}
         </span>
       </div>
-      <div style={{ width:1, height:14, background:'var(--bd)', flexShrink:0 }} />
-      <div style={{ display:'flex', alignItems:'center', gap:8, flex:1, minWidth:140 }}>
-        <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', whiteSpace:'nowrap' }}>NEWS</span>
-        <div style={{ flex:1, height:3, background:'var(--bd)', borderRadius:2, overflow:'hidden' }}>
-          <div style={{ height:'100%', borderRadius:2, width:(isPro||isElite)?'0%':`${nPct}%`, background:nPct>80?'var(--red)':'var(--ac2)', transition:'width .5s' }} />
-        </div>
-        <span style={{ fontFamily:HUD, fontSize:9, color:'var(--ac2)', whiteSpace:'nowrap', minWidth:40 }}>
-          {(isPro||isElite)?'∞':`${nUsed}/${limits.news}`}
-        </span>
-      </div>
+      {(isEmpty || isLow) && (
+        <a href="/pricing" style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#020408', background:color, borderRadius:3, padding:'3px 10px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0 }}>
+          RECHARGER →
+        </a>
+      )}
     </div>
   )
 }

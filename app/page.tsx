@@ -294,10 +294,15 @@ export default function LandingPage() {
 
               </div>
 
-              {/* Barre de statut bas */}
-              <div style={{ background: 'rgba(0,255,178,0.04)', borderTop: '1px solid rgba(0,255,178,0.08)', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: 'rgba(232,244,248,0.3)' }}>1 CRÉDIT UTILISÉ · SOLDE : 141</span>
-                <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: '#00FFB2' }}>✓ ANALYSE SMC COMPLÈTE</span>
+              {/* Barre crédits — fidèle à la vraie interface */}
+              <div style={{ background: 'rgba(0,255,178,0.03)', borderTop: '1px solid rgba(0,255,178,0.06)', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#00FFB2" strokeWidth="1.2"/><path d="M8 4v4l2 2" stroke="#00FFB2" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 2, color: 'rgba(232,244,248,0.3)' }}>CRÉDITS</span>
+                <div style={{ flex: 1, height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
+                  <div style={{ width: '68%', height: '100%', background: 'linear-gradient(90deg,#00FFB2,#00D4FF)', borderRadius: 2 }} />
+                </div>
+                <span style={{ fontFamily: HUD, fontSize: 9, fontWeight: 700, color: '#00FFB2' }}>142</span>
+                <span style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, color: 'rgba(232,244,248,0.3)' }}>restants</span>
               </div>
             </div>
 
