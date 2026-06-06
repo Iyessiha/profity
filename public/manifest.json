@@ -3,18 +3,32 @@
   "short_name": "ProfityX",
   "description": "Analysez vos charts et annonces macro avec l'intelligence artificielle",
   "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#020408",
   "theme_color": "#00FFB2",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ],
-  "screenshots": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "form_factor": "narrow" }
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ],
   "categories": ["finance", "utilities"],
-  "lang": "fr"
+  "lang": "fr",
+  "dir": "ltr"
 }
