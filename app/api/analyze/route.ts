@@ -164,12 +164,12 @@ export async function POST(req: NextRequest) {
               {
                 type: 'text',
                 text: locale === 'fr'
-                  ? 'Analyse ce chart de trading et génère le signal JSON.'
+                  ? `Analyse ce chart de trading. IMPORTANT : lis le timeframe dans le coin supérieur gauche, lis le nom de la paire dans le titre, et lis les prix DIRECTEMENT sur l'axe Y (côté droit). Les prix de ton signal DOIVENT correspondre aux valeurs visibles sur le chart. Génère le signal JSON.`
                   : locale === 'ar'
-                  ? 'حلّل هذا الرسم البياني وولّد إشارة JSON.'
+                  ? `حلّل هذا الرسم البياني. مهم: اقرأ الإطار الزمني من الركن العلوي الأيسر، اقرأ اسم الزوج من العنوان، واقرأ الأسعار من المحور Y (الجانب الأيمن). يجب أن تتطابق أسعار الإشارة مع القيم المرئية في الرسم البياني.`
                   : locale === 'pt'
-                  ? 'Analisa este gráfico e gera o sinal JSON.'
-                  : 'Analyze this trading chart and generate the JSON signal.',
+                  ? `Analisa este gráfico. IMPORTANTE: lê o timeframe no canto superior esquerdo, o par no título, e os preços no eixo Y (lado direito). Os preços do sinal DEVEM corresponder aos valores visíveis no gráfico.`
+                  : `Analyze this trading chart. IMPORTANT: read the timeframe from the top-left corner, the pair name from the title, and prices DIRECTLY from the Y-axis (right side). Signal prices MUST match the values visible on the chart. Generate JSON signal.`,
               },
             ],
           },

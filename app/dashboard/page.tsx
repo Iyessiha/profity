@@ -10,6 +10,7 @@ import TopBar from '@/components/dashboard/TopBar'
 import QuotaBar from '@/components/dashboard/QuotaBar'
 import GamificationBar from '@/components/dashboard/GamificationBar'
 import WatchlistFeed from '@/components/dashboard/WatchlistFeed'
+import MarketClocks from '@/components/dashboard/MarketClocks'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -93,6 +94,9 @@ export default function DashboardPage() {
 
           {/* Gamification */}
           {user && <GamificationBar userId={user.id} locale={locale} />}
+
+          {/* Horloges des marchés mondiaux */}
+          <MarketClocks locale={locale} />
 
           {/* Modules */}
           <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'var(--tx2)', marginBottom: 10 }}>{locale === 'fr' ? 'ACCÈS RAPIDE' : 'QUICK ACCESS'}</div>
