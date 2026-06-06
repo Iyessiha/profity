@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Envoyer via l'API push interne
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://profityx.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://profity-x.com'
 
   const res = await fetch(`${appUrl}/api/push/send`, {
     method:  'POST',

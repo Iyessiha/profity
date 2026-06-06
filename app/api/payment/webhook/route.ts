@@ -1,11 +1,11 @@
 // ============================================================
 // PROFITYX — POST /api/payment/webhook
-// Reçoit les webhooks GeniusPay et active les plans
-// Doc : signature = HMAC-SHA256(timestamp + "." + payload, whsec_...)
+// Reçoit les notifications CinetPay ET GeniusPay
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient }              from '@supabase/supabase-js'
-import { verifyWebhookSignature }    from '@/lib/geniuspay'
+import { createClient } from '@supabase/supabase-js'
+import { verifyWebhookSignature } from '@/lib/geniuspay'
+import { checkCinetPayPayment } from '@/lib/cinetpay'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,81 +13,120 @@ const supabaseAdmin = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
-export async function POST(req: NextRequest) {
-  // 1. Body brut (nécessaire pour la signature)
-  const rawBody = await req.text()
+async function activatePlan(userId: string, planKey: string, ref: string) {
+  // Mettre à jour le plan
+  await supabaseAdmin.from('profiles')
+    .update({ user_plan: planKey })
+    .eq('id', userId)
 
-  // 2. Vérifier la signature
-  const signature = req.headers.get('x-webhook-signature') ?? ''
-  const timestamp = req.headers.get('x-webhook-timestamp') ?? ''
-  const eventHdr  = req.headers.get('x-webhook-event') ?? ''
-  const secret    = process.env.GENIUSPAY_WEBHOOK_SECRET ?? ''
+  // Mettre à jour l'abonnement
+  await supabaseAdmin.from('subscriptions').upsert({
+    user_id:              userId,
+    plan:                 planKey,
+    status:               'active',
+    currency:             'XOF',
+    amount:               planKey === 'pro' ? 17500 : 35000,
+    paygenius_id:         ref,
+    current_period_start: new Date().toISOString(),
+    current_period_end:   new Date(Date.now() + 30 * 864e5).toISOString(),
+  }, { onConflict: 'user_id' })
 
-  if (secret) {
-    // Protection replay : timestamp < 5 min
-    if (timestamp && Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) {
-      return NextResponse.json({ error: 'Timestamp trop ancien' }, { status: 400 })
-    }
-    if (!verifyWebhookSignature(rawBody, signature, timestamp, secret)) {
-      console.warn('[Webhook] Signature invalide — rejetée')
-      return NextResponse.json({ error: 'Signature invalide' }, { status: 401 })
-    }
-  }
+  // Notification à l'utilisateur
+  await supabaseAdmin.from('notifications').insert({
+    user_id:  userId,
+    type:     'plan_change',
+    title:    planKey === 'pro' ? '🎉 Plan Pro activé !' : '👑 Plan Elite activé !',
+    message:  planKey === 'pro'
+      ? 'Votre plan Pro est maintenant actif. Profitez de 100 analyses SMC, signaux illimités et coaching psychologique.'
+      : 'Votre plan Elite est actif. Accès illimité à tout — sans aucune restriction.',
+    action_url:   '/dashboard',
+    action_label: 'Voir le dashboard',
+    priority:     'high',
+  })
 
-  // 3. Parser
-  let payload: { event?: string; data?: Record<string, unknown> }
-  try { payload = JSON.parse(rawBody) } catch { return NextResponse.json({ error: 'Payload invalide' }, { status: 400 }) }
-
-  const eventType = payload.event ?? eventHdr
-  const data = payload.data ?? {}
-  const metadata = (data.metadata ?? {}) as Record<string, string>
-  const reference = String(data.reference ?? '')
-  const userId = metadata.user_id
-  const planKey = metadata.plan_key
-
-  console.log(`[Webhook] ${eventType} · ref=${reference} · user=${userId} · plan=${planKey}`)
-
-  // 4. Router les événements
-  switch (eventType) {
-    case 'payment.success': {
-      if (userId && planKey && ['pro', 'elite'].includes(planKey)) {
-        // Activer le plan → le trigger sync_subscription crée l'abonnement actif
-        await supabaseAdmin.from('profiles').update({ user_plan: planKey }).eq('id', userId)
-        // Marquer la période
-        await supabaseAdmin.from('subscriptions').update({
-          status: 'active',
-          current_period_start: new Date().toISOString(),
-          current_period_end: new Date(Date.now() + 30 * 864e5).toISOString(),
-        }).eq('user_id', userId)
-        console.log(`[Webhook] Plan ${planKey} activé pour ${userId}`)
-      }
-      break
-    }
-
-    case 'payment.failed':
-    case 'payment.cancelled':
-    case 'payment.expired': {
-      if (userId) {
-        // Laisser le plan inchangé ; marquer l'abonnement pending comme cancelled
-        await supabaseAdmin.from('subscriptions')
-          .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
-          .eq('user_id', userId).eq('status', 'pending')
-      }
-      break
-    }
-
-    case 'payment.refunded': {
-      if (userId) {
-        await supabaseAdmin.from('profiles').update({ user_plan: 'free' }).eq('id', userId)
-      }
-      break
-    }
-
-    default:
-      // payment.initiated, webhook.test, etc. → on accuse réception
-      break
-  }
-
-  // 5. Toujours répondre 200 pour accuser réception
-  return NextResponse.json({ received: true })
+  console.log(`[Webhook] Plan ${planKey} activé pour user ${userId}`)
 }
+
+export async function POST(req: NextRequest) {
+  const rawBody = await req.text()
+  let body: Record<string, unknown>
+  try { body = JSON.parse(rawBody) } catch { return NextResponse.json({ ok: false }, { status: 400 }) }
+
+  // ── Détecter la source du webhook ──────────────────────
+
+  // ── CinetPay webhook ──
+  // CinetPay envoie : { cpm_trans_id, cpm_site_id, cpm_amount, cpm_currency, cpm_payment_status, ... }
+  if (body.cpm_site_id || body.cpm_trans_id) {
+    const transactionId = body.cpm_trans_id as string
+    const status        = body.cpm_payment_status as string  // 'ACCEPTED' ou 'REFUSED'
+
+    if (status !== 'ACCEPTED') {
+      console.log(`[CinetPay webhook] Paiement non accepté: ${status}`)
+      return NextResponse.json({ ok: true })
+    }
+
+    // Vérifier le statut en appelant l'API CinetPay (double vérification)
+    try {
+      const check = await checkCinetPayPayment(transactionId)
+      if (check.status !== 'ACCEPTED') {
+        console.log('[CinetPay webhook] Vérification échouée:', check.status)
+        return NextResponse.json({ ok: true })
+      }
+
+      const meta    = check.metadata
+      const userId  = meta.user_id
+      const planKey = meta.plan_key
+
+      if (!userId || !planKey) {
+        console.error('[CinetPay webhook] metadata manquant:', meta)
+        return NextResponse.json({ ok: false }, { status: 400 })
+      }
+
+      await activatePlan(userId, planKey, transactionId)
+      return NextResponse.json({ ok: true })
+
+    } catch (err) {
+      console.error('[CinetPay webhook] Erreur vérification:', err)
+      return NextResponse.json({ ok: false }, { status: 500 })
+    }
+  }
+
+  // ── GeniusPay webhook ──
+  // GeniusPay envoie avec headers X-Webhook-Signature et X-Webhook-Timestamp
+  if (body.event || body.reference) {
+    const signature = req.headers.get('x-webhook-signature') ?? ''
+    const timestamp = req.headers.get('x-webhook-timestamp') ?? ''
+    const secret    = process.env.GENIUSPAY_WEBHOOK_SECRET ?? ''
+
+    if (secret && signature && timestamp) {
+      const valid = verifyWebhookSignature(rawBody, signature, timestamp, secret)
+      if (!valid) {
+        console.error('[GeniusPay webhook] Signature invalide')
+        return NextResponse.json({ ok: false }, { status: 403 })
+      }
+    }
+
+    const event = body.event as string
+    if (event !== 'payment.success') return NextResponse.json({ ok: true })
+
+    const data    = (body.data ?? {}) as Record<string, unknown>
+    const meta    = (data.metadata ?? {}) as Record<string, string>
+    const userId  = meta.user_id
+    const planKey = meta.plan_key
+    const ref     = data.reference as string ?? ''
+
+    if (!userId || !planKey) {
+      console.error('[GeniusPay webhook] metadata manquant:', meta)
+      return NextResponse.json({ ok: false }, { status: 400 })
+    }
+
+    await activatePlan(userId, planKey, ref)
+    return NextResponse.json({ ok: true })
+  }
+
+  // Webhook inconnu
+  console.warn('[Webhook] Format non reconnu:', Object.keys(body))
+  return NextResponse.json({ ok: true })
+}
+
+export const maxDuration = 15

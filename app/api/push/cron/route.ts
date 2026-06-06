@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
       }
 
       // 3. Envoyer aux utilisateurs Pro/Elite qui ont les alertes actives
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://profityx.vercel.app'
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://profity-x.com'
       const res = await fetch(`${appUrl}/api/push/send`, {
         method:  'POST',
         headers: {

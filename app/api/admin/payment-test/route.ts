@@ -52,8 +52,8 @@ export async function GET(req: NextRequest) {
         currency: 'XOF',
         description: 'Test ProfityX',
         customer: { name: 'Test', email: 'test@profityx.app', phone: '+2250000000000', country: 'CI' },
-        success_url: 'https://profity-alpha.vercel.app/dashboard',
-        error_url:   'https://profity-alpha.vercel.app/pricing',
+        success_url: 'https://profity-x.com/dashboard',
+        error_url:   'https://profity-x.com/pricing',
         metadata: { user_id: 'test', plan_key: 'pro', app: 'profityx' },
       }),
     })
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
     } else {
       result.status = `❌ GeniusPay erreur ${res.status}`
       result.fix = res.status === 403
-        ? 'Allez dans votre compte GeniusPay → Paramètres → Domaines autorisés → Ajouter : profity-alpha.vercel.app'
+        ? 'Allez dans votre compte GeniusPay → Paramètres → Domaines autorisés → Ajouter : profity-x.com'
         : res.status === 401
           ? 'Les clés API sont invalides — vérifiez GENIUSPAY_API_KEY et GENIUSPAY_SECRET dans Vercel'
           : 'Erreur inattendue — contactez le support GeniusPay'
