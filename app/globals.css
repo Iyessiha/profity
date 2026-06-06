@@ -1,0 +1,232 @@
+/* ============================================================
+   PROFITYX — DESIGN TOKENS (CSS variables par thème)
+   ============================================================ */
+
+/* ── Dark (défaut) ── */
+:root, [data-theme="dark"] {
+  /* Backgrounds */
+  --bg0: #020408;
+  --bg1: #06090F;
+  --bg2: #0A0F1A;
+  --bg3: #0D1420;
+  /* Textes */
+  --tx0: #E8F4F8;
+  --tx1: rgba(232,244,248,0.75);
+  --tx2: rgba(232,244,248,0.45);
+  --tx3: rgba(232,244,248,0.2);
+  /* Accents */
+  --ac:  #00FFB2;  /* neon vert */
+  --ac2: #00D4FF;  /* cyan */
+  --ac3: #C9A84C;  /* or */
+  --red: #FF3A5C;
+  --ora: #FF8800;
+  /* Bordures */
+  --bd:  rgba(0,255,178,0.08);
+  --bd1: rgba(0,255,178,0.18);
+  --bd2: rgba(0,255,178,0.3);
+  /* Ombres */
+  --sh: rgba(0,0,0,0.5);
+  --sh2: rgba(0,255,178,0.15);
+  /* Scrollbar */
+  --scr: rgba(0,255,178,0.2);
+}
+
+/* ── Light ── */
+[data-theme="light"] {
+  --bg0: #EEF1F6;
+  --bg1: #FFFFFF;
+  --bg2: #F4F7FB;
+  --bg3: #E8EDF5;
+  --tx0: #0F172A;
+  --tx1: rgba(15,23,42,0.75);
+  --tx2: rgba(15,23,42,0.5);
+  --tx3: rgba(15,23,42,0.2);
+  --ac:  #009E78;
+  --ac2: #006FA6;
+  --ac3: #8B6914;
+  --red: #DC2626;
+  --ora: #D97706;
+  --bd:  rgba(15,23,42,0.08);
+  --bd1: rgba(0,158,120,0.2);
+  --bd2: rgba(0,158,120,0.35);
+  --sh: rgba(15,23,42,0.12);
+  --sh2: rgba(0,158,120,0.1);
+  --scr: rgba(0,158,120,0.3);
+}
+
+/* ── Reset & base ── */
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { max-width:100%; overflow-x:hidden; }
+body {
+  background: var(--bg0);
+  color: var(--tx0);
+  font-family: 'Rajdhani', sans-serif;
+  transition: background .3s, color .3s;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg0); }
+::-webkit-scrollbar-thumb { background: var(--scr); border-radius: 2px; }
+
+/* ─── Layout shells ─────────────────────────────────────── */
+.app-shell   { display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
+.admin-shell { display:grid; grid-template-columns:200px 1fr; min-height:calc(100vh - 60px); }
+.login-shell { display:flex; min-height:100vh; background:var(--bg0); }
+.login-brand { flex:1; display:flex; flex-direction:column; justify-content:center; padding:4rem; }
+.login-form  { width:440px; display:flex; flex-direction:column; justify-content:center; padding:3rem 3rem 3rem 3.5rem; }
+.login-sep   { width:1px; align-self:stretch; }
+.nav-links   { display:flex; align-items:center; gap:24px; }
+
+/* ─── Utilitaires ── */
+.mobile-only  { display:none !important; }
+.desktop-only { display:flex; }
+
+/* ─── Tablette ≤ 1024px ─────────────────────────────────── */
+@media (max-width:1024px) {
+  .app-shell   { grid-template-columns:64px 1fr; }
+  .admin-shell { grid-template-columns:60px 1fr; }
+  .login-brand { padding:2rem; }
+}
+
+/* ─── Mobile + tablette ≤ 900px : DRAWER ──────────────── */
+@media (max-width:900px) {
+  .mobile-only  { display:flex !important; }
+  .desktop-only { display:none !important; }
+  .app-shell    { grid-template-columns:1fr; }
+  .admin-shell  { grid-template-columns:1fr; }
+  .login-brand  { display:none; }
+  .login-sep    { display:none; }
+  .login-form   { width:100%; padding:2rem 1.25rem; }
+  .nav-links .nav-hide { display:none !important; }
+
+  .app-sidebar, .admin-sidebar {
+    position:fixed !important;
+    top:0; left:0; bottom:0;
+    width:260px !important;
+    height:100vh !important;
+    transform:translateX(-100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);
+    z-index:300; overflow-y:auto; overflow-x:hidden;
+    flex-direction:column !important;
+  }
+  .app-sidebar.drawer-open, .admin-sidebar.drawer-open {
+    transform:translateX(0);
+    box-shadow:4px 0 40px var(--sh);
+  }
+  .sidebar-label { display:inline !important; }
+  .sidebar-logo  { display:block !important; }
+
+  .drawer-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:290; opacity:0; pointer-events:none; transition:opacity .28s;
+  }
+  .drawer-overlay.show { opacity:1; pointer-events:auto; }
+
+  .hamburger-btn {
+    display:flex !important; align-items:center; justify-content:center;
+    width:40px; height:40px; flex-shrink:0;
+    background:var(--bd); border:1px solid var(--bd1);
+    border-radius:8px; cursor:pointer; color:var(--ac);
+  }
+  /* hamburger maintenant inline dans TopBar — pas de padding forcé */
+}
+
+/* ─── Mobile ≤ 640px ─────────────────────────────────── */
+@media (max-width:640px) {
+  .resp-pad { padding:0.75rem !important; }
+  .topbar-hide { display:none !important; }
+  .topbar-name { display:none !important; }
+  .quota-bar { padding:8px 0.75rem !important; gap:8px !important; flex-wrap:wrap; }
+  .modal-card { width:94vw !important; padding:1.25rem !important; max-height:90vh; overflow-y:auto; }
+  .hero-section { padding:5rem 1rem 3rem !important; }
+  .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .table-scroll > * { min-width:600px; }
+  .settings-shell { grid-template-columns:1fr !important; padding:0.75rem !important; }
+  .app-main, .admin-main { width:100% !important; max-width:100vw !important; overflow-x:hidden !important; }
+  .stats-grid { grid-template-columns:1fr 1fr !important; }
+  .cal-filters { overflow-x:auto !important; flex-wrap:nowrap !important; padding-bottom:4px; }
+}
+
+/* ─── Desktop : cacher hamburger ───────────────────────── */
+@media (min-width:901px) {
+  .hamburger-btn { display:none !important; }
+  .drawer-overlay { display:none !important; }
+  .nav-links .nav-hide { display:none !important; }
+}
+@media (min-width:641px) {
+  .nav-links .nav-hide { display:flex !important; }
+}
+
+/* ─── Transitions thème ─────────────────────────────────── */
+.theme-transition, .theme-transition * {
+  transition: background-color .3s, color .3s, border-color .3s !important;
+}
+
+/* ─── Animations fond (subtiles) ────────────────────────── */
+@keyframes gradMove {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+@keyframes orb1 {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50%       { transform: translate(40px,-30px) scale(1.08); }
+}
+@keyframes orb2 {
+  0%, 100% { transform: translate(0,0); }
+  50%       { transform: translate(-30px,20px); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Fond animé pour les pages (dark mode seulement) */
+[data-theme="dark"] body::before,
+[data-theme="dark"] body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.3;
+}
+[data-theme="dark"] body::before {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,255,178,0.25), transparent 70%);
+  top: -150px; left: -100px;
+  animation: orb1 20s ease-in-out infinite;
+}
+[data-theme="dark"] body::after {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(0,212,255,0.2), transparent 70%);
+  bottom: -100px; right: -50px;
+  animation: orb2 25s ease-in-out infinite;
+}
+
+/* Light mode : fond doux sans animation agressive */
+[data-theme="light"] body {
+  background: linear-gradient(135deg, #EEF1F6 0%, #F4F7FB 50%, #EAF0F8 100%);
+  background-size: 400% 400%;
+  animation: gradMove 15s ease infinite;
+}
+
+/* Footer légal global dans les pages app */
+.app-footer {
+  border-top: 1px solid var(--bd);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--bg1);
+}
+.app-footer a {
+  font-family: 'Orbitron', monospace;
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: var(--tx3);
+  text-decoration: none;
+}
+.app-footer a:hover { color: var(--ac); }
