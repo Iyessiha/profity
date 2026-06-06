@@ -321,6 +321,109 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── PAIEMENT SÉCURISÉ ── */}
+      <section style={{ position:'relative', zIndex:1, padding:'4rem 2rem', maxWidth:900, margin:'0 auto' }}>
+        <div style={{ background:'linear-gradient(135deg, rgba(0,255,178,0.04), rgba(0,212,255,0.03))', border:'1px solid rgba(0,255,178,0.12)', borderRadius:16, padding:'2.5rem 2rem' }}>
+          <div style={{ textAlign:'center', marginBottom:'2rem' }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(0,255,178,0.08)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:100, padding:'6px 18px', marginBottom:14 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V6l-8-4z" fill="#00FFB2"/></svg>
+              <span style={{ fontFamily:"'Orbitron',monospace", fontSize:9, letterSpacing:2, color:'#00FFB2' }}>PAIEMENT 100% SÉCURISÉ</span>
+            </div>
+            <h2 style={{ fontFamily:"'Orbitron',monospace", fontSize:'clamp(18px,3vw,26px)', fontWeight:900, letterSpacing:1, color:'#E8F4F8', margin:'0 0 8px' }}>
+              PAYEZ COMME VOUS VOULEZ
+            </h2>
+            <p style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:15, color:'rgba(232,244,248,0.45)', margin:0 }}>
+              Mobile Money, Wave ou carte bancaire — choisissez votre méthode préférée
+            </p>
+          </div>
+
+          {/* Logos SVG moyens de paiement */}
+          <div style={{ display:'flex', flexWrap:'wrap', gap:14, justifyContent:'center', alignItems:'center', marginBottom:'2rem' }}>
+
+            {/* Wave */}
+            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(0,199,255,0.2)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
+              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="20" fill="#0DC5FF"/>
+                <path d="M8 22c2-6 5-9 8-9s5 6 8 6 5-6 8-3" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+                <path d="M8 27c2-4 5-6 8-6s5 4 8 4 5-4 8-2" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+              </svg>
+              <span style={{ fontFamily:"'Orbitron',monospace", fontSize:12, fontWeight:900, color:'#0DC5FF', letterSpacing:1 }}>WAVE</span>
+            </div>
+
+            {/* Orange Money */}
+            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(255,130,0,0.25)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
+              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="20" fill="#FF8200"/>
+                <circle cx="20" cy="20" r="10" fill="none" stroke="#fff" strokeWidth="2.5"/>
+                <circle cx="20" cy="20" r="4" fill="#fff"/>
+              </svg>
+              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:13, fontWeight:700, color:'#FF8200', letterSpacing:0.5 }}>Orange Money</span>
+            </div>
+
+            {/* MTN Mobile Money */}
+            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(255,204,0,0.25)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
+              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="8" fill="#FFCC00"/>
+                <text x="20" y="26" textAnchor="middle" fontFamily="Arial" fontWeight="900" fontSize="14" fill="#000">MTN</text>
+              </svg>
+              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:13, fontWeight:700, color:'#FFCC00' }}>MTN MoMo</span>
+            </div>
+
+            {/* Moov Money */}
+            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(0,120,215,0.25)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
+              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+                <circle cx="20" cy="20" r="20" fill="#0078D7"/>
+                <path d="M10 20l6-8 4 12 4-8 6 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:13, fontWeight:700, color:'#0078D7' }}>Moov Money</span>
+            </div>
+
+            {/* Visa */}
+            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(26,115,232,0.25)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:6 }}>
+              <svg width="48" height="28" viewBox="0 0 75 24" fill="none">
+                <text x="0" y="20" fontFamily="Arial" fontWeight="900" fontSize="22" fill="#1A73E8" letterSpacing="-1">VISA</text>
+              </svg>
+            </div>
+
+            {/* Mastercard */}
+            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(235,0,27,0.2)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
+              <svg width="44" height="28" viewBox="0 0 44 28" fill="none">
+                <circle cx="16" cy="14" r="13" fill="#EB001B"/>
+                <circle cx="28" cy="14" r="13" fill="#F79E1B"/>
+                <path d="M22 5.5a13 13 0 0 1 0 17A13 13 0 0 1 22 5.5z" fill="#FF5F00"/>
+              </svg>
+              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:12, fontWeight:700, color:'rgba(232,244,248,0.6)' }}>Mastercard</span>
+            </div>
+
+            {/* GeniusPay */}
+            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
+              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="8" fill="url(#gpGrad)"/>
+                <defs><linearGradient id="gpGrad" x1="0" y1="0" x2="40" y2="40"><stop stopColor="#00FFB2"/><stop offset="1" stopColor="#00D4FF"/></linearGradient></defs>
+                <path d="M12 20h8M20 12v16M28 16c0-4-4-6-8-4" stroke="#020408" strokeWidth="2.5" strokeLinecap="round"/>
+              </svg>
+              <span style={{ fontFamily:"'Orbitron',monospace", fontSize:10, fontWeight:900, color:'#00FFB2', letterSpacing:0.5 }}>GeniusPay</span>
+            </div>
+
+          </div>
+
+          {/* Badges de sécurité */}
+          <div style={{ display:'flex', flexWrap:'wrap', gap:12, justifyContent:'center' }}>
+            {[
+              { icon:<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V6l-8-4z" fill="#00FFB2"/><path d="M9 12l2 2 4-4" stroke="#020408" strokeWidth="2" strokeLinecap="round"/></svg>, label:'Chiffrement SSL 256 bits', color:'#00FFB2' },
+              { icon:<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" fill="#00D4FF"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#00D4FF" strokeWidth="2" strokeLinecap="round" fill="none"/></svg>, label:'Données bancaires jamais stockées', color:'#00D4FF' },
+              { icon:<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#C9A84C"/><path d="M12 7v5l3 3" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>, label:'Annulable à tout moment', color:'#C9A84C' },
+              { icon:<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" stroke="#00FFB2" strokeWidth="2" strokeLinecap="round" fill="none"/></svg>, label:'Sans engagement', color:'#00FFB2' },
+            ].map((b,i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:7, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:8, padding:'7px 14px' }}>
+                {b.icon}
+                <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:12, color:'rgba(232,244,248,0.55)' }}>{b.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA FINAL ── */}
       <section style={{ position: 'relative', zIndex: 1, padding: '6rem 2rem', textAlign: 'center', maxWidth: 760, margin: '0 auto' }}>
         <h2 style={{ fontFamily: HUD, fontSize: 'clamp(28px,4vw,46px)', fontWeight: 900, letterSpacing: 1, marginBottom: '1rem' }}>VOTRE PROCHAIN TRADE<br /><span style={{ color: '#00FFB2' }}>COMMENCE MAINTENANT</span></h2>
