@@ -905,6 +905,9 @@ export default function AdminDashboard() {
             <NotifSenderPanel token={token} showToast={showToast} />
           )}
 
+          {/* ══ DIAGNOSTIC PAIEMENT ══════════════════════ */}
+          {tab === 'treasury' && stats && <GeniusPayDiag token={token} />}
+
           {tab === 'logs' && <LogsPanel token={token} />}
 
         </main>
@@ -1152,6 +1155,95 @@ function LogsPanel({ token }: { token: string }) {
       {logs.length === 0 && (
         <div style={{ padding: '3rem', textAlign: 'center', fontFamily: HUD, fontSize: 10, color: 'rgba(232,244,248,0.2)', letterSpacing: 3 }}>
           AUCUNE ACTION ENREGISTRÉE
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Diagnostic GeniusPay ─────────────────────────────────
+function GeniusPayDiag({ token }: { token: string }) {
+  const HUD  = "'Orbitron', monospace"
+  const BODY = "'Rajdhani', sans-serif"
+  const [result, setResult] = useState<Record<string,unknown>|null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const run = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/admin/payment-test', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const json = await res.json()
+      setResult(json)
+    } catch(e) {
+      setResult({ status: '❌ Erreur réseau', error: String(e) })
+    }
+    setLoading(false)
+  }
+
+  const s = result?.geniuspay_test as Record<string,unknown>|undefined
+  const httpOk = s?.http_ok === true
+  const env = result?.env as Record<string,string>|undefined
+
+  return (
+    <div style={{ marginTop:'2rem', background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem' }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1rem', flexWrap:'wrap', gap:10 }}>
+        <div style={{ fontFamily:HUD, fontSize:11, color:'var(--ac)', letterSpacing:1 }}>⚡ DIAGNOSTIC GENIUSPAY</div>
+        <button onClick={run} disabled={loading}
+          style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, background:loading?'var(--bd)':'var(--ac)', color:'#020408', border:'none', borderRadius:4, padding:'8px 18px', cursor:loading?'wait':'pointer', fontWeight:700 }}>
+          {loading ? 'TEST EN COURS...' : '▶ TESTER LA CONNEXION'}
+        </button>
+      </div>
+
+      {result && (
+        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          {/* Statut global */}
+          <div style={{ fontFamily:BODY, fontSize:15, color: httpOk?'var(--ok)':'var(--red)', fontWeight:700 }}>
+            {String(result.status ?? '')}
+          </div>
+
+          {/* Variables d'environnement */}
+          {env && (
+            <div style={{ background:'var(--bg1)', borderRadius:6, padding:'0.875rem', display:'grid', gridTemplateColumns:'auto 1fr', gap:'6px 16px', alignItems:'center' }}>
+              <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', gridColumn:'1/-1', marginBottom:4 }}>VARIABLES D'ENVIRONNEMENT</div>
+              {Object.entries(env).map(([k,v]) => (
+                <>
+                  <span key={k+'k'} style={{ fontFamily:HUD, fontSize:8, color:'var(--tx3)' }}>{k}</span>
+                  <span key={k+'v'} style={{ fontFamily:BODY, fontSize:13, color: v.startsWith('✅')?'var(--ok)':'var(--red)' }}>{v}</span>
+                </>
+              ))}
+            </div>
+          )}
+
+          {/* Réponse GeniusPay */}
+          {s && (
+            <div style={{ background:'var(--bg1)', borderRadius:6, padding:'0.875rem' }}>
+              <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', marginBottom:8 }}>RÉPONSE GENIUSPAY</div>
+              <div style={{ display:'flex', gap:10, marginBottom:8, flexWrap:'wrap' }}>
+                <span style={{ fontFamily:HUD, fontSize:12, fontWeight:900, color: httpOk?'var(--ok)':'var(--red)' }}>HTTP {String(s.http_status)}</span>
+                <span style={{ fontFamily:BODY, fontSize:12, color: httpOk?'var(--ok)':'var(--red)' }}>{httpOk?'✓ Succès':'✗ Échec'}</span>
+              </div>
+              <pre style={{ fontFamily:'monospace', fontSize:11, color:'var(--tx1)', background:'var(--bg2)', padding:'0.75rem', borderRadius:4, overflowX:'auto', whiteSpace:'pre-wrap', wordBreak:'break-word' }}>
+                {JSON.stringify(s.response, null, 2)}
+              </pre>
+            </div>
+          )}
+
+          {/* Instruction fix */}
+          {result.fix && (
+            <div style={{ background:'rgba(255,153,0,0.08)', border:'1px solid rgba(255,153,0,0.25)', borderRadius:6, padding:'0.875rem', fontFamily:BODY, fontSize:14, color:'var(--ora)', lineHeight:1.6 }}>
+              💡 {String(result.fix)}
+            </div>
+          )}
+
+          {/* URL checkout si OK */}
+          {result.checkout_url && (
+            <div style={{ background:'rgba(0,230,118,0.08)', border:'1px solid rgba(0,230,118,0.2)', borderRadius:6, padding:'0.875rem' }}>
+              <div style={{ fontFamily:HUD, fontSize:8, color:'var(--ok)', marginBottom:4 }}>✅ CHECKOUT URL GÉNÉRÉE</div>
+              <a href={String(result.checkout_url)} target="_blank" style={{ fontFamily:BODY, fontSize:12, color:'var(--ok)', wordBreak:'break-all' }}>{String(result.checkout_url)}</a>
+            </div>
+          )}
         </div>
       )}
     </div>
