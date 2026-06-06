@@ -25,8 +25,21 @@ export default function Sidebar({ plan, locale }: Props) {
   const { isDark } = useTheme()
 
   const handleLogout = async () => {
-    await supabasePublic.auth.signOut()
-    window.location.href = '/auth/login'
+    try {
+      await supabasePublic.auth.signOut()
+    } catch (_) {
+      // Ignorer les erreurs — on force la déconnexion quoi qu'il arrive
+    }
+    // Nettoyer le storage manuellement (garantit la déco même si signOut échoue)
+    try {
+      Object.keys(localStorage).forEach(k => {
+        if (k.includes('supabase') || k.includes('sb-') || k.includes('pxTheme') === false && k.includes('auth')) {
+          if (k.includes('supabase') || k.includes('sb-')) localStorage.removeItem(k)
+        }
+      })
+    } catch (_) {}
+    // Redirection forcée — replace empêche le retour arrière
+    window.location.replace('/auth/login')
   }
 
   const planColor     = PLAN_COLORS[plan] ?? '#888'

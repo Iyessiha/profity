@@ -153,7 +153,8 @@ export default function AdminDashboard() {
   }
 
   const handleLogout = async () => {
-    await supabasePublic.auth.signOut()
+    try { await supabasePublic.auth.signOut() } catch (_) {}
+    try { Object.keys(localStorage).filter(k=>k.includes('supabase')||k.includes('sb-')).forEach(k=>localStorage.removeItem(k)) } catch (_) {}
     window.location.replace('/auth/login')
   }
 
