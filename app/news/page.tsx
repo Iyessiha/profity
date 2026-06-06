@@ -108,21 +108,25 @@ function SignalBox({ sig, label }: { sig: Signal; label: string }) {
   )
 }
 
-function CountdownCard({ ev, isPremium, onSelect }: { ev:ScheduledEvent; isPremium:boolean; onSelect:(ev:ScheduledEvent)=>void }) {
+function CountdownCard({ ev, isPremium, onSelect, index }: { ev:ScheduledEvent; isPremium:boolean; onSelect:(ev:ScheduledEvent)=>void; index:number }) {
   const cd = useCountdown(ev.event_date)
   const isImminent = !cd.passed && cd.d===0 && cd.h<4
   const color = ev.impact==='High' ? 'var(--red)' : 'var(--ora)'
   const sig = EVENT_SIGNALS[ev.code] ?? EVENT_SIGNALS.DEFAULT
 
-  return (
-    <div style={{ background:'var(--bg1)', border:`1px solid ${isImminent?'rgba(220,38,38,0.4)':'var(--bd)'}`, borderRadius:10, overflow:'hidden', transition:'transform .2s, box-shadow .2s' }}
-      onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform='translateY(-2px)';(e.currentTarget as HTMLElement).style.boxShadow=`0 6px 20px rgba(0,0,0,0.3)`}}
-      onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform='none';(e.currentTarget as HTMLElement).style.boxShadow='none'}}>
-      {/* Barre impact */}
-      <div style={{ height:2, background:`linear-gradient(90deg, transparent, ${color}, transparent)` }} />
+  // Les 2 premiers événements sont visibles pour tous — le reste flou pour free
+  const isLocked = !isPremium && index >= 2
 
-      <div style={{ padding:'0.875rem' }}>
-        {/* En-tête événement */}
+  return (
+    <div style={{ background:'var(--bg1)', border:`1px solid ${isImminent&&!isLocked?'rgba(220,38,38,0.4)':isLocked?'var(--bd)':'var(--bd)'}`, borderRadius:10, overflow:'hidden', transition:'transform .2s, box-shadow .2s', position:'relative' }}
+      onMouseEnter={e=>{if(!isLocked){(e.currentTarget as HTMLElement).style.transform='translateY(-2px)';(e.currentTarget as HTMLElement).style.boxShadow=`0 6px 20px rgba(0,0,0,0.3)`}}}
+      onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform='none';(e.currentTarget as HTMLElement).style.boxShadow='none'}}>
+
+      {/* Barre impact */}
+      <div style={{ height:2, background: isLocked ? 'var(--bd)' : `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
+
+      <div style={{ padding:'0.875rem', filter: isLocked ? 'blur(4px)' : 'none', userSelect: isLocked ? 'none' : 'auto', pointerEvents: isLocked ? 'none' : 'auto', transition:'filter .2s' }}>
+        {/* En-tête événement — TOUJOURS visible (pas flou) */}
         <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:10 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
             <span style={{ fontSize:18 }}>{ev.flag}</span>
@@ -134,7 +138,7 @@ function CountdownCard({ ev, isPremium, onSelect }: { ev:ScheduledEvent; isPremi
           <ImpactBadge impact={ev.impact} />
         </div>
 
-        {/* Chronomètre ou signal publié */}
+        {/* Chronomètre */}
         {!cd.passed ? (
           <>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:4, marginBottom:8 }}>
@@ -151,22 +155,44 @@ function CountdownCard({ ev, isPremium, onSelect }: { ev:ScheduledEvent; isPremi
             </div>
           </>
         ) : (
-          <div style={{ background:'color-mix(in srgb, var(--ac) 6%, transparent)', border:'1px solid var(--bd2)', borderRadius:6, padding:'8px 10px', marginBottom:8, textAlign:'center', cursor:'pointer' }}
-            onClick={()=>onSelect(ev)}>
+          <div style={{ background:'color-mix(in srgb, var(--ac) 6%, transparent)', border:'1px solid var(--bd2)', borderRadius:6, padding:'8px 10px', marginBottom:8, textAlign:'center' }}>
             <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)', marginBottom:2 }}>✓ RÉSULTATS PUBLIÉS</div>
             <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)' }}>Voir le signal →</div>
           </div>
         )}
 
-        {/* Intro du signal */}
+        {/* Intro + bouton signal */}
         <div style={{ marginTop:8, fontFamily:BODY, fontSize:11, color:'var(--tx3)', lineHeight:1.4, borderTop:'1px solid var(--bd)', paddingTop:8 }}>{sig.intro}</div>
-
-        {/* Bouton voir les signaux */}
-        <button onClick={()=>onSelect(ev)} style={{ marginTop:10, width:'100%', background:'color-mix(in srgb, var(--ac) 8%, transparent)', border:'1px solid var(--bd2)', borderRadius:5, padding:'7px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+        <button style={{ marginTop:10, width:'100%', background:'color-mix(in srgb, var(--ac) 8%, transparent)', border:'1px solid var(--bd2)', borderRadius:5, padding:'7px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
           <i className="ti ti-chart-line" style={{ fontSize:13 }} />
           VOIR LES SIGNAUX
         </button>
       </div>
+
+      {/* Overlay lock — uniquement pour les cards floutées */}
+      {isLocked && (
+        <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:10, background:'rgba(var(--bg1-raw,8,17,31), 0.55)', backdropFilter:'blur(0px)', zIndex:2 }}>
+          {/* Badge impact visible malgré le flou */}
+          <div style={{ position:'absolute', top:10, right:10 }}>
+            <ImpactBadge impact={ev.impact} />
+          </div>
+          {/* En-tête visible */}
+          <div style={{ position:'absolute', top:14, left:14, display:'flex', alignItems:'center', gap:6 }}>
+            <span style={{ fontSize:16 }}>{ev.flag}</span>
+            <span style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', letterSpacing:1 }}>{ev.code}</span>
+          </div>
+
+          {/* Lock CTA */}
+          <div style={{ background:'var(--bg2)', border:'1px solid var(--bd2)', borderRadius:10, padding:'1rem 1.25rem', textAlign:'center', margin:'0 1rem', backdropFilter:'blur(8px)' }}>
+            <i className="ti ti-lock" style={{ fontSize:22, color:'var(--ac)', display:'block', marginBottom:6 }} />
+            <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'var(--tx0)', marginBottom:4 }}>SIGNAL RÉSERVÉ PRO</div>
+            <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx2)', marginBottom:10 }}>Countdown, stratégie et coaching</div>
+            <a href="/pricing" style={{ display:'inline-block', background:'var(--ac)', color:'#020408', fontFamily:HUD, fontSize:8, letterSpacing:1, fontWeight:700, padding:'7px 16px', borderRadius:4, textDecoration:'none' }}>
+              DÉBLOQUER →
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -323,8 +349,8 @@ export default function NewsPage() {
                 </div>
               )}
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(230px,1fr))', gap:12 }}>
-                {events.map(ev=>(
-                  <CountdownCard key={ev.id} ev={ev} isPremium={isPremium} onSelect={setSelected} />
+                {events.map((ev, i)=>(
+                  <CountdownCard key={ev.id} ev={ev} isPremium={isPremium} onSelect={setSelected} index={i} />
                 ))}
                 {events.length===0 && (
                   <div style={{ gridColumn:'1/-1', textAlign:'center', padding:'3rem', color:'var(--tx3)', fontFamily:HUD, fontSize:10, letterSpacing:2 }}>CHARGEMENT...</div>
