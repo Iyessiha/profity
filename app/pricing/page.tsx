@@ -99,8 +99,17 @@ export default function PricingPage() {
         body: JSON.stringify({ plan: planKey }),
       })
       const json = await res.json()
-      if (json.success && json.redirectUrl) window.location.href = json.redirectUrl
-      else showToast((json.error ?? 'Erreur de paiement') + (json.detail ? ` — ${String(json.detail).slice(0,120)}` : ''), false)
+      if (json.success && json.redirectUrl) {
+        if (json.fallback) {
+          // Fallback WhatsApp : paiement manuel
+          showToast('💬 Redirection vers WhatsApp pour finaliser votre abonnement...', true)
+          setTimeout(() => window.open(json.redirectUrl, '_blank'), 1200)
+        } else {
+          window.location.href = json.redirectUrl
+        }
+      } else {
+        showToast((json.error ?? 'Erreur de paiement'), false)
+      }
     } catch { showToast('Erreur réseau — réessayez', false) }
     setLoading(null)
   }
@@ -150,7 +159,7 @@ export default function PricingPage() {
           </p>
           {/* Badges preuve */}
           <div style={{ display:'flex', gap:8, justifyContent:'center', flexWrap:'wrap' }}>
-            {['✓ Sans engagement','✓ Annulable à tout moment','✓ Paiement sécurisé GeniusPay'].map(b => (
+            {['✓ Sans engagement','✓ Annulable à tout moment','✓ Paiement sécurisé','💬 Support WhatsApp'].map(b => (
               <span key={b} style={{ background:'color-mix(in srgb, var(--ac) 8%, transparent)', border:'1px solid var(--bd2)', borderRadius:100, padding:'4px 14px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)' }}>{b}</span>
             ))}
           </div>
@@ -232,7 +241,7 @@ export default function PricingPage() {
                   </div>
                 ) : (
                   <button onClick={() => handleUpgrade(plan.key)} disabled={!!loading || !token}
-                    style={{ width:'100%', padding:'14px', borderRadius:6, cursor:isLoading?'wait':'pointer', fontFamily:HUD, fontSize:10, letterSpacing:2, fontWeight:700, border:'none', background: isUp ? c : 'transparent', color: isUp ? '#020408' : c, border: isUp ? 'none' : `1px solid ${c}50`, display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity: loading && !isLoading ? 0.6 : 1 }}>
+                    style={{ width:'100%', padding:'14px', borderRadius:6, cursor:isLoading?'wait':'pointer', fontFamily:HUD, fontSize:10, letterSpacing:2, fontWeight:700, background: isUp ? c : 'transparent', color: isUp ? '#020408' : c, border: isUp ? 'none' : `1px solid ${c}50`, display:'flex', alignItems:'center', justifyContent:'center', gap:8, opacity: loading && !isLoading ? 0.6 : 1 }}>
                     {isLoading ? <><div style={{ width:14,height:14,border:'2px solid rgba(0,0,0,0.2)',borderTop:`2px solid ${isUp?'#020408':c}`,borderRadius:'50%',animation:'spin .8s linear infinite' }} />REDIRECTION...</> : isUp ? `CHOISIR ${plan.name} →` : `REVENIR EN ${plan.name}`}
                   </button>
                 )}

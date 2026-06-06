@@ -54,10 +54,10 @@ export async function POST(req: NextRequest) {
       userId:        user.id,
       successUrl:    `${appUrl}/dashboard?subscription=success&plan=${planKey}`,
       errorUrl:      `${appUrl}/pricing?subscription=cancelled`,
-      paymentMethod: body.payment_method,  // optionnel
+      paymentMethod: body.payment_method,
     })
 
-    // 6. Enregistrer un abonnement "pending" lié à la référence
+    // 6. Enregistrer un abonnement "pending"
     await supabaseAdmin.from('subscriptions').upsert({
       user_id:              user.id,
       plan:                 planKey,
@@ -72,13 +72,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, redirectUrl: checkout.redirectUrl, reference: checkout.reference })
 
   } catch (err) {
-    const detail = err instanceof Error ? err.message : String(err)
+    const detail  = err instanceof Error ? err.message : String(err)
+    const isSetup = /MISSING_API_KEY|INVALID_API_KEY|401|403|allowlist|Host not/i.test(detail)
+
     console.error('[GeniusPay] checkout error:', detail)
-    let hint = ''
-    if (/MISSING_API_KEY|INVALID_API_KEY|401/i.test(detail)) hint = ' (clés GeniusPay invalides — vérifiez GENIUSPAY_API_KEY / GENIUSPAY_SECRET)'
-    else if (/MERCHANT_INACTIVE|403/i.test(detail))          hint = ' (compte marchand inactif — activez le mode live)'
-    else if (/VALIDATION_ERROR|422/i.test(detail))           hint = ' (données invalides)'
-    else if (/ENOTFOUND|ECONNREFUSED|fetch failed/i.test(detail)) hint = ' (impossible de joindre GeniusPay)'
-    return NextResponse.json({ success: false, error: `Erreur création paiement${hint}`, detail }, { status: 502 })
+
+    // Fallback WhatsApp si GeniusPay non configuré
+    if (isSetup) {
+      const { data: userProfile } = await supabaseAdmin.from('profiles').select('public_id').eq('id', user.id).single()
+      const pid   = userProfile?.public_id ?? 'INCONNU'
+      const pname = planKey === 'pro' ? 'Pro (17 500 FCFA/mois)' : 'Elite (35 000 FCFA/mois)'
+      const msg   = encodeURIComponent(
+        `Bonjour ProfityX 👋\n\nJe souhaite souscrire au plan ${pname}.\n\nMon identifiant : ${pid}\nEmail : ${profile.email ?? user.email}\n\nMerci de me confirmer les instructions de paiement.`
+      )
+      const waUrl = `https://wa.me/+2250500446464?text=${msg}`
+      return NextResponse.json({
+        success:     true,
+        redirectUrl: waUrl,
+        fallback:    true,
+        message:     'Paiement via WhatsApp (configuration GeniusPay en cours)',
+      })
+    }
+
+    return NextResponse.json({ success: false, error: 'Erreur paiement — contactez le support', detail }, { status: 502 })
   }
 }
