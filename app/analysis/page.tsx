@@ -28,6 +28,7 @@ export default function AnalysisPage() {
   const [plan, setPlan]           = useState('free')
   const [locale, setLocale]       = useState('fr')
   const [token, setToken]         = useState('')
+  const [balance, setBalance]     = useState<number|undefined>(undefined)
   const [showOnboarding, setOnboarding] = useState(false)
 
   const fileRef  = useRef<HTMLInputElement>(null)
@@ -46,6 +47,9 @@ export default function AnalysisPage() {
       if (!session) { window.location.href = '/auth/login'; return }
       setUser(session.user as { id:string; email?:string })
       setToken(session.access_token)
+      // Charger le solde crédits
+      fetch('/api/credits', { headers:{ Authorization:`Bearer ${session.access_token}` } })
+        .then(r=>r.json()).then(j=>{ if(j.success) setBalance(j.balance) }).catch(()=>{})
       const { data: p } = await supabasePublic.from('profiles').select('*').eq('id', session.user.id).single()
       if (p) {
         setProfile(p)
@@ -216,7 +220,7 @@ export default function AnalysisPage() {
               </>
             ) : (
               <div>
-                <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" />
+                <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" creditBalance={balance} />
                 {plan === 'free' && (
                   <div style={{ marginTop:'1rem', background:'linear-gradient(135deg,color-mix(in srgb, var(--ac) 6%, transparent),color-mix(in srgb, var(--ac2) 4%, transparent))', border:'1px solid var(--bd2)', borderRadius:8, padding:'1rem 1.25rem', display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
                     <i className="ti ti-bolt" style={{ fontSize:22, color:'var(--ac)', flexShrink:0 }} />
