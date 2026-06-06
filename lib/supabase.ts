@@ -36,17 +36,20 @@ export const supabaseAdmin = new Proxy({} as SupabaseClient, {
 // Les admins et le plan Elite ont un accès illimité (pas de consommation)
 // ============================================================
 export async function checkAndConsumeAnalysisQuota(userId: string): Promise<boolean> {
-  // Vérifier si admin ou elite → accès illimité
+  // Vérifier si admin → accès vraiment illimité
+  // Elite = cap à 500/mois via la DB (use_analysis_quota gère)
   const { data: profile } = await supabaseAdmin
     .from('profiles')
     .select('is_admin, user_plan')
     .eq('id', userId)
     .single()
 
-  if (profile?.is_admin || profile?.user_plan === 'elite') {
-    return true // accès illimité, on ne consomme pas de quota
+  if (profile?.is_admin) {
+    return true // admins : pas de comptage
   }
 
+  // Tous les plans (y compris Elite) passent par la fonction DB
+  // qui respecte les caps mensuel + journalier
   const { data, error } = await supabaseAdmin
     .rpc('use_analysis_quota', { p_user_id: userId })
 
