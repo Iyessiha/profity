@@ -1,11 +1,11 @@
 // ============================================================
 // PROFITYX — POST /api/payment/webhook
-// Reçoit les notifications CinetPay ET GeniusPay
+// Reçoit les confirmations GeniusPay
+// Gère : activation plan Pro/Elite + achat crédits
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyWebhookSignature } from '@/lib/geniuspay'
-import { checkCinetPayPayment } from '@/lib/cinetpay'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,13 +13,12 @@ const supabaseAdmin = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
+// ── Activer un plan abonnement ────────────────────────────
 async function activatePlan(userId: string, planKey: string, ref: string) {
-  // Mettre à jour le plan
   await supabaseAdmin.from('profiles')
     .update({ user_plan: planKey })
     .eq('id', userId)
 
-  // Mettre à jour l'abonnement
   await supabaseAdmin.from('subscriptions').upsert({
     user_id:              userId,
     plan:                 planKey,
@@ -31,102 +30,114 @@ async function activatePlan(userId: string, planKey: string, ref: string) {
     current_period_end:   new Date(Date.now() + 30 * 864e5).toISOString(),
   }, { onConflict: 'user_id' })
 
-  // Notification à l'utilisateur
-  await supabaseAdmin.from('notifications').insert({
-    user_id:  userId,
-    type:     'plan_change',
-    title:    planKey === 'pro' ? '🎉 Plan Pro activé !' : '👑 Plan Elite activé !',
-    message:  planKey === 'pro'
-      ? 'Votre plan Pro est maintenant actif. Profitez de 100 analyses SMC, signaux illimités et coaching psychologique.'
-      : 'Votre plan Elite est actif. Accès illimité à tout — sans aucune restriction.',
-    action_url:   '/dashboard',
-    action_label: 'Voir le dashboard',
-    priority:     'high',
+  // Crédits mensuels selon le plan
+  const credits = planKey === 'pro' ? 150 : 600
+  await supabaseAdmin.rpc('add_credits', {
+    p_user_id: userId,
+    p_amount:  credits,
+    p_type:    'monthly',
+    p_desc:    `Crédits inclus plan ${planKey.toUpperCase()} (mensuel)`,
+    p_ref:     ref,
   })
 
-  console.log(`[Webhook] Plan ${planKey} activé pour user ${userId}`)
+  await supabaseAdmin.from('notifications').insert({
+    user_id:      userId,
+    type:         'plan_change',
+    priority:     'high',
+    title:        planKey === 'pro' ? '🎉 Plan Pro activé !' : '👑 Plan Elite activé !',
+    message:      planKey === 'pro'
+      ? `Plan Pro actif. ${credits} crédits ajoutés. Analyses SMC, signaux illimités et coaching.`
+      : `Plan Elite actif. ${credits} crédits ajoutés. Accès illimité à tout.`,
+    action_url:   '/dashboard',
+    action_label: 'Voir le dashboard',
+  })
+
+  console.log(`[Webhook] Plan ${planKey} activé, ${credits} crédits ajoutés — user ${userId}`)
 }
 
+// ── Créditer un achat de pack ─────────────────────────────
+async function activateCredits(userId: string, credits: number, ref: string) {
+  await supabaseAdmin.rpc('add_credits', {
+    p_user_id: userId,
+    p_amount:  credits,
+    p_type:    'purchase',
+    p_desc:    `Achat pack ${credits} crédits`,
+    p_ref:     ref,
+  })
+
+  await supabaseAdmin.from('notifications').insert({
+    user_id:      userId,
+    type:         'success',
+    priority:     'high',
+    title:        `💰 ${credits} crédits ajoutés !`,
+    message:      `Votre pack de ${credits} crédits est maintenant disponible. Bonne analyse !`,
+    action_url:   '/analysis',
+    action_label: 'Analyser maintenant',
+  })
+
+  console.log(`[Webhook] ${credits} crédits ajoutés — user ${userId}`)
+}
+
+// ── Route principale ──────────────────────────────────────
 export async function POST(req: NextRequest) {
   const rawBody = await req.text()
+
+  // Parser le body
   let body: Record<string, unknown>
-  try { body = JSON.parse(rawBody) } catch { return NextResponse.json({ ok: false }, { status: 400 }) }
+  try { body = JSON.parse(rawBody) }
+  catch { return NextResponse.json({ ok: false, error: 'JSON invalide' }, { status: 400 }) }
 
-  // ── Détecter la source du webhook ──────────────────────
+  // Vérification signature GeniusPay (si secret configuré)
+  const signature = req.headers.get('x-webhook-signature') ?? ''
+  const timestamp = req.headers.get('x-webhook-timestamp') ?? ''
+  const secret    = process.env.GENIUSPAY_WEBHOOK_SECRET ?? ''
 
-  // ── CinetPay webhook ──
-  // CinetPay envoie : { cpm_trans_id, cpm_site_id, cpm_amount, cpm_currency, cpm_payment_status, ... }
-  if (body.cpm_site_id || body.cpm_trans_id) {
-    const transactionId = body.cpm_trans_id as string
-    const status        = body.cpm_payment_status as string  // 'ACCEPTED' ou 'REFUSED'
-
-    if (status !== 'ACCEPTED') {
-      console.log(`[CinetPay webhook] Paiement non accepté: ${status}`)
-      return NextResponse.json({ ok: true })
-    }
-
-    // Vérifier le statut en appelant l'API CinetPay (double vérification)
-    try {
-      const check = await checkCinetPayPayment(transactionId)
-      if (check.status !== 'ACCEPTED') {
-        console.log('[CinetPay webhook] Vérification échouée:', check.status)
-        return NextResponse.json({ ok: true })
-      }
-
-      const meta    = check.metadata
-      const userId  = meta.user_id
-      const planKey = meta.plan_key
-
-      if (!userId || !planKey) {
-        console.error('[CinetPay webhook] metadata manquant:', meta)
-        return NextResponse.json({ ok: false }, { status: 400 })
-      }
-
-      await activatePlan(userId, planKey, transactionId)
-      return NextResponse.json({ ok: true })
-
-    } catch (err) {
-      console.error('[CinetPay webhook] Erreur vérification:', err)
-      return NextResponse.json({ ok: false }, { status: 500 })
+  if (secret && signature && timestamp) {
+    const valid = verifyWebhookSignature(rawBody, signature, timestamp, secret)
+    if (!valid) {
+      console.error('[Webhook] ❌ Signature invalide')
+      return NextResponse.json({ ok: false, error: 'Signature invalide' }, { status: 403 })
     }
   }
 
-  // ── GeniusPay webhook ──
-  // GeniusPay envoie avec headers X-Webhook-Signature et X-Webhook-Timestamp
-  if (body.event || body.reference) {
-    const signature = req.headers.get('x-webhook-signature') ?? ''
-    const timestamp = req.headers.get('x-webhook-timestamp') ?? ''
-    const secret    = process.env.GENIUSPAY_WEBHOOK_SECRET ?? ''
+  // Filtrer les événements
+  const event = body.event as string
+  console.log(`[Webhook] Événement reçu: ${event}`)
 
-    if (secret && signature && timestamp) {
-      const valid = verifyWebhookSignature(rawBody, signature, timestamp, secret)
-      if (!valid) {
-        console.error('[GeniusPay webhook] Signature invalide')
-        return NextResponse.json({ ok: false }, { status: 403 })
-      }
-    }
+  if (event !== 'payment.success') {
+    return NextResponse.json({ ok: true, skipped: `Événement ${event} ignoré` })
+  }
 
-    const event = body.event as string
-    if (event !== 'payment.success') return NextResponse.json({ ok: true })
+  // Extraire les metadata
+  const data    = (body.data ?? {}) as Record<string, unknown>
+  const meta    = (data.metadata ?? {}) as Record<string, string>
+  const ref     = (data.reference as string) ?? ''
+  const userId  = meta.user_id
+  const planKey = meta.plan_key   // 'pro', 'elite', 'credits_75', 'credits_200', etc.
+  const amount  = data.amount as number
 
-    const data    = (body.data ?? {}) as Record<string, unknown>
-    const meta    = (data.metadata ?? {}) as Record<string, string>
-    const userId  = meta.user_id
-    const planKey = meta.plan_key
-    const ref     = data.reference as string ?? ''
+  if (!userId || !planKey) {
+    console.error('[Webhook] metadata manquant:', meta)
+    return NextResponse.json({ ok: false, error: 'metadata manquant' }, { status: 400 })
+  }
 
-    if (!userId || !planKey) {
-      console.error('[GeniusPay webhook] metadata manquant:', meta)
-      return NextResponse.json({ ok: false }, { status: 400 })
-    }
-
+  // Détecter le type de paiement
+  if (planKey === 'pro' || planKey === 'elite') {
+    // ── Activation d'un plan abonnement ──
     await activatePlan(userId, planKey, ref)
-    return NextResponse.json({ ok: true })
+  } else if (planKey.startsWith('credits_')) {
+    // ── Achat de crédits — extraire le nombre depuis 'credits_75', 'credits_200'...
+    const creditCount = parseInt(planKey.replace('credits_', ''), 10)
+    if (isNaN(creditCount) || creditCount <= 0) {
+      console.error('[Webhook] Nombre de crédits invalide:', planKey)
+      return NextResponse.json({ ok: false, error: 'credits invalide' }, { status: 400 })
+    }
+    await activateCredits(userId, creditCount, ref)
+  } else {
+    console.warn('[Webhook] Type de paiement inconnu:', planKey)
   }
 
-  // Webhook inconnu
-  console.warn('[Webhook] Format non reconnu:', Object.keys(body))
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true, event, planKey, userId })
 }
 
 export const maxDuration = 15
