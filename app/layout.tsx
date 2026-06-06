@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { ThemeProvider } from '@/lib/theme'
 import { MenuProvider } from '@/lib/menu-context'
+import PWAInstall from '@/components/PWAInstall'
 import './globals.css'
 
 export const viewport: Viewport = {
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </MenuProvider>
         </ThemeProvider>
         <script dangerouslySetInnerHTML={{ __html: REGISTER_SW }} />
+        <PWAInstall />
       </body>
     </html>
   )
