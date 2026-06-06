@@ -34,7 +34,7 @@ export default function DashboardPage() {
   const h = new Date().getHours()
   const greet = locale === 'fr' ? (h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir') : (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening')
   const name  = (profile?.full_name as string ?? user?.email?.split('@')[0] ?? 'Trader').toUpperCase()
-  const planColor: Record<string, string> = { free: '#888', pro: '#00FFB2', elite: '#C9A84C' }
+  const planColor: Record<string, string> = { free: '#888', pro: 'var(--ac)', elite: 'var(--ac3)' }
   const pc = planColor[plan] ?? '#888'
 
   const limits: Record<string, { a: number; n: number }> = { free: { a: 3, n: 5 }, pro: { a: 100, n: 999999 }, elite: { a: 999999, n: 999999 } }
@@ -47,7 +47,7 @@ export default function DashboardPage() {
   const MODULES = [
     { href: '/analysis', icon: 'ti-chart-candle', color: 'var(--ac)', title: locale === 'fr' ? 'ANALYSE CHART' : 'CHART ANALYSIS', desc: locale === 'fr' ? 'TradingView + analyse IA · Signaux SMC pour Pro/Elite' : 'TradingView + AI analysis · SMC signals for Pro/Elite', badge: plan === 'pro' || plan === 'elite' ? 'SMC' : null },
     { href: '/news',     icon: 'ti-news',          color: 'var(--ac2)', title: locale === 'fr' ? 'ANNONCES MACRO' : 'MACRO NEWS',   desc: locale === 'fr' ? 'NFP, CPI, FOMC · Coaching psychologique pour Pro/Elite' : 'NFP, CPI, FOMC · Psychological coaching for Pro/Elite', badge: plan === 'pro' || plan === 'elite' ? 'COACH' : null },
-    { href: '/history',  icon: 'ti-history',       color: '#C9A84C', title: locale === 'fr' ? 'HISTORIQUE' : 'HISTORY',          desc: locale === 'fr' ? 'Vos analyses passées et signaux générés' : 'Your past analyses and generated signals', badge: null },
+    { href: '/history',  icon: 'ti-history',       color: 'var(--ac3)', title: locale === 'fr' ? 'HISTORIQUE' : 'HISTORY',          desc: locale === 'fr' ? 'Vos analyses passées et signaux générés' : 'Your past analyses and generated signals', badge: null },
   ]
 
   return (
@@ -66,7 +66,7 @@ export default function DashboardPage() {
               <h1 style={{ fontFamily: HUD, fontSize: "clamp(18px,4vw,26px)", fontWeight: 900, color: "var(--tx0)", letterSpacing: 1 }}>{name}</h1>
             </div>
             {plan === 'free' && (
-              <a href="/pricing" style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '10px 18px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+              <a href="/pricing" style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#020408', background: 'var(--ac)', padding: '10px 18px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                 <i className="ti ti-rocket" style={{ fontSize: 14 }} aria-hidden="true" />
                 {locale === 'fr' ? 'PASSER PRO' : 'GO PRO'}
               </a>
@@ -76,18 +76,19 @@ export default function DashboardPage() {
           {/* Stats rapides */}
           <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: '1.25rem' }}>
             {[
-              { icon: 'ti-chart-candle', label: locale === 'fr' ? 'Analyses restantes' : 'Analyses left', value: aLeft, color: 'var(--ac)' },
-              { icon: 'ti-news',          label: locale === 'fr' ? 'Signaux news' : 'News signals', value: nLeft,  color: 'var(--ac2)' },
-              { icon: 'ti-crown',         label: locale === 'fr' ? 'Votre plan' : 'Your plan',    value: plan.toUpperCase(), color: pc },
-              { icon: 'ti-bell',          label: locale === 'fr' ? 'Notifications' : 'Alerts',      value: profile?.notifications_push ? (locale === 'fr' ? 'ON' : 'ON') : 'OFF', color: '#FF8800' },
+              { icon: 'ti-chart-candle', label: locale === 'fr' ? 'ANALYSES' : 'ANALYSES', value: aLeft, color: 'var(--ac)',  sub: locale==='fr'?'restantes':'left' },
+              { icon: 'ti-news',          label: 'SIGNAUX NEWS',                               value: nLeft,  color: 'var(--ac)', sub: locale==='fr'?'disponibles':'available' },
+              { icon: 'ti-crown',         label: locale === 'fr' ? 'VOTRE PLAN' : 'YOUR PLAN', value: plan.toUpperCase(), color: pc, sub: '' },
+              { icon: 'ti-bell',          label: locale === 'fr' ? 'ALERTES' : 'ALERTS',        value: profile?.notifications_push ? 'ON' : 'OFF', color: profile?.notifications_push ? 'var(--ok)' : 'var(--tx3)', sub: '' },
             ].map(c => (
-              <div key={c.label} style={{ background: 'var(--bg1)', border: '1px solid var(--bd)', borderRadius: 8, padding: '0.875rem 1rem', position: 'relative', overflow: 'hidden', width: '100%', boxSizing: 'border-box' }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 2, background: c.color }} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-                  <i className={'ti ' + c.icon} style={{ fontSize: 15, color: c.color, flexShrink: 0 }} aria-hidden="true" />
-                  <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: 'var(--tx2)', lineHeight: 1.3 }}>{c.label.toUpperCase()}</span>
+              <div key={c.label} style={{ background: 'var(--bg1)', border: '1px solid var(--bd)', borderRadius: 8, padding: '0.875rem 1rem', position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: c.color, opacity: 0.7 }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <i className={'ti ' + c.icon} style={{ fontSize: 14, color: c.color }} />
+                  <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: 'var(--tx3)' }}>{c.label}</span>
                 </div>
-                <div style={{ fontFamily: HUD, fontSize: 20, fontWeight: 900, color: c.color }}>{c.value}</div>
+                <div style={{ fontFamily: HUD, fontSize: 22, fontWeight: 900, color: c.color, lineHeight: 1 }}>{c.value}</div>
+                {c.sub && <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 10, color: 'var(--tx3)', marginTop: 3 }}>{c.sub}</div>}
               </div>
             ))}
           </div>

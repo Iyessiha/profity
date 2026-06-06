@@ -1,108 +1,104 @@
 /* ============================================================
-   PROFITYX — DESIGN TOKENS (CSS variables par thème)
+   PROFITYX — DESIGN SYSTEM v3 — Palette harmonisée
    ============================================================ */
 
-/* ── Dark (défaut) ── */
+/* ── Dark (défaut) ─────────────────────────────────────────── */
 :root, [data-theme="dark"] {
-  /* Backgrounds */
   --bg0: #020408;
-  --bg1: #06090F;
-  --bg2: #0A0F1A;
-  --bg3: #0D1420;
-  /* Textes */
+  --bg1: #08111F;
+  --bg2: #0D1A2E;
+  --bg3: #142038;
   --tx0: #E8F4F8;
-  --tx1: rgba(232,244,248,0.75);
-  --tx2: rgba(232,244,248,0.45);
-  --tx3: rgba(232,244,248,0.2);
-  /* Accents */
-  --ac:  #00FFB2;  /* neon vert */
-  --ac2: #00D4FF;  /* cyan */
-  --ac3: #C9A84C;  /* or */
-  --red: #FF3A5C;
-  --ora: #FF8800;
+  --tx1: rgba(232,244,248,0.82);
+  --tx2: rgba(232,244,248,0.5);
+  --tx3: rgba(232,244,248,0.25);
+  /* Accent unique vert cyan */
+  --ac:  #00FFB2;
+  --ac2: #00CCFF;
+  --ac3: #C9A84C;
+  --red: #FF4466;
+  --ora: #FF9900;
+  --ok:  #00E676;
   /* Bordures */
-  --bd:  rgba(0,255,178,0.08);
-  --bd1: rgba(0,255,178,0.18);
-  --bd2: rgba(0,255,178,0.3);
-  /* Ombres */
-  --sh: rgba(0,0,0,0.5);
-  --sh2: rgba(0,255,178,0.15);
-  /* Scrollbar */
-  --scr: rgba(0,255,178,0.2);
+  --bd:  rgba(0,255,178,0.07);
+  --bd1: rgba(0,255,178,0.15);
+  --bd2: rgba(0,255,178,0.28);
+  --sh: rgba(0,0,0,0.55);
+  --scr: rgba(0,255,178,0.18);
+  /* Cartes */
+  --card-glow: rgba(0,255,178,0.04);
 }
 
-/* ── Light ── */
+/* ── Light ─────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg0: #EEF1F6;
+  --bg0: #F0F4FA;
   --bg1: #FFFFFF;
-  --bg2: #F4F7FB;
-  --bg3: #E8EDF5;
-  --tx0: #0F172A;
-  --tx1: rgba(15,23,42,0.75);
-  --tx2: rgba(15,23,42,0.5);
-  --tx3: rgba(15,23,42,0.2);
-  --ac:  #009E78;
-  --ac2: #006FA6;
-  --ac3: #8B6914;
-  --red: #DC2626;
-  --ora: #D97706;
-  --bd:  rgba(15,23,42,0.08);
-  --bd1: rgba(0,158,120,0.2);
-  --bd2: rgba(0,158,120,0.35);
-  --sh: rgba(15,23,42,0.12);
-  --sh2: rgba(0,158,120,0.1);
-  --scr: rgba(0,158,120,0.3);
+  --bg2: #F5F8FD;
+  --bg3: #EBF0F8;
+  --tx0: #0A1929;
+  --tx1: rgba(10,25,41,0.78);
+  --tx2: rgba(10,25,41,0.5);
+  --tx3: rgba(10,25,41,0.28);
+  --ac:  #00875A;
+  --ac2: #0066A6;
+  --ac3: #8B6800;
+  --red: #D32F2F;
+  --ora: #C66900;
+  --ok:  #1B8A48;
+  --bd:  rgba(10,25,41,0.08);
+  --bd1: rgba(0,135,90,0.2);
+  --bd2: rgba(0,135,90,0.35);
+  --sh: rgba(10,25,41,0.1);
+  --scr: rgba(0,135,90,0.3);
+  --card-glow: rgba(0,135,90,0.03);
 }
 
-/* ── Reset & base ── */
+/* ── Reset & base ──────────────────────────────────────────── */
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { max-width:100%; overflow-x:hidden; }
 body {
   background: var(--bg0);
   color: var(--tx0);
   font-family: 'Rajdhani', sans-serif;
-  transition: background .3s, color .3s;
+  transition: background .35s, color .35s;
 }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg0); }
 ::-webkit-scrollbar-thumb { background: var(--scr); border-radius: 2px; }
 
-/* ─── Layout shells ─────────────────────────────────────── */
+/* ── Layout shells ─────────────────────────────────────────── */
 .app-shell   { display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
-.admin-shell { display:grid; grid-template-columns:200px 1fr; min-height:calc(100vh - 60px); }
+.admin-shell { display:grid; grid-template-columns:200px 1fr; min-height:calc(100vh - 56px); }
 .login-shell { display:flex; min-height:100vh; background:var(--bg0); }
 .login-brand { flex:1; display:flex; flex-direction:column; justify-content:center; padding:4rem; }
-.login-form  { width:440px; display:flex; flex-direction:column; justify-content:center; padding:3rem 3rem 3rem 3.5rem; }
+.login-form  { width:440px; display:flex; flex-direction:column; justify-content:center; padding:3rem; }
 .login-sep   { width:1px; align-self:stretch; }
 .nav-links   { display:flex; align-items:center; gap:24px; }
 
-/* ─── Utilitaires ── */
+/* ── Utilitaires ───────────────────────────────────────────── */
 .mobile-only  { display:none !important; }
 .desktop-only { display:flex; }
 
-/* ─── Tablette ≤ 1024px ─────────────────────────────────── */
+/* ── Tablette ≤ 1024px ─────────────────────────────────────── */
 @media (max-width:1024px) {
   .app-shell   { grid-template-columns:64px 1fr; }
   .admin-shell { grid-template-columns:60px 1fr; }
-  .login-brand { padding:2rem; }
+  .login-brand { display:none; }
+  .login-sep   { display:none; }
+  .login-form  { width:100%; padding:2rem 1.25rem; }
 }
 
-/* ─── Mobile + tablette ≤ 900px : DRAWER ──────────────── */
+/* ── Mobile + tablette ≤ 900px : DRAWER ───────────────────── */
 @media (max-width:900px) {
   .mobile-only  { display:flex !important; }
   .desktop-only { display:none !important; }
   .app-shell    { grid-template-columns:1fr; }
   .admin-shell  { grid-template-columns:1fr; }
-  .login-brand  { display:none; }
-  .login-sep    { display:none; }
-  .login-form   { width:100%; padding:2rem 1.25rem; }
   .nav-links .nav-hide { display:none !important; }
 
   .app-sidebar, .admin-sidebar {
-    position:fixed !important;
-    top:0; left:0; bottom:0;
-    width:260px !important;
-    height:100vh !important;
+    position:fixed !important; top:0; left:0; bottom:0;
+    width:260px !important; height:100vh !important;
     transform:translateX(-100%);
     transition:transform .28s cubic-bezier(.4,0,.2,1);
     z-index:300; overflow-y:auto; overflow-x:hidden;
@@ -116,21 +112,20 @@ body {
   .sidebar-logo  { display:block !important; }
 
   .drawer-overlay {
-    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    position:fixed; inset:0; background:rgba(0,0,0,.65);
     z-index:290; opacity:0; pointer-events:none; transition:opacity .28s;
   }
   .drawer-overlay.show { opacity:1; pointer-events:auto; }
 
   .hamburger-btn {
     display:flex !important; align-items:center; justify-content:center;
-    width:40px; height:40px; flex-shrink:0;
+    width:38px; height:38px; flex-shrink:0;
     background:var(--bd); border:1px solid var(--bd1);
     border-radius:8px; cursor:pointer; color:var(--ac);
   }
-  /* hamburger maintenant inline dans TopBar — pas de padding forcé */
 }
 
-/* ─── Mobile ≤ 640px ─────────────────────────────────── */
+/* ── Mobile ≤ 640px ─────────────────────────────────────────── */
 @media (max-width:640px) {
   .resp-pad { padding:0.75rem !important; }
   .topbar-hide { display:none !important; }
@@ -146,87 +141,45 @@ body {
   .cal-filters { overflow-x:auto !important; flex-wrap:nowrap !important; padding-bottom:4px; }
 }
 
-/* ─── Desktop : cacher hamburger ───────────────────────── */
+/* ── Desktop : cacher hamburger ─────────────────────────────── */
 @media (min-width:901px) {
   .hamburger-btn { display:none !important; }
   .drawer-overlay { display:none !important; }
-  .nav-links .nav-hide { display:none !important; }
-}
-@media (min-width:641px) {
   .nav-links .nav-hide { display:flex !important; }
 }
 
-/* ─── Transitions thème ─────────────────────────────────── */
-.theme-transition, .theme-transition * {
-  transition: background-color .3s, color .3s, border-color .3s !important;
-}
+/* ── Animations de fond ─────────────────────────────────────── */
+@keyframes orb1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(40px,-30px) scale(1.1)} }
+@keyframes orb2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-35px,25px)} }
+@keyframes gradMove { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+@keyframes spin  { to{transform:rotate(360deg)} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 
-/* ─── Animations fond (subtiles) ────────────────────────── */
-@keyframes gradMove {
-  0%, 100% { background-position: 0% 50%; }
-  50%       { background-position: 100% 50%; }
-}
-@keyframes orb1 {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  50%       { transform: translate(40px,-30px) scale(1.08); }
-}
-@keyframes orb2 {
-  0%, 100% { transform: translate(0,0); }
-  50%       { transform: translate(-30px,20px); }
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.2; }
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Fond animé pour les pages (dark mode seulement) */
 [data-theme="dark"] body::before,
 [data-theme="dark"] body::after {
-  content: '';
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.3;
+  content:''; position:fixed; border-radius:50%;
+  filter:blur(90px); pointer-events:none; z-index:-1; opacity:.25;
 }
 [data-theme="dark"] body::before {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(0,255,178,0.25), transparent 70%);
-  top: -150px; left: -100px;
-  animation: orb1 20s ease-in-out infinite;
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(0,255,178,.3), transparent 70%);
+  top:-200px; left:-150px; animation:orb1 22s ease-in-out infinite;
 }
 [data-theme="dark"] body::after {
-  width: 350px; height: 350px;
-  background: radial-gradient(circle, rgba(0,212,255,0.2), transparent 70%);
-  bottom: -100px; right: -50px;
-  animation: orb2 25s ease-in-out infinite;
+  width:400px; height:400px;
+  background:radial-gradient(circle, rgba(0,204,255,.2), transparent 70%);
+  bottom:-100px; right:-80px; animation:orb2 28s ease-in-out infinite;
 }
-
-/* Light mode : fond doux sans animation agressive */
 [data-theme="light"] body {
-  background: linear-gradient(135deg, #EEF1F6 0%, #F4F7FB 50%, #EAF0F8 100%);
-  background-size: 400% 400%;
-  animation: gradMove 15s ease infinite;
+  background:linear-gradient(145deg,#EFF4FC 0%,#F8FAFF 50%,#EBF2F9 100%);
 }
 
-/* Footer légal global dans les pages app */
+/* ── Footer légal ────────────────────────────────────────────── */
 .app-footer {
-  border-top: 1px solid var(--bd);
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  background: var(--bg1);
+  border-top:1px solid var(--bd); padding:.875rem 1.5rem;
+  display:flex; align-items:center; justify-content:center;
+  gap:16px; flex-wrap:wrap; background:var(--bg1);
 }
-.app-footer a {
-  font-family: 'Orbitron', monospace;
-  font-size: 7px;
-  letter-spacing: 1px;
-  color: var(--tx3);
-  text-decoration: none;
-}
-.app-footer a:hover { color: var(--ac); }
+.app-footer a { font-family:'Orbitron',monospace; font-size:7px; letter-spacing:1px; color:var(--tx3); text-decoration:none; }
+.app-footer a:hover { color:var(--ac); }

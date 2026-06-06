@@ -65,8 +65,8 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         {/* Marché ouvert (caché sur mobile) */}
         <div className="topbar-hide" style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 3, padding: '4px 8px' }}>
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#00E676' }} />
-          <span style={{ fontFamily: HUD, fontSize: 7, color: '#00E676', letterSpacing: 1.5 }}>
+          <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ok)' }} />
+          <span style={{ fontFamily: HUD, fontSize: 7, color: 'var(--ok)', letterSpacing: 1.5 }}>
             {locale === 'fr' ? 'MARCHÉ OUVERT' : 'MARKET OPEN'}
           </span>
         </div>
@@ -78,7 +78,7 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
 
         {/* Toggle thème */}
         <button onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
-          style={{ width: 34, height: 34, borderRadius: 7, border: '1px solid var(--bd1)', background: 'var(--bg2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme === 'dark' ? '#C9A84C' : '#0EA5E9', flexShrink: 0 }}>
+          style={{ width: 34, height: 34, borderRadius: 7, border: '1px solid var(--bd1)', background: 'var(--bg2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme === 'dark' ? 'var(--ac3)' : '#0EA5E9', flexShrink: 0 }}>
           <i className={'ti ' + (theme === 'dark' ? 'ti-sun' : 'ti-moon')} style={{ fontSize: 15 }} aria-hidden="true" />
         </button>
 
