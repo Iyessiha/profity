@@ -101,16 +101,19 @@ export default function PricingPage() {
       const json = await res.json()
       if (json.success && json.redirectUrl) {
         if (json.fallback) {
-          // Fallback WhatsApp : paiement manuel
+          // Paiement GeniusPay indisponible → WhatsApp
           showToast('💬 Redirection vers WhatsApp pour finaliser votre abonnement...', true)
-          setTimeout(() => window.open(json.redirectUrl, '_blank'), 1200)
+          setTimeout(() => { window.open(json.redirectUrl, '_blank') }, 1000)
         } else {
+          // Paiement GeniusPay OK → redirection directe
           window.location.href = json.redirectUrl
         }
       } else {
-        showToast((json.error ?? 'Erreur de paiement'), false)
+        showToast(json.error ?? 'Erreur — réessayez', false)
       }
-    } catch { showToast('Erreur réseau — réessayez', false) }
+    } catch {
+      showToast('Erreur réseau — réessayez dans quelques secondes', false)
+    }
     setLoading(null)
   }
 

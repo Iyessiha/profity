@@ -69,31 +69,30 @@ export async function POST(req: NextRequest) {
       current_period_end:   new Date(Date.now() + 30 * 864e5).toISOString(),
     }, { onConflict: 'user_id' })
 
-    return NextResponse.json({ success: true, redirectUrl: checkout.redirectUrl, reference: checkout.reference })
+    return NextResponse.json({
+      success:     true,
+      redirectUrl: checkout.redirectUrl,
+      reference:   checkout.reference,
+    })
 
   } catch (err) {
-    const detail  = err instanceof Error ? err.message : String(err)
-    const isSetup = /MISSING_API_KEY|INVALID_API_KEY|401|403|allowlist|Host not/i.test(detail)
-
+    const detail = err instanceof Error ? err.message : String(err)
     console.error('[GeniusPay] checkout error:', detail)
 
-    // Fallback WhatsApp si GeniusPay non configuré
-    if (isSetup) {
-      const { data: userProfile } = await supabaseAdmin.from('profiles').select('public_id').eq('id', user.id).single()
-      const pid   = userProfile?.public_id ?? 'INCONNU'
-      const pname = planKey === 'pro' ? 'Pro (17 500 FCFA/mois)' : 'Elite (35 000 FCFA/mois)'
-      const msg   = encodeURIComponent(
-        `Bonjour ProfityX 👋\n\nJe souhaite souscrire au plan ${pname}.\n\nMon identifiant : ${pid}\nEmail : ${profile.email ?? user.email}\n\nMerci de me confirmer les instructions de paiement.`
-      )
-      const waUrl = `https://wa.me/+2250500446464?text=${msg}`
-      return NextResponse.json({
-        success:     true,
-        redirectUrl: waUrl,
-        fallback:    true,
-        message:     'Paiement via WhatsApp (configuration GeniusPay en cours)',
-      })
-    }
-
-    return NextResponse.json({ success: false, error: 'Erreur paiement — contactez le support', detail }, { status: 502 })
+    // ─── Fallback WhatsApp pour TOUT échec GeniusPay ─────────
+    const { data: userProfile } = await supabaseAdmin
+      .from('profiles').select('public_id').eq('id', user.id).single()
+    const pid   = userProfile?.public_id ?? 'INCONNU'
+    const pname = planKey === 'pro' ? 'Pro — 17 500 FCFA/mois' : 'Elite — 35 000 FCFA/mois'
+    const msg   = encodeURIComponent(
+      `Bonjour ProfityX 👋\n\nJe souhaite souscrire au plan ${pname}.\n\n🆔 Mon identifiant : ${pid}\n📧 Email : ${profile.email ?? user.email ?? ''}\n\nMerci de m'envoyer les instructions de paiement.`
+    )
+    const waUrl = `https://wa.me/+2250500446464?text=${msg}`
+    return NextResponse.json({
+      success:     true,
+      redirectUrl: waUrl,
+      fallback:    true,
+      message:     'Paiement via WhatsApp',
+    })
   }
 }
