@@ -144,35 +144,175 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="hero-section" style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '6rem 2rem 4rem', maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start', background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 100, padding: '6px 16px', marginBottom: '2rem' }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00E676', animation: 'pulse 1.5s infinite' }} />
-          <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#00FFB2' }}>+4 800 TRADERS · MARCHÉS EN DIRECT · {time}</span>
+      <section className="hero-section" style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center', padding: '6rem 2rem 4rem', maxWidth: 1200, margin: '0 auto' }}>
+        
+        {/* Colonne texte */}
+        <div style={{ flex: '1 1 500px', maxWidth: 600 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 100, padding: '6px 16px', marginBottom: '2rem' }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00E676', animation: 'pulse 1.5s infinite' }} />
+            <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#00FFB2' }}>+4 800 TRADERS · MARCHÉS EN DIRECT · {time}</span>
+          </div>
+
+          <h1 style={{ fontFamily: HUD, fontSize: 'clamp(36px, 5.5vw, 72px)', fontWeight: 900, lineHeight: 1.04, letterSpacing: 1, marginBottom: '1.5rem' }}>
+            ARRÊTEZ DE TRADER<br /><span style={{ color: '#FF3A5C' }}>À L'AVEUGLE.</span><br />
+            <span style={{ color: '#00FFB2', textShadow: '0 0 30px rgba(0,255,178,0.4)' }}>LAISSEZ L'IA</span> DÉCIDER.
+          </h1>
+
+          <p style={{ fontSize: 'clamp(15px,1.8vw,19px)', color: 'rgba(232,244,248,0.55)', lineHeight: 1.7, maxWidth: 520, marginBottom: '2.5rem', fontWeight: 300 }}>
+            Uploadez un graphique, recevez en <strong style={{ color: '#00FFB2', fontWeight: 600 }}>quelques secondes</strong> votre point d'entrée, stop loss et take profit. Plus d'hésitation, plus d'émotion — juste des décisions claires.
+          </p>
+
+          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+            <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '16px 32px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, boxShadow: '0 0 40px rgba(0,255,178,0.35)', animation: 'glowPulse 2.5s ease-in-out infinite' }}>COMMENCER GRATUITEMENT →</a>
+            <a href="#how" style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: 'var(--tx0)', background: 'transparent', border: '1px solid rgba(0,255,178,0.25)', padding: '16px 32px', borderRadius: 4, textDecoration: 'none' }}>VOIR COMMENT</a>
+          </div>
+          <p style={{ fontSize: 13, color: 'rgba(232,244,248,0.35)', fontWeight: 300, marginBottom: '3rem' }}>✓ Sans carte bancaire &nbsp;·&nbsp; ✓ 10 crédits offerts &nbsp;·&nbsp; ✓ Annulable à tout moment</p>
+
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+            {TRUST.map(t => (
+              <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <i className={'ti ' + t.icon} style={{ fontSize: 18, color: '#00FFB2' }} aria-hidden="true" />
+                <span style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 1, color: 'rgba(232,244,248,0.4)' }}>{t.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <h1 style={{ fontFamily: HUD, fontSize: 'clamp(40px, 7vw, 82px)', fontWeight: 900, lineHeight: 1.04, letterSpacing: 1, marginBottom: '1.5rem', maxWidth: 920 }}>
-          ARRÊTEZ DE TRADER<br /><span style={{ color: '#FF3A5C' }}>À L'AVEUGLE.</span><br />
-          <span style={{ color: '#00FFB2', textShadow: '0 0 30px rgba(0,255,178,0.4)' }}>LAISSEZ L'IA</span> DÉCIDER.
-        </h1>
+        {/* Colonne mockup interface */}
+        <div className="hero-mockup" style={{ flex: '1 1 420px', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem 0 2rem 3rem' }}>
+          <div style={{ position: 'relative', width: '100%', maxWidth: 420 }}>
+            {/* Lueur derrière le mockup */}
+            <div style={{ position: 'absolute', inset: -30, background: 'radial-gradient(ellipse at center, rgba(0,255,178,0.12) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
 
-        <p style={{ fontSize: 'clamp(16px,2vw,21px)', color: 'rgba(232,244,248,0.55)', lineHeight: 1.7, maxWidth: 580, marginBottom: '2.5rem', fontWeight: 300 }}>
-          Uploadez un graphique, recevez en <strong style={{ color: '#00FFB2', fontWeight: 600 }}>quelques secondes</strong> votre point d'entrée, stop loss et take profit. Plus d'hésitation, plus d'émotion — juste des décisions claires.
-        </p>
+            {/* Carte principale — interface ProfityX */}
+            <div style={{ position: 'relative', zIndex: 1, background: 'linear-gradient(160deg, #0D1420 0%, #060810 100%)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,255,178,0.06)' }}>
+              
+              {/* Barre top simulée */}
+              <div style={{ background: 'rgba(2,4,8,0.9)', borderBottom: '1px solid rgba(0,255,178,0.08)', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ fontFamily: HUD, fontSize: 11, fontWeight: 900, color: '#00FFB2', letterSpacing: 1 }}>PROFIT<span style={{ color: '#00D4FF' }}>YX</span></div>
+                  <div style={{ background: 'rgba(0,255,178,0.1)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 4, padding: '2px 8px', fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: '#00FFB2' }}>PRO</div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(0,255,178,0.08)', border: '1px solid rgba(0,255,178,0.15)', borderRadius: 5, padding: '3px 9px' }}>
+                    <svg width="11" height="11" viewBox="0 0 16 16" fill="#00FFB2"><circle cx="8" cy="8" r="7" fill="rgba(0,255,178,0.2)"/><path d="M5 8h3M8 5v6" stroke="#00FFB2" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                    <span style={{ fontFamily: HUD, fontSize: 8, color: '#00FFB2', fontWeight: 700 }}>142</span>
+                  </div>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #00FFB2, #00D4FF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: HUD, fontSize: 10, fontWeight: 900, color: '#020408' }}>K</div>
+                </div>
+              </div>
 
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-          <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 12, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '17px 38px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, boxShadow: '0 0 40px rgba(0,255,178,0.35)', animation: 'glowPulse 2.5s ease-in-out infinite' }}>COMMENCER GRATUITEMENT →</a>
-          <a href="#how" style={{ fontFamily: HUD, fontSize: 12, letterSpacing: 2, color: 'var(--tx0)', background: 'transparent', border: '1px solid rgba(0,255,178,0.25)', padding: '17px 38px', borderRadius: 4, textDecoration: 'none' }}>VOIR COMMENT</a>
-        </div>
-        <p style={{ fontSize: 13, color: 'rgba(232,244,248,0.35)', fontWeight: 300 }}>✓ Sans carte bancaire &nbsp;·&nbsp; ✓ 3 analyses offertes &nbsp;·&nbsp; ✓ Annulable à tout moment</p>
+              <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-        {/* Badges de confiance */}
-        <div style={{ display: 'flex', gap: '2rem', marginTop: '3.5rem', flexWrap: 'wrap' }}>
-          {TRUST.map(t => (
-            <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-              <i className={'ti ' + t.icon} style={{ fontSize: 20, color: '#00FFB2' }} aria-hidden="true" />
-              <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 1, color: 'rgba(232,244,248,0.45)' }}>{t.label}</span>
+                {/* Mini chart simulé */}
+                <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(0,255,178,0.07)', borderRadius: 10, padding: '10px 12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <div style={{ fontFamily: HUD, fontSize: 9, color: '#00FFB2', letterSpacing: 1 }}>XAU/USD · H4</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00E676', animation: 'pulse 1.5s infinite' }} />
+                      <span style={{ fontFamily: HUD, fontSize: 7, color: 'rgba(232,244,248,0.4)' }}>LIVE</span>
+                    </div>
+                  </div>
+                  {/* SVG chart simulé avec chandeliers */}
+                  <svg width="100%" height="72" viewBox="0 0 380 72" preserveAspectRatio="none">
+                    {/* Grille */}
+                    {[18, 36, 54].map(y => <line key={y} x1="0" y1={y} x2="380" y2={y} stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>)}
+                    {/* Zone verte sous la courbe */}
+                    <defs>
+                      <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#00FFB2" stopOpacity="0.15"/>
+                        <stop offset="100%" stopColor="#00FFB2" stopOpacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,60 L30,52 L60,55 L90,42 L120,38 L150,44 L180,30 L210,26 L240,32 L270,18 L300,22 L330,14 L360,10 L380,8 L380,72 L0,72 Z" fill="url(#chartFill)"/>
+                    {/* Ligne principale */}
+                    <path d="M0,60 L30,52 L60,55 L90,42 L120,38 L150,44 L180,30 L210,26 L240,32 L270,18 L300,22 L330,14 L360,10 L380,8" stroke="#00FFB2" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
+                    {/* Chandeliers verts */}
+                    {[[30,48,56],[90,38,46],[150,40,48],[210,22,30],[270,14,22],[330,10,18]].map(([x,y1,y2],i) => (
+                      <g key={i}>
+                        <line x1={x} y1={y1} x2={x} y2={y2} stroke="#00FFB2" strokeWidth="5" strokeLinecap="round" opacity="0.8"/>
+                      </g>
+                    ))}
+                    {/* Chandeliers rouges */}
+                    {[[60,51,58],[120,34,42],[240,28,36],[360,7,14]].map(([x,y1,y2],i) => (
+                      <g key={i}>
+                        <line x1={x} y1={y1} x2={x} y2={y2} stroke="#FF3A5C" strokeWidth="5" strokeLinecap="round" opacity="0.8"/>
+                      </g>
+                    ))}
+                    {/* Niveau entrée */}
+                    <line x1="200" y1="26" x2="380" y2="26" stroke="#00FFB2" strokeWidth="1" strokeDasharray="4,3"/>
+                    {/* Niveau SL */}
+                    <line x1="200" y1="46" x2="380" y2="46" stroke="#FF3A5C" strokeWidth="1" strokeDasharray="4,3"/>
+                    {/* Niveau TP */}
+                    <line x1="200" y1="8" x2="380" y2="8" stroke="#00D4FF" strokeWidth="1" strokeDasharray="4,3"/>
+                    {/* Labels */}
+                    <text x="305" y="23" fontFamily="monospace" fontSize="8" fill="#00FFB2">ENTRÉE</text>
+                    <text x="320" y="43" fontFamily="monospace" fontSize="8" fill="#FF3A5C">SL</text>
+                    <text x="325" y="6" fontFamily="monospace" fontSize="8" fill="#00D4FF">TP</text>
+                  </svg>
+                </div>
+
+                {/* Signal card */}
+                <div style={{ background: 'linear-gradient(135deg, rgba(0,255,178,0.06), rgba(0,212,255,0.04))', border: '1px solid rgba(0,255,178,0.18)', borderRadius: 10, padding: '12px 14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                        <span style={{ fontFamily: HUD, fontSize: 16, fontWeight: 900, color: '#00FFB2' }}>LONG</span>
+                        <span style={{ fontFamily: HUD, fontSize: 11, color: '#E8F4F8' }}>XAU/USD</span>
+                        <span style={{ fontFamily: HUD, fontSize: 8, color: '#00D4FF', background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: 3, padding: '1px 6px' }}>H4</span>
+                      </div>
+                      <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 11, color: 'rgba(232,244,248,0.45)' }}>Order Block + FVG confirmé</div>
+                    </div>
+                    <div style={{ background: 'rgba(0,255,178,0.1)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 6, padding: '4px 10px', textAlign: 'center' }}>
+                      <div style={{ fontFamily: HUD, fontSize: 8, color: 'rgba(232,244,248,0.4)', marginBottom: 1 }}>R/R</div>
+                      <div style={{ fontFamily: HUD, fontSize: 14, fontWeight: 900, color: '#00FFB2' }}>1:3.2</div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 6 }}>
+                    {[
+                      { l:'ENTRÉE', v:'2 318.50', c:'#00FFB2' },
+                      { l:'STOP', v:'2 302.00', c:'#FF3A5C' },
+                      { l:'TP1', v:'2 351.20', c:'#00D4FF' },
+                    ].map(s => (
+                      <div key={s.l} style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 7, padding: '7px 8px', textAlign: 'center' }}>
+                        <div style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: 'rgba(232,244,248,0.35)', marginBottom: 3 }}>{s.l}</div>
+                        <div style={{ fontFamily: HUD, fontSize: 10, fontWeight: 700, color: s.c }}>{s.v}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Barre de confiance IA */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: 'rgba(232,244,248,0.35)', whiteSpace: 'nowrap' }}>CONFIANCE IA</div>
+                  <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+                    <div style={{ width: '87%', height: '100%', background: 'linear-gradient(90deg, #00FFB2, #00D4FF)', borderRadius: 3 }} />
+                  </div>
+                  <div style={{ fontFamily: HUD, fontSize: 9, fontWeight: 900, color: '#00FFB2' }}>87%</div>
+                </div>
+
+              </div>
+
+              {/* Barre de statut bas */}
+              <div style={{ background: 'rgba(0,255,178,0.04)', borderTop: '1px solid rgba(0,255,178,0.08)', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: 'rgba(232,244,248,0.3)' }}>1 CRÉDIT UTILISÉ · SOLDE : 141</span>
+                <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: '#00FFB2' }}>✓ ANALYSE SMC COMPLÈTE</span>
+              </div>
             </div>
-          ))}
+
+            {/* Badge flottant "Généré en 3 sec" */}
+            <div style={{ position: 'absolute', top: -14, right: -10, background: 'linear-gradient(135deg, #00FFB2, #00D4FF)', borderRadius: 20, padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 20px rgba(0,255,178,0.4)', zIndex: 2 }}>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 4.5H14l-3.5 2.5 1.5 4.5L8 10 4 12.5l1.5-4.5L2 5.5h4.5z" fill="#020408"/></svg>
+              <span style={{ fontFamily: HUD, fontSize: 8, fontWeight: 900, color: '#020408', letterSpacing: 1 }}>GÉNÉRÉ EN 3 SEC</span>
+            </div>
+
+            {/* Badge flottant bas gauche "SMC" */}
+            <div style={{ position: 'absolute', bottom: -12, left: -10, background: 'rgba(6,9,15,0.95)', border: '1px solid rgba(201,168,76,0.4)', borderRadius: 20, padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 20px rgba(0,0,0,0.5)', zIndex: 2 }}>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 2l1.5 3H12l-2.5 1.8 1 3L8 10l-2.5 1.8 1-3L4 7h2.5z" fill="#C9A84C"/></svg>
+              <span style={{ fontFamily: HUD, fontSize: 8, fontWeight: 900, color: '#C9A84C', letterSpacing: 1 }}>ANALYSE SMC PRO</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -507,6 +647,13 @@ export default function LandingPage() {
         .feat-card:hover { transform:translateY(-6px); border-color:rgba(0,255,178,0.3); }
         .partner-card, .broker-card { transition:transform .3s, box-shadow .3s; }
         .partner-card:hover, .broker-card:hover { transform:translateY(-6px); box-shadow:0 10px 40px rgba(0,255,178,0.15); }
+
+        /* Mockup hero responsive */
+        .hero-mockup { display:flex; }
+        @media (max-width: 860px) {
+          .hero-mockup { display:none; }
+          .hero-section { flex-direction:column; justify-content:center; }
+        }
       `}</style>
     </div>
   )
