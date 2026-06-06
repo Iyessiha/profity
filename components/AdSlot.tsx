@@ -27,7 +27,7 @@ export default function AdSlot({ type, slot, manual, showAds = true }: AdSlotPro
       const script = document.createElement('script')
       script.id = 'adsense-script'
       script.async = true
-      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX'
+      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7885889662324153'
       script.crossOrigin = 'anonymous'
       document.head.appendChild(script)
     }
@@ -71,7 +71,7 @@ export default function AdSlot({ type, slot, manual, showAds = true }: AdSlotPro
         <div style={{ position:'absolute', top:4, right:8, fontFamily:HUD, fontSize:6, color:'var(--tx3)', letterSpacing:1 }}>PUBLICITÉ</div>
         <ins className="adsbygoogle"
           style={{ display:'block', width:'100%', height:`${heights[type]}px` }}
-          data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+          data-ad-client="ca-pub-7885889662324153"
           data-ad-slot={slot}
           data-ad-format="auto"
           data-full-width-responsive="true" />
