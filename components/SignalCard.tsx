@@ -100,6 +100,31 @@ export default function SignalCard({ signal, type, creditBalance }: Props) {
   const cs     = type === 'chart' ? signal as ChartSignal : null
   const concl  = cs?.conclusion ?? (signal as NewsSignal).interpretation
   const rr     = signal.rr_ratio
+  const [copied, setCopied] = useState(false)
+
+  const copySignal = async () => {
+    const emoji = dir === 'LONG' ? '🟢' : dir === 'SHORT' ? '🔴' : '🟡'
+    const lines = [
+      `${emoji} SIGNAL PROFITYX — ${dir} ${pair || ''}${tf ? ` (${tf})` : ''}`,
+      '',
+      `🎯 ENTRÉE   : ${fmt(signal.entry)}`,
+      `🛑 STOP     : ${fmt(signal.stop_loss)}`,
+      `✅ TP1      : ${fmt(signal.tp1)}`,
+      ...(signal.tp2 ? [`✅ TP2      : ${fmt(signal.tp2)}`] : []),
+      ...(signal.tp3 ? [`✅ TP3      : ${fmt(signal.tp3)}`] : []),
+      '',
+      `⚖️  R/R      : 1:${rr ?? '—'}`,
+      ...(cs?.confidence ? [`📊 Confiance : ${cs.confidence}`] : []),
+      ...(concl ? ['', `📝 ${concl.slice(0, 200)}${concl.length > 200 ? '…' : ''}`] : []),
+      '',
+      `🤖 Généré par ProfityX — profity-x.com`,
+    ]
+    try {
+      await navigator.clipboard.writeText(lines.join('\n'))
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    } catch {}
+  }
 
   return (
     <div style={{ background:'linear-gradient(160deg,#0A1628,#060B14)', border:`1px solid ${cfg.border}`, borderRadius:14, overflow:'hidden', boxShadow:`0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,255,178,0.05)`, fontFamily:BODY }}>
@@ -199,14 +224,21 @@ export default function SignalCard({ signal, type, creditBalance }: Props) {
       {/* Barre confiance IA */}
       <ConfidenceBar value={cs?.confidence} />
 
-      {/* Footer crédits */}
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'8px 16px', background:'rgba(0,255,178,0.03)', borderTop:'1px solid rgba(0,255,178,0.06)' }}>
+      {/* Footer crédits + bouton copier */}
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'8px 16px', background:'rgba(0,255,178,0.03)', borderTop:'1px solid rgba(0,255,178,0.06)', gap:8, flexWrap:'wrap' }}>
         <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(232,244,248,0.3)' }}>
-          1 CRÉDIT UTILISÉ{creditBalance !== undefined ? ` · SOLDE : ${creditBalance}` : ''}
+          {creditBalance !== undefined ? `1 CRÉDIT UTILISÉ · SOLDE : ${creditBalance}` : '✓ ANALYSE ' + (type==='chart'?'SMC ':'') + 'COMPLÈTE'}
         </span>
-        <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#00FFB2' }}>
-          ✓ ANALYSE {type==='chart'?'SMC ':''}COMPLÈTE
-        </span>
+        <button
+          onClick={copySignal}
+          style={{ display:'flex', alignItems:'center', gap:5, background: copied ? 'rgba(0,255,178,0.15)' : 'rgba(255,255,255,0.04)', border: `1px solid ${copied ? 'rgba(0,255,178,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius:5, padding:'5px 12px', cursor:'pointer', transition:'all .2s', flexShrink:0 }}>
+          {copied
+            ? <><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="#00FFB2" strokeWidth="2" strokeLinecap="round"/></svg>
+                <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#00FFB2' }}>COPIÉ !</span></>
+            : <><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="rgba(232,244,248,0.5)" strokeWidth="1.3"/><path d="M3 11V3a1 1 0 0 1 1-1h8" stroke="rgba(232,244,248,0.5)" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(232,244,248,0.5)' }}>COPIER</span></>
+          }
+        </button>
       </div>
     </div>
   )
