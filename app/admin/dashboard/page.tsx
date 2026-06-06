@@ -748,71 +748,9 @@ export default function AdminDashboard() {
           {/* ══ ABONNEMENTS ═══════════════════════════════ */}
           {tab === 'subscriptions' && <SubscriptionsPanel token={token} />}
 
-          {tab === 'treasury' && stats && (
-            <div>
-              <div style={{ fontFamily:HUD, fontSize:14, color:'var(--ac3)', letterSpacing:2, marginBottom:'1.5rem' }}>💰 TRÉSORERIE & REVENUS</div>
-              {/* MRR */}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:12, marginBottom:'1.5rem' }}>
-                {[
-                  { label:'MRR Total', value:`${(stats.mrr_total_xof || 0).toLocaleString('fr-FR')} FCFA`, sub:'Revenu mensuel récurrent', color:'var(--ac)' },
-                  { label:'ARR Estimé', value:`${((stats.mrr_total_xof || 0)*12).toLocaleString('fr-FR')} FCFA`, sub:'Revenu annuel récurrent', color:'var(--ac2)' },
-                  { label:'Abonnements actifs', value:String(stats.active_subscriptions || 0), sub:'Comptes payants', color:'var(--ac3)' },
-                  { label:'ARPU', value: stats.active_subscriptions > 0 ? `${Math.round((stats.mrr_total_xof||0)/stats.active_subscriptions).toLocaleString('fr-FR')} FCFA` : '—', sub:'Revenu moyen par user', color:'var(--red)' },
-                ].map(c => (
-                  <div key={c.label} style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem', position:'relative', overflow:'hidden' }}>
-                    <div style={{ position:'absolute', top:0, left:0, bottom:0, width:3, background:c.color }} />
-                    <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)', marginBottom:8 }}>{c.label.toUpperCase()}</div>
-                    <div style={{ fontFamily:HUD, fontSize:20, fontWeight:900, color:c.color, marginBottom:4 }}>{c.value}</div>
-                    <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>{c.sub}</div>
-                  </div>
-                ))}
-              </div>
-              {/* Répartition par plan */}
-              <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem', marginBottom:'1.25rem' }}>
-                <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx3)', marginBottom:'1rem' }}>RÉPARTITION REVENUS PAR PLAN</div>
-                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                  {[
-                    { plan:'FREE', count:stats.free_users||0, mrr:0, color:'#888' },
-                    { plan:'PRO', count:stats.pro_users||0, mrr:(stats.pro_users||0)*17500, color:'var(--ac)' },
-                    { plan:'ELITE', count:stats.elite_users||0, mrr:(stats.elite_users||0)*35000, color:'var(--ac3)' },
-                  ].map(r => {
-                    const total = Math.max(1, stats.total_users||1)
-                    const pct = Math.round((r.count/total)*100)
-                    return (
-                      <div key={r.plan}>
-                        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
-                          <span style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:r.color }}>{r.plan} ({r.count} users)</span>
-                          <span style={{ fontFamily:HUD, fontSize:9, color:'var(--tx2)' }}>{r.mrr.toLocaleString('fr-FR')} FCFA/mois</span>
-                        </div>
-                        <div style={{ height:6, background:'var(--bd)', borderRadius:3, overflow:'hidden' }}>
-                          <div style={{ height:'100%', width:`${pct}%`, background:r.color, borderRadius:3 }} />
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-              {/* Taux de conversion */}
-              <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem' }}>
-                <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx3)', marginBottom:'1rem' }}>MÉTRIQUES DE CONVERSION</div>
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:10 }}>
-                  {[
-                    { label:'Taux payant', value: stats.total_users > 0 ? `${Math.round(((stats.pro_users||0)+(stats.elite_users||0))/(stats.total_users||1)*100)}%` : '0%', sub:'% users payants' },
-                    { label:'Taux Elite', value: (stats.pro_users||0)+(stats.elite_users||0) > 0 ? `${Math.round((stats.elite_users||0)/Math.max(1,(stats.pro_users||0)+(stats.elite_users||0))*100)}%` : '0%', sub:'Pro → Elite upgrade' },
-                    { label:'Utilisateurs actifs', value:String(stats.new_users_7d||0), sub:'Nouveaux 7 jours' },
-                    { label:'Analyses/24h', value:String(stats.analyses_24h||0), sub:'Engagement quotidien' },
-                  ].map(m => (
-                    <div key={m.label} style={{ background:'var(--bg3)', borderRadius:8, padding:'1rem' }}>
-                      <div style={{ fontFamily:HUD, fontSize:18, fontWeight:900, color:'var(--ac)', marginBottom:4 }}>{m.value}</div>
-                      <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', marginBottom:2 }}>{m.label.toUpperCase()}</div>
-                      <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>{m.sub}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          {tab === 'treasury' && (
+            <TreasuryPanel token={token} />
           )}
-
           {/* ══ BROADCAST ════════════════════════════════ */}
           {tab === 'broadcast' && (            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
               <div>
@@ -904,9 +842,6 @@ export default function AdminDashboard() {
           {tab === 'notifications' && (
             <NotifSenderPanel token={token} showToast={showToast} />
           )}
-
-          {/* ══ DIAGNOSTIC PAIEMENT ══════════════════════ */}
-          {tab === 'treasury' && stats && <GeniusPayDiag token={token} />}
 
           {tab === 'logs' && <LogsPanel token={token} />}
 
@@ -1246,6 +1181,253 @@ function GeniusPayDiag({ token }: { token: string }) {
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+// ─── Trésorerie complète avec coûts Anthropic ──────────────
+function TreasuryPanel({ token }: { token: string }) {
+  const HUD  = "'Orbitron', monospace"
+  const BODY = "'Rajdhani', sans-serif"
+
+  type TData = {
+    users: { total:number; free:number; pro:number; elite:number; new_7d:number }
+    revenue: { mrr_xof:number; arr_xof:number; active_subs:number; pack_sales:number }
+    anthropic: { cost_per_call_usd:number; cost_per_call_xof:number; total_calls:number; calls_this_month:number; calls_7d:number; total_cost_usd:number; total_cost_xof:number; month_cost_usd:number; month_cost_xof:number; refunds:number }
+    credits: { total_issued:number; total_consumed:number; outstanding:number }
+    margin: { net_profit_xof:number; percent:number }
+    per_plan: Record<string, { price_xof:number; api_cost_xof:number; margin_xof:number; margin_pct:number }>
+  }
+
+  const [data, setData]       = useState<TData|null>(null)
+  const [loading, setLoading] = useState(true)
+  const [lastRefresh, setLastRefresh] = useState(new Date())
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const res  = await fetch('/api/admin/treasury', { headers: { Authorization: `Bearer ${token}` } })
+      const json = await res.json()
+      if (!json.error) { setData(json); setLastRefresh(new Date()) }
+    } catch {}
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  const card = (label: string, value: string, sub: string, color: string, icon: string) => (
+    <div key={label} style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.1rem', position:'relative', overflow:'hidden' }}>
+      <div style={{ position:'absolute', top:0, left:0, bottom:0, width:3, background:color }} />
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
+        <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)' }}>{label}</span>
+        <i className={'ti '+icon} style={{ fontSize:15, color }} />
+      </div>
+      <div style={{ fontFamily:HUD, fontSize:18, fontWeight:900, color, lineHeight:1, marginBottom:4 }}>{value}</div>
+      <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>{sub}</div>
+    </div>
+  )
+
+  const fmt = (n: number) => n.toLocaleString('fr-FR')
+
+  if (loading) return (
+    <div style={{ textAlign:'center', padding:'4rem', fontFamily:HUD, fontSize:9, color:'var(--tx3)', letterSpacing:2 }}>
+      CHARGEMENT TRÉSORERIE...
+    </div>
+  )
+
+  if (!data) return <div style={{ color:'var(--red)', fontFamily:HUD, fontSize:10, padding:'2rem' }}>Erreur de chargement</div>
+
+  const { users, revenue, anthropic, credits, margin, per_plan } = data
+
+  const payingUsers   = users.pro + users.elite
+  const convRate      = users.total > 0 ? Math.round((payingUsers / users.total) * 100) : 0
+  const arpu          = revenue.active_subs > 0 ? Math.round(revenue.mrr_xof / revenue.active_subs) : 0
+
+  // Projections (estimations avec 50 Pro + 10 Elite)
+  const proj50pro10elite = {
+    mrr: 50 * 17500 + 10 * 35000,
+    apiCost: Math.round((50 * 150 + 10 * 600) * 6.2),
+    net: 50 * 17500 + 10 * 35000 - Math.round((50 * 150 + 10 * 600) * 6.2),
+  }
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:'1.5rem' }}>
+      {/* En-tête */}
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10 }}>
+        <div style={{ fontFamily:HUD, fontSize:13, color:'var(--ac3)', letterSpacing:2 }}>💰 TRÉSORERIE & COÛTS ANTHROPIC</div>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <span style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>
+            Mis à jour {lastRefresh.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}
+          </span>
+          <button onClick={load} disabled={loading}
+            style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, background:'var(--bg2)', border:'1px solid var(--bd)', color:'var(--ac)', borderRadius:4, padding:'6px 14px', cursor:'pointer' }}>
+            ↻ ACTUALISER
+          </button>
+        </div>
+      </div>
+
+      {/* KPIs revenus */}
+      <div>
+        <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:10 }}>📈 REVENUS</div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:10 }}>
+          {card('MRR', `${fmt(revenue.mrr_xof)} FCFA`, 'Revenu mensuel récurrent', 'var(--ac)', 'ti-trending-up')}
+          {card('ARR ESTIMÉ', `${fmt(revenue.arr_xof)} FCFA`, 'Revenu annuel projeté', 'var(--ac2)', 'ti-calendar-stats')}
+          {card('ABONNEMENTS', String(revenue.active_subs), 'Comptes payants actifs', 'var(--ac3)', 'ti-crown')}
+          {card('ARPU', arpu > 0 ? `${fmt(arpu)} FCFA` : '—', 'Revenu moyen/utilisateur', '#888', 'ti-user-dollar')}
+        </div>
+      </div>
+
+      {/* KPIs Anthropic */}
+      <div>
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
+          <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)' }}>⚡ COÛTS ANTHROPIC (0,01$/appel · 6,2 FCFA)</div>
+          <div style={{ height:1, flex:1, background:'var(--bd)' }} />
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:10 }}>
+          {card('APPELS CE MOIS', fmt(anthropic.calls_this_month), `${fmt(anthropic.month_cost_xof)} FCFA de coût`, 'var(--ora)', 'ti-api')}
+          {card('COÛT CE MOIS', `${anthropic.month_cost_usd.toFixed(2)} $`, `${fmt(anthropic.month_cost_xof)} FCFA`, 'var(--ora)', 'ti-currency-dollar')}
+          {card('APPELS TOTAL', fmt(anthropic.total_calls), `${anthropic.total_cost_usd.toFixed(2)} $ au total`, 'var(--red)', 'ti-database')}
+          {card('REMBOURSEMENTS', String(anthropic.refunds), 'Crédits restitués (erreurs IA)', '#888', 'ti-refresh')}
+        </div>
+      </div>
+
+      {/* Marge nette */}
+      <div style={{ background:'var(--bg2)', border:`1px solid ${margin.percent >= 80?'var(--bd2)':margin.percent >= 50?'rgba(255,153,0,0.3)':'rgba(220,38,38,0.3)'}`, borderRadius:10, padding:'1.25rem' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+          <div>
+            <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:8 }}>📊 MARGE NETTE CE MOIS</div>
+            <div style={{ display:'flex', alignItems:'baseline', gap:12, flexWrap:'wrap' }}>
+              <span style={{ fontFamily:HUD, fontSize:28, fontWeight:900, color: margin.net_profit_xof >= 0 ? 'var(--ok)' : 'var(--red)', lineHeight:1 }}>
+                {margin.net_profit_xof >= 0 ? '+' : ''}{fmt(margin.net_profit_xof)} FCFA
+              </span>
+              <span style={{ fontFamily:HUD, fontSize:16, color: margin.percent >= 80 ? 'var(--ok)' : margin.percent >= 50 ? 'var(--ora)' : 'var(--red)' }}>
+                {margin.percent}%
+              </span>
+            </div>
+            <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', marginTop:6 }}>
+              {fmt(revenue.mrr_xof)} FCFA revenus — {fmt(anthropic.month_cost_xof)} FCFA coûts API
+            </div>
+          </div>
+          <div style={{ textAlign:'right' }}>
+            <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', marginBottom:4 }}>COÛT TOTAL PAR USER</div>
+            <div style={{ fontFamily:HUD, fontSize:18, color:'var(--ora)' }}>
+              {users.total > 0 ? `${(anthropic.month_cost_xof / users.total).toFixed(0)} FCFA` : '—'}
+            </div>
+            <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>par utilisateur ce mois</div>
+          </div>
+        </div>
+
+        {/* Barre marge */}
+        <div style={{ marginTop:14, height:8, background:'var(--bd)', borderRadius:4, overflow:'hidden' }}>
+          <div style={{ height:'100%', width:`${Math.max(0, Math.min(100, margin.percent))}%`, background: margin.percent >= 80 ? 'var(--ok)' : margin.percent >= 50 ? 'var(--ora)' : 'var(--red)', borderRadius:4, transition:'width 1s' }} />
+        </div>
+      </div>
+
+      {/* Économie par plan */}
+      <div>
+        <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:10 }}>💎 ÉCONOMIE PAR PLAN (coût API max si tous crédits utilisés)</div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:10 }}>
+          {[
+            { key:'free',  label:'FREE',  color:'#888',        users:users.free },
+            { key:'pro',   label:'PRO',   color:'var(--ac)',   users:users.pro  },
+            { key:'elite', label:'ELITE', color:'var(--ac3)',  users:users.elite },
+          ].map(({ key, label, color, users: count }) => {
+            const p = per_plan[key]
+            if (!p) return null
+            return (
+              <div key={key} style={{ background:'var(--bg2)', border:`1px solid color-mix(in srgb, ${color} 20%, var(--bd))`, borderRadius:10, padding:'1.1rem' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                  <span style={{ fontFamily:HUD, fontSize:10, letterSpacing:1, color, fontWeight:900 }}>{label}</span>
+                  <span style={{ fontFamily:HUD, fontSize:8, color:'var(--tx3)' }}>{count} users</span>
+                </div>
+                <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                  <div style={{ display:'flex', justifyContent:'space-between' }}>
+                    <span style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>Prix</span>
+                    <span style={{ fontFamily:HUD, fontSize:10, color:'var(--tx0)' }}>{p.price_xof > 0 ? `${fmt(p.price_xof)} FCFA` : 'Gratuit'}</span>
+                  </div>
+                  <div style={{ display:'flex', justifyContent:'space-between' }}>
+                    <span style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>Coût API max</span>
+                    <span style={{ fontFamily:HUD, fontSize:10, color:'var(--red)' }}>−{fmt(p.api_cost_xof)} FCFA</span>
+                  </div>
+                  <div style={{ height:1, background:'var(--bd)', margin:'2px 0' }} />
+                  <div style={{ display:'flex', justifyContent:'space-between' }}>
+                    <span style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>Marge nette</span>
+                    <span style={{ fontFamily:HUD, fontSize:11, fontWeight:900, color: p.margin_xof >= 0 ? 'var(--ok)' : 'var(--red)' }}>
+                      {p.margin_xof >= 0 ? '+' : ''}{fmt(p.margin_xof)} FCFA
+                    </span>
+                  </div>
+                  <div style={{ height:5, background:'var(--bd)', borderRadius:3, overflow:'hidden', marginTop:4 }}>
+                    <div style={{ height:'100%', width:`${Math.max(0,p.margin_pct)}%`, background: p.margin_pct >= 80 ? 'var(--ok)' : 'var(--ora)', borderRadius:3 }} />
+                  </div>
+                  <div style={{ textAlign:'right', fontFamily:HUD, fontSize:9, color: p.margin_pct >= 80 ? 'var(--ok)' : 'var(--ora)' }}>
+                    {p.margin_pct > 0 ? `${p.margin_pct}% de marge` : 'Coût acquisition'}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Crédits & utilisateurs */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+        {/* Crédits */}
+        <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.1rem' }}>
+          <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:12 }}>🪙 CRÉDITS</div>
+          {[
+            { l:'Émis au total',   v: fmt(credits.total_issued),   c:'var(--ac)' },
+            { l:'Consommés',       v: fmt(credits.total_consumed), c:'var(--ora)' },
+            { l:'Soldes restants', v: fmt(credits.outstanding),    c:'var(--ac2)' },
+            { l:'Packs vendus',    v: String(revenue.pack_sales),  c:'var(--ac3)' },
+          ].map(({ l, v, c }) => (
+            <div key={l} style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
+              <span style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>{l}</span>
+              <span style={{ fontFamily:HUD, fontSize:10, color:c }}>{v}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Utilisateurs */}
+        <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.1rem' }}>
+          <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:12 }}>👥 UTILISATEURS</div>
+          {[
+            { l:'Free',           v: `${users.free}`,        c:'#888' },
+            { l:'Pro',            v: `${users.pro}`,         c:'var(--ac)' },
+            { l:'Elite',          v: `${users.elite}`,       c:'var(--ac3)' },
+            { l:'Taux conversion',v: `${convRate}%`,         c:'var(--ac2)' },
+            { l:'Nouveaux 7j',    v: `+${users.new_7d}`,     c:'var(--ok)' },
+          ].map(({ l, v, c }) => (
+            <div key={l} style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
+              <span style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>{l}</span>
+              <span style={{ fontFamily:HUD, fontSize:10, color:c }}>{v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Projection */}
+      <div style={{ background:'color-mix(in srgb, var(--ac) 4%, transparent)', border:'1px solid color-mix(in srgb, var(--ac) 20%, transparent)', borderRadius:10, padding:'1.25rem' }}>
+        <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--ac)', marginBottom:12 }}>🚀 PROJECTION — 50 PRO + 10 ELITE</div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:10 }}>
+          {[
+            { l:'MRR projeté',   v:`${fmt(proj50pro10elite.mrr)} FCFA`,     c:'var(--ac)' },
+            { l:'Coût API/mois', v:`${fmt(proj50pro10elite.apiCost)} FCFA`, c:'var(--ora)' },
+            { l:'Profit net',    v:`${fmt(proj50pro10elite.net)} FCFA`,     c:'var(--ok)' },
+            { l:'Marge nette',   v:`${Math.round((1 - proj50pro10elite.apiCost/proj50pro10elite.mrr)*100)}%`, c:'var(--ok)' },
+          ].map(({ l, v, c }) => (
+            <div key={l} style={{ background:'var(--bg1)', borderRadius:8, padding:'0.875rem' }}>
+              <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'var(--tx3)', marginBottom:4 }}>{l}</div>
+              <div style={{ fontFamily:HUD, fontSize:15, fontWeight:900, color:c }}>{v}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginTop:10 }}>
+          * Coût Anthropic 0,01 $/appel (6,2 FCFA). Pro = 150 crédits max/mois. Elite = 600 crédits max/mois.
+        </div>
+      </div>
+
+      {/* Diagnostic GeniusPay */}
+      <GeniusPayDiag token={token} />
     </div>
   )
 }
