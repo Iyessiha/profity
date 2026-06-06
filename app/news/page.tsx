@@ -155,7 +155,7 @@ function CountdownCard({ ev, isPremium, onSelect, index }: { ev:ScheduledEvent; 
             </div>
           </>
         ) : (
-          <div style={{ background:'color-mix(in srgb, var(--ac) 6%, transparent)', border:'1px solid var(--bd2)', borderRadius:6, padding:'8px 10px', marginBottom:8, textAlign:'center' }}>
+          <div onClick={()=>onSelect(ev)} style={{ background:'color-mix(in srgb, var(--ac) 6%, transparent)', border:'1px solid var(--bd2)', borderRadius:6, padding:'8px 10px', marginBottom:8, textAlign:'center', cursor:'pointer' }}>
             <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)', marginBottom:2 }}>✓ RÉSULTATS PUBLIÉS</div>
             <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)' }}>Voir le signal →</div>
           </div>
@@ -163,7 +163,7 @@ function CountdownCard({ ev, isPremium, onSelect, index }: { ev:ScheduledEvent; 
 
         {/* Intro + bouton signal */}
         <div style={{ marginTop:8, fontFamily:BODY, fontSize:11, color:'var(--tx3)', lineHeight:1.4, borderTop:'1px solid var(--bd)', paddingTop:8 }}>{sig.intro}</div>
-        <button style={{ marginTop:10, width:'100%', background:'color-mix(in srgb, var(--ac) 8%, transparent)', border:'1px solid var(--bd2)', borderRadius:5, padding:'7px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+        <button onClick={()=>onSelect(ev)} style={{ marginTop:10, width:'100%', background:'color-mix(in srgb, var(--ac) 8%, transparent)', border:'1px solid var(--bd2)', borderRadius:5, padding:'7px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
           <i className="ti ti-chart-line" style={{ fontSize:13 }} />
           VOIR LES SIGNAUX
         </button>
