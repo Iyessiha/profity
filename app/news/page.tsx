@@ -280,6 +280,7 @@ function EventModal({ ev, isPremium, onClose }: { ev:ScheduledEvent; isPremium:b
 }
 
 export default function NewsPage() {
+  const [token,   setToken]   = useState('')
   const [user, setUser]       = useState<{id:string;email?:string}|null>(null)
   const [profile, setProfile] = useState<Record<string,unknown>|null>(null)
   const [plan, setPlan]       = useState('free')

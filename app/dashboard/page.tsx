@@ -16,6 +16,7 @@ const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 
 export default function DashboardPage() {
+  const [token,   setToken]   = useState('')
   const [user,    setUser]    = useState<{ id: string; email?: string } | null>(null)
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null)
   const [plan,    setPlan]    = useState('free')
