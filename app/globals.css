@@ -125,11 +125,15 @@ body {
   }
 }
 
+/* Horloge : taille par défaut */
+.topbar-clock { font-size:15px; }
+
 /* ── Mobile ≤ 640px ─────────────────────────────────────────── */
 @media (max-width:640px) {
   .resp-pad { padding:0.75rem !important; }
   .topbar-hide { display:none !important; }
   .topbar-name { display:none !important; }
+  .topbar-clock { font-size:13px !important; letter-spacing:1px !important; }
   .quota-bar { padding:8px 0.75rem !important; gap:8px !important; flex-wrap:wrap; }
   .modal-card { width:94vw !important; padding:1.25rem !important; max-height:90vh; overflow-y:auto; }
   .hero-section { padding:5rem 1rem 3rem !important; }

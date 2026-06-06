@@ -66,7 +66,7 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
         </button>
 
         {/* Horloge */}
-        <div style={{ fontFamily: HUD, fontSize: 15, color: 'var(--ac)', letterSpacing: 2, flexShrink: 0 }}>{time}</div>
+        <div className="topbar-clock" style={{ fontFamily: HUD, color: 'var(--ac)', letterSpacing: 2, flexShrink: 0 }}>{time}</div>
         <div className="topbar-hide" style={{ width: 1, height: 16, background: 'var(--bd1)', flexShrink: 0 }} />
         <div className="topbar-hide" style={{ fontFamily: BODY, fontSize: 12, color: 'var(--tx2)', letterSpacing: 1, textTransform: 'capitalize', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{date}</div>
       </div>
@@ -81,8 +81,8 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
           </span>
         </div>
 
-        {/* Devise */}
-        <div style={{ fontFamily: HUD, fontSize: 9, color: 'var(--ac2)', background: 'color-mix(in srgb, var(--ac2) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--ac2) 18%, transparent)', borderRadius: 3, padding: '4px 8px', letterSpacing: 1 }}>
+        {/* Devise — cachée sur petits écrans */}
+        <div className="topbar-hide" style={{ fontFamily: HUD, fontSize: 9, color: 'var(--ac2)', background: 'color-mix(in srgb, var(--ac2) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--ac2) 18%, transparent)', borderRadius: 3, padding: '4px 8px', letterSpacing: 1, flexShrink: 0 }}>
           {currency}
         </div>
 
