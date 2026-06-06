@@ -42,7 +42,7 @@ interface User {
   subscriptions: { status: string; amount: number }[]
 }
 
-type AdminTab = 'overview' | 'users' | 'subscriptions' | 'treasury' | 'broadcast' | 'logs'
+type AdminTab = 'overview' | 'users' | 'subscriptions' | 'treasury' | 'notifications' | 'broadcast' | 'logs'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -306,6 +306,7 @@ export default function AdminDashboard() {
     { key: 'subscriptions', icon: 'ti-credit-card',   label: 'ABONNEMENTS'  },
     { key: 'treasury',      icon: 'ti-cash',          label: 'TRÉSORERIE'   },
     { key: 'broadcast',     icon: 'ti-speakerphone',  label: 'BROADCAST'    },
+    { key: 'notifications', icon: 'ti-bell',           label: 'NOTIFS'       },
     { key: 'logs',          icon: 'ti-file-analytics', label: 'LOGS'        },
     { key: 'subscriptions', icon: 'ti-credit-card',   label: 'ABONNEMENTS'  },
     { key: 'broadcast',     icon: 'ti-speakerphone',  label: 'BROADCAST'    },
@@ -813,8 +814,7 @@ export default function AdminDashboard() {
           )}
 
           {/* ══ BROADCAST ════════════════════════════════ */}
-          {tab === 'broadcast' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          {tab === 'broadcast' && (            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
               <div>
                 <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: '#FF3A5C', marginBottom: 16 }}>
                   ENVOYER UNE NOTIFICATION
@@ -900,6 +900,11 @@ export default function AdminDashboard() {
           )}
 
           {/* ══ LOGS ══════════════════════════════════════ */}
+          {/* ══ NOTIFICATIONS ═══════════════════════════ */}
+          {tab === 'notifications' && (
+            <NotifSenderPanel token={token} showToast={showToast} />
+          )}
+
           {tab === 'logs' && <LogsPanel token={token} />}
 
         </main>
@@ -908,6 +913,111 @@ export default function AdminDashboard() {
       <style>{`
         @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
       `}</style>
+    </div>
+  )
+}
+
+// ─── Sous-composant Notifications Admin ─────────────────
+function NotifSenderPanel({ token, showToast }: { token:string; showToast:(msg:string,ok:boolean)=>void }) {
+  const HUD  = "'Orbitron', monospace"
+  const BODY = "'Rajdhani', sans-serif"
+  const [form, setForm] = useState({ title:'', message:'', type:'admin_message', priority:'normal', target_plan:'', target_user_id:'' })
+  const [sending, setSending] = useState(false)
+
+  const send = async () => {
+    if (!form.title || !form.message) { showToast('Titre et message requis', false); return }
+    setSending(true)
+    const body: Record<string,string> = { title:form.title, message:form.message, type:form.type, priority:form.priority }
+    if (form.target_user_id.trim()) body.target_user_id = form.target_user_id.trim()
+    else if (form.target_plan) body.target_plan = form.target_plan
+    const res = await fetch('/api/notifications', { method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`}, body:JSON.stringify(body) })
+    const json = await res.json()
+    if (json.success) { showToast(`✅ Envoyé à ${json.sent_to} utilisateur(s)`, true); setForm(f=>({...f,title:'',message:'',target_user_id:''})) }
+    else showToast(json.error||'Erreur', false)
+    setSending(false)
+  }
+
+  const inp = { background:'var(--bg2)', border:'1px solid var(--bd)', color:'var(--tx0)', fontFamily:BODY, fontSize:14, padding:'9px 12px', borderRadius:4, width:'100%', boxSizing:'border-box' as const }
+  const lbl = { fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', marginBottom:5, display:'block' as const }
+
+  return (
+    <div>
+      <div style={{ fontFamily:HUD, fontSize:12, color:'var(--ac)', letterSpacing:1, marginBottom:'1.5rem' }}>🔔 ENVOYER UNE NOTIFICATION</div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:16 }}>
+        {/* Formulaire */}
+        <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem', display:'flex', flexDirection:'column', gap:12 }}>
+          <div><span style={lbl}>TITRE</span><input style={inp} value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} placeholder="Ex: Signal NFP disponible !" /></div>
+          <div><span style={lbl}>MESSAGE</span><textarea style={{...inp, minHeight:90, resize:'vertical'}} value={form.message} onChange={e=>setForm(f=>({...f,message:e.target.value}))} placeholder="Corps de la notification..." /></div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+            <div>
+              <span style={lbl}>TYPE</span>
+              <select style={inp} value={form.type} onChange={e=>setForm(f=>({...f,type:e.target.value}))}>
+                <option value="admin_message">📢 Message admin</option>
+                <option value="announcement">📣 Annonce</option>
+                <option value="signal">📊 Signal</option>
+                <option value="upgrade_invite">🚀 Invitation upgrade</option>
+                <option value="quota_warning">⚠️ Alerte quota</option>
+                <option value="plan_change">👑 Changement plan</option>
+                <option value="success">✅ Succès</option>
+                <option value="info">ℹ️ Info</option>
+              </select>
+            </div>
+            <div>
+              <span style={lbl}>PRIORITÉ</span>
+              <select style={inp} value={form.priority} onChange={e=>setForm(f=>({...f,priority:e.target.value}))}>
+                <option value="low">Faible</option>
+                <option value="normal">Normale</option>
+                <option value="high">Haute</option>
+                <option value="urgent">🚨 Urgente</option>
+              </select>
+            </div>
+          </div>
+          <div style={{ background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:6, padding:'0.875rem' }}>
+            <span style={{...lbl, marginBottom:10}}>🎯 CIBLAGE (laisser vide = tous les users)</span>
+            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+              <div>
+                <span style={{...lbl, color:'var(--tx2)'}}>ID USER SPÉCIFIQUE</span>
+                <input style={inp} value={form.target_user_id} onChange={e=>setForm(f=>({...f,target_user_id:e.target.value}))} placeholder="UUID de l'utilisateur (optionnel)" />
+              </div>
+              <div>
+                <span style={{...lbl, color:'var(--tx2)'}}>OU FILTRER PAR PLAN</span>
+                <select style={inp} value={form.target_plan} onChange={e=>setForm(f=>({...f,target_plan:e.target.value}))}>
+                  <option value="">Tous les plans</option>
+                  <option value="free">Free uniquement</option>
+                  <option value="pro">Pro uniquement</option>
+                  <option value="elite">Elite uniquement</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button onClick={send} disabled={sending||!form.title||!form.message}
+            style={{ padding:'12px', borderRadius:6, border:'none', background:sending||!form.title||!form.message?'var(--bd)':'var(--ac)', color:'#020408', fontFamily:HUD, fontSize:10, letterSpacing:2, fontWeight:700, cursor:sending?'wait':'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+            {sending ? '⏳ ENVOI...' : '🔔 ENVOYER LA NOTIFICATION'}
+          </button>
+        </div>
+
+        {/* Exemples rapides */}
+        <div>
+          <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx3)', marginBottom:10 }}>MESSAGES RAPIDES</div>
+          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+            {[
+              { title:'🚀 Passez Pro maintenant', msg:'Débloquez 100 analyses SMC, coaching NFP/CPI et signaux illimités. Offre spéciale ce mois-ci.', type:'upgrade_invite', priority:'high', plan:'free' },
+              { title:'📊 Signal NFP publié', msg:'Un nouveau signal a été généré pour le NFP. Consultez le module Annonces pour la stratégie complète.', type:'signal', priority:'high', plan:'' },
+              { title:'⚠️ Renouvellement de quota', msg:'Votre quota mensuel sera remis à zéro le 1er du mois. Pensez à analyser vos charts restants.', type:'announcement', priority:'normal', plan:'' },
+              { title:'🎉 Nouvelle fonctionnalité', msg:'Les horloges des marchés mondiaux sont maintenant disponibles sur votre dashboard. Découvrez-les !', type:'success', priority:'normal', plan:'' },
+            ].map((tpl,i) => (
+              <button key={i} onClick={()=>setForm(f=>({...f, title:tpl.title, message:tpl.msg, type:tpl.type, priority:tpl.priority, target_plan:tpl.plan}))}
+                style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:6, padding:'0.75rem', textAlign:'left', cursor:'pointer', transition:'background .15s' }}
+                onMouseEnter={e=>(e.currentTarget as HTMLElement).style.background='var(--bg3)'}
+                onMouseLeave={e=>(e.currentTarget as HTMLElement).style.background='var(--bg2)'}>
+                <div style={{ fontFamily:HUD, fontSize:9, color:'var(--tx0)', marginBottom:4 }}>{tpl.title}</div>
+                <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', lineHeight:1.4 }}>{tpl.msg.slice(0,60)}...</div>
+                {tpl.plan && <div style={{ fontFamily:HUD, fontSize:7, color:'var(--ac)', marginTop:4 }}>→ Plan {tpl.plan.toUpperCase()} uniquement</div>}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

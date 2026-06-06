@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import { useTheme } from '@/lib/theme'
 import { useMenu } from '@/lib/menu-context'
+import { supabasePublic } from '@/lib/supabase'
+import NotificationBell from '@/components/dashboard/NotificationBell'
 
 interface TopBarProps {
   user?: { email?: string; id: string } | null
@@ -32,6 +34,13 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
 
   const name = (profile?.full_name as string) ?? (user?.email?.split('@')[0]) ?? 'Trader'
   const plan = (profile?.user_plan as string) ?? 'free'
+  const [token, setToken] = useState('')
+
+  useEffect(() => {
+    supabasePublic.auth.getSession().then(({ data }) => {
+      if (data.session) setToken(data.session.access_token)
+    })
+  }, [])
 
   return (
     <header style={{
@@ -75,6 +84,9 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
         <div style={{ fontFamily: HUD, fontSize: 9, color: 'var(--ac2)', background: 'color-mix(in srgb, var(--ac2) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--ac2) 18%, transparent)', borderRadius: 3, padding: '4px 8px', letterSpacing: 1 }}>
           {currency}
         </div>
+
+        {/* Notifications */}
+        {token && <NotificationBell token={token} />}
 
         {/* Toggle thème */}
         <button onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
