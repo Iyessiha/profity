@@ -147,7 +147,7 @@ export default function LandingPage() {
       <section className="hero-section" style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center', padding: '6rem 2rem 4rem', maxWidth: 1200, margin: '0 auto' }}>
         
         {/* Colonne texte */}
-        <div style={{ flex: '1 1 500px', maxWidth: 600 }}>
+        <div className="hero-text-col" style={{ flex: '1 1 500px', maxWidth: 600 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 100, padding: '6px 16px', marginBottom: '2rem' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00E676', animation: 'pulse 1.5s infinite' }} />
             <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#00FFB2' }}>+4 800 TRADERS · MARCHÉS EN DIRECT · {time}</span>
@@ -179,7 +179,7 @@ export default function LandingPage() {
         </div>
 
         {/* Colonne mockup interface */}
-        <div className="hero-mockup" style={{ flex: '1 1 420px', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem 0 2rem 3rem' }}>
+        <div className="hero-mockup" style={{ flex: '1 1 420px', justifyContent: 'center', alignItems: 'center', padding: '2rem 0 2rem 3rem' }}>
           <div style={{ position: 'relative', width: '100%', maxWidth: 420 }}>
             {/* Lueur derrière le mockup */}
             <div style={{ position: 'absolute', inset: -30, background: 'radial-gradient(ellipse at center, rgba(0,255,178,0.12) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
@@ -656,8 +656,9 @@ export default function LandingPage() {
         /* Mockup hero responsive */
         .hero-mockup { display:flex; }
         @media (max-width: 860px) {
-          .hero-mockup { display:none; }
-          .hero-section { flex-direction:column; justify-content:center; }
+          .hero-mockup { display:none !important; }
+          .hero-section { flex-direction:column !important; align-items:flex-start !important; padding-top:5rem !important; }
+          .hero-text-col { max-width:100% !important; }
         }
       `}</style>
     </div>
