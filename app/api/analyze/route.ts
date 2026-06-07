@@ -154,7 +154,33 @@ export async function POST(req: NextRequest) {
   if (!signal)
     return NextResponse.json<ApiResponse<null>>({ success:false, error:'Signal incomplet', code:'AI_ERROR' }, { status:422 })
 
-  await saveChartAnalysis({ userId:user.id, pair:signal.pair, timeframe:signal.timeframe, direction:signal.direction, entry:signal.entry, stopLoss:signal.stop_loss, tp1:signal.tp1, tp2:signal.tp2, tp3:signal.tp3, rrRatio:signal.rr_ratio, conclusion:signal.conclusion, rawAnalysis:signal.raw_analysis, locale })
+  await saveChartAnalysis({
+    userId:             user.id,
+    pair:               signal.pair,
+    timeframe:          signal.timeframe,
+    direction:          signal.direction,
+    entry:              signal.entry,
+    stopLoss:           signal.stop_loss,
+    tp1:                signal.tp1,
+    tp2:                signal.tp2,
+    tp3:                signal.tp3,
+    rrRatio:            signal.rr_ratio,
+    conclusion:         signal.conclusion,
+    rawAnalysis:        signal.raw_analysis ?? '',
+    locale,
+    marketState:        signal.market_state,
+    confidence:         signal.confidence,
+    smcAnalysis:        signal.smc_analysis,
+    confluenceFactors:  signal.confluence_factors,
+    orderType:          signal.order_type,
+    trend:              signal.trend,
+    orderBlock:         signal.order_block ?? null,
+    fvg:                signal.fvg ?? null,
+    bosLevel:           signal.bos_level,
+    chochLevel:         signal.choch_level,
+    liquidityHigh:      signal.liquidity_high,
+    liquidityLow:       signal.liquidity_low,
+  })
 
   // Notifier si solde bas après déduction
   const { data:newBal } = await admin.from('credits').select('balance').eq('user_id', user.id).single()

@@ -117,24 +117,49 @@ export async function saveChartAnalysis(params: {
   conclusion:  string
   rawAnalysis: string
   locale:      string
+  // Champs SMC
+  marketState?:       string | null
+  confidence?:        string | null
+  smcAnalysis?:       string | null
+  confluenceFactors?: string[] | null
+  orderType?:         string | null
+  trend?:             string | null
+  orderBlock?:        object | null
+  fvg?:               object | null
+  bosLevel?:          number | null
+  chochLevel?:        number | null
+  liquidityHigh?:     number | null
+  liquidityLow?:      number | null
 }) {
   const { error } = await supabaseAdmin
     .from('chart_analyses')
     .insert({
-      user_id:      params.userId,
-      image_url:    params.imageUrl,
-      pair:         params.pair,
-      timeframe:    params.timeframe,
-      direction:    params.direction,
-      entry:        params.entry,
-      stop_loss:    params.stopLoss,
-      tp1:          params.tp1,
-      tp2:          params.tp2 ?? null,
-      tp3:          params.tp3 ?? null,
-      rr_ratio:     params.rrRatio,
-      conclusion:   params.conclusion,
-      raw_analysis: params.rawAnalysis,
-      locale:       params.locale,
+      user_id:            params.userId,
+      image_url:          params.imageUrl,
+      pair:               params.pair,
+      timeframe:          params.timeframe,
+      direction:          params.direction,
+      entry:              params.entry,
+      stop_loss:          params.stopLoss,
+      tp1:                params.tp1,
+      tp2:                params.tp2 ?? null,
+      tp3:                params.tp3 ?? null,
+      rr_ratio:           params.rrRatio,
+      conclusion:         params.conclusion,
+      raw_analysis:       params.rawAnalysis,
+      locale:             params.locale,
+      market_state:       params.marketState ?? null,
+      confidence:         params.confidence ?? null,
+      smc_analysis:       params.smcAnalysis ?? null,
+      confluence_factors: params.confluenceFactors ?? null,
+      order_type:         params.orderType ?? null,
+      trend:              params.trend ?? null,
+      order_block:        params.orderBlock ?? null,
+      fvg:                params.fvg ?? null,
+      bos_level:          params.bosLevel ?? null,
+      choch_level:        params.chochLevel ?? null,
+      liquidity_high:     params.liquidityHigh ?? null,
+      liquidity_low:      params.liquidityLow ?? null,
     })
 
   if (error) console.error('[DB] Erreur sauvegarde chart:', error)
