@@ -227,17 +227,7 @@ export default function AnalysisPage() {
               </>
             ) : (
               <div>
-                <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" creditBalance={balance} />
-                {plan === 'free' && (
-                  <div style={{ marginTop:'1rem', background:'linear-gradient(135deg,color-mix(in srgb, var(--ac) 6%, transparent),color-mix(in srgb, var(--ac2) 4%, transparent))', border:'1px solid var(--bd2)', borderRadius:8, padding:'1rem 1.25rem', display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
-                    <i className="ti ti-bolt" style={{ fontSize:22, color:'var(--ac)', flexShrink:0 }} />
-                    <div style={{ flex:1, minWidth:160 }}>
-                      <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:1, color:'var(--ac)', marginBottom:4 }}>ANALYSE SMC AVEC PRO</div>
-                      <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx2)' }}>Order Blocks, FVG, Liquidité, Confluence institutionnelle, Market State.</div>
-                    </div>
-                    <a href="/pricing" style={{ background:'var(--ac)', color:'#020408', fontFamily:HUD, fontSize:9, letterSpacing:2, padding:'9px 16px', borderRadius:4, textDecoration:'none', fontWeight:700, whiteSpace:'nowrap' }}>PASSER PRO →</a>
-                  </div>
-                )}
+                <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" creditBalance={balance} plan={plan} />
                 <button onClick={()=>{setPreview(null);setSignal(null)}} style={{ marginTop:'1rem', background:'transparent', border:'1px solid var(--bd1)', color:'var(--ac)', fontFamily:HUD, fontSize:9, letterSpacing:2, padding:'10px 24px', borderRadius:4, cursor:'pointer', width:'100%' }}>+ NOUVELLE ANALYSE</button>
               </div>
             )}

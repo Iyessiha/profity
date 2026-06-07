@@ -6,7 +6,7 @@ import { useState } from 'react'
 import type { ChartSignal, NewsSignal } from '@/types'
 
 type Signal = ChartSignal | NewsSignal
-interface Props { signal: Signal; type: 'chart' | 'news'; creditBalance?: number }
+interface Props { signal: Signal; type: 'chart' | 'news'; creditBalance?: number; plan?: string }
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -93,7 +93,7 @@ function MiniChart({ direction }: { direction: string }) {
   )
 }
 
-export default function SignalCard({ signal, type, creditBalance }: Props) {
+export default function SignalCard({ signal, type, creditBalance, plan = 'free' }: Props) {
   const dir    = signal.direction in DIR_CFG ? signal.direction : 'NEUTRE'
   const cfg    = DIR_CFG[dir as keyof typeof DIR_CFG]
   const pair   = type === 'chart' ? (signal as ChartSignal).pair : (signal as NewsSignal).pair_cible
@@ -101,6 +101,7 @@ export default function SignalCard({ signal, type, creditBalance }: Props) {
   const cs     = type === 'chart' ? signal as ChartSignal : null
   const concl  = cs?.conclusion ?? (signal as NewsSignal).interpretation
   const rr     = signal.rr_ratio
+  const isPro  = plan === 'pro' || plan === 'elite'
   const [showText, setShowText] = useState(false)
 
   const signalText = [
@@ -187,8 +188,8 @@ export default function SignalCard({ signal, type, creditBalance }: Props) {
           )}
         </div>
 
-        {/* Badges SMC / marché */}
-        {cs && (cs.market_state || cs.confluence_factors) && (
+        {/* Badges SMC / marché — Pro uniquement */}
+        {isPro && cs && (cs.market_state || cs.confluence_factors) && (
           <div style={{ marginTop:10, display:'flex', flexWrap:'wrap', gap:6 }}>
             {cs.market_state && (
               <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#00D4FF', background:'rgba(0,212,255,0.08)', border:'1px solid rgba(0,212,255,0.2)', borderRadius:3, padding:'3px 9px' }}>
@@ -203,14 +204,49 @@ export default function SignalCard({ signal, type, creditBalance }: Props) {
           </div>
         )}
 
-        {/* Conclusion IA complète */}
+        {/* Conclusion IA — Pro complète, Free floutée */}
         {concl && (
-          <div style={{ marginTop:10, background:'rgba(0,212,255,0.04)', border:'1px solid rgba(0,212,255,0.1)', borderRadius:8, padding:'12px 14px' }}>
-            <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'#00D4FF', marginBottom:7 }}>
-              &gt; {type === 'chart' ? 'ANALYSE IA' : 'INTERPRÉTATION IA'}
+          isPro ? (
+            <div style={{ marginTop:10, background:'rgba(0,212,255,0.04)', border:'1px solid rgba(0,212,255,0.1)', borderRadius:8, padding:'12px 14px' }}>
+              <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'#00D4FF', marginBottom:7 }}>
+                &gt; {type === 'chart' ? 'ANALYSE IA' : 'INTERPRÉTATION IA'}
+              </div>
+              <p style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.65)', lineHeight:1.7, margin:0 }}>{concl}</p>
             </div>
-            <p style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.65)', lineHeight:1.7, margin:0 }}>{concl}</p>
-          </div>
+          ) : (
+            /* ── TEASER FREE : contenu floutté + CTA upgrade ── */
+            <div style={{ marginTop:10, position:'relative', borderRadius:8, overflow:'hidden' }}>
+              {/* Contenu floutté */}
+              <div style={{ background:'rgba(0,212,255,0.04)', border:'1px solid rgba(0,212,255,0.1)', borderRadius:8, padding:'12px 14px', filter:'blur(4px)', userSelect:'none', pointerEvents:'none' }}>
+                <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'#00D4FF', marginBottom:7 }}>
+                  &gt; ANALYSE SMC COMPLÈTE
+                </div>
+                <p style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.65)', lineHeight:1.7, margin:0 }}>
+                  {concl.slice(0, 80)}... Order Block haussier confirmé sur H4. FVG comblé à 2318.50. Liquidité institutionnelle au-dessus de 2351. Structure de marché bullish. Confluence SMC élevée.
+                </p>
+                <div style={{ marginTop:8, display:'flex', gap:6, flexWrap:'wrap' }}>
+                  {['Order Block H4','FVG confirmé','BOS haussier','Liquidité 2351'].map(f => (
+                    <span key={f} style={{ fontFamily:BODY, fontSize:11, color:'rgba(0,255,178,0.7)', background:'rgba(0,255,178,0.05)', border:'1px solid rgba(0,255,178,0.12)', borderRadius:100, padding:'2px 9px' }}>✓ {f}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Overlay de déverrouillage */}
+              <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:10, background:'rgba(6,9,15,0.55)', backdropFilter:'blur(2px)', borderRadius:8 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(201,168,76,0.12)', border:'1px solid rgba(201,168,76,0.3)', borderRadius:6, padding:'6px 12px' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#C9A84C" strokeWidth="1.8"/><path d="M8 11V7a4 4 0 1 1 8 0v4" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                  <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#C9A84C' }}>ANALYSE SMC VERROUILLÉE</span>
+                </div>
+                <div style={{ fontFamily:BODY, fontSize:12, color:'rgba(232,244,248,0.5)', textAlign:'center', maxWidth:200 }}>
+                  Order Blocks · FVG · Liquidité · Confluence
+                </div>
+                <a href="/pricing" style={{ display:'flex', alignItems:'center', gap:7, background:'linear-gradient(135deg,#00FFB2,#00D4FF)', color:'#020408', fontFamily:HUD, fontSize:9, letterSpacing:2, fontWeight:900, padding:'10px 20px', borderRadius:5, textDecoration:'none', boxShadow:'0 4px 16px rgba(0,255,178,0.3)' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#020408" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  DÉBLOQUER AVEC PRO →
+                </a>
+              </div>
+            </div>
+          )
         )}
       </div>
 
