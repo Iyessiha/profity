@@ -32,14 +32,21 @@ interface User {
   id:            string
   public_id:     string
   full_name:     string
-  email:         string
-  user_plan:     string
-  is_admin:      boolean
-  suspended?:    boolean
-  analyses_used: number
-  news_used:     number
-  created_at:    string
-  subscriptions: { status: string; amount: number }[]
+  email:               string
+  user_plan:           string
+  is_admin:            boolean
+  suspended?:          boolean
+  analyses_used:       number
+  news_used:           number
+  credit_balance?:     number
+  current_streak?:     number
+  longest_streak?:     number
+  total_xp?:           number
+  last_active_date?:   string
+  total_analyses?:     number
+  total_journal_entries?: number
+  created_at:          string
+  subscriptions:       { status: string; amount: number }[]
 }
 
 type AdminTab = 'overview' | 'users' | 'subscriptions' | 'treasury' | 'notifications' | 'export' | 'broadcast' | 'logs'
@@ -194,7 +201,14 @@ export default function AdminDashboard() {
     if (json.success) setUsers(json.data)
   }, [token, search, planFilter])
 
-  useEffect(() => { if (token) { fetchStats(); fetchUsers() } }, [token, fetchStats, fetchUsers])
+  useEffect(() => {
+    if (!token) return
+    fetchStats()
+    fetchUsers()
+    // Auto-refresh toutes les 30 secondes
+    const id = setInterval(() => { fetchStats(); fetchUsers() }, 30_000)
+    return () => clearInterval(id)
+  }, [token, fetchStats, fetchUsers])
 
   // ── Action sur un user ─────────────────────────────────
   const userAction = async (action: string, userId: string, plan?: string) => {
@@ -510,19 +524,26 @@ export default function AdminDashboard() {
             <div>
               {/* Barre d'actions */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: '#00FFB2' }}>
-                  GESTION DES UTILISATEURS
+                <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                  <div style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: '#00FFB2' }}>
+                    GESTION DES UTILISATEURS
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap:5, fontFamily:HUD, fontSize:7, color:'rgba(232,244,248,0.3)', letterSpacing:1 }}>
+                    <span style={{ width:5, height:5, borderRadius:'50%', background:'#00FFB2', boxShadow:'0 0 5px #00FFB2', animation:'pulse 2.5s infinite', display:'inline-block' }} />
+                    SYNC 30S
+                  </div>
                 </div>
-                <button onClick={() => { resetForm(); setShowCreate(true) }}
-                  style={{
-                    background: '#00FFB2', border: 'none', color: '#020408',
-                    fontFamily: HUD, fontSize: 9, letterSpacing: 2, fontWeight: 700,
-                    padding: '9px 18px', borderRadius: 4, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: 6,
-                  }}>
-                  <i className="ti ti-user-plus" style={{ fontSize: 14 }} aria-hidden="true" />
-                  CRÉER UN UTILISATEUR
-                </button>
+                <div style={{ display:'flex', gap:8 }}>
+                  <button onClick={() => { fetchUsers(); fetchStats() }}
+                    style={{ background:'transparent', border:'1px solid rgba(0,255,178,0.2)', color:'#00FFB2', fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'8px 12px', borderRadius:4, cursor:'pointer', display:'flex', alignItems:'center', gap:5 }}>
+                    <i className="ti ti-refresh" style={{ fontSize:13 }} /> ACTUALISER
+                  </button>
+                  <button onClick={() => { resetForm(); setShowCreate(true) }}
+                    style={{ background: '#00FFB2', border: 'none', color: '#020408', fontFamily: HUD, fontSize: 9, letterSpacing: 2, fontWeight: 700, padding: '9px 18px', borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <i className="ti ti-user-plus" style={{ fontSize: 14 }} aria-hidden="true" />
+                    CRÉER UN UTILISATEUR
+                  </button>
+                </div>
               </div>
 
               {/* Filtres */}
@@ -556,23 +577,25 @@ export default function AdminDashboard() {
               <div className="table-scroll" style={{ background: '#06090F', border: '1px solid rgba(0,255,178,0.08)', borderRadius: 8, overflow: 'hidden' }}>
                 {/* Header */}
                 <div style={{
-                  display: 'grid', gridTemplateColumns: '1fr 110px 75px 70px 90px 250px',
+                  display: 'grid', gridTemplateColumns: '1.4fr 90px 65px 60px 65px 80px 70px 90px 220px',
                   padding: '10px 16px', background: '#0A0F1A',
                   borderBottom: '1px solid rgba(0,255,178,0.06)',
+                  minWidth: 900,
                 }}>
-                  {['UTILISATEUR','PLAN','ANALYSES','NEWS','STATUT','ACTIONS'].map(h => (
-                    <span key={h} style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.25)' }}>{h}</span>
+                  {['UTILISATEUR','PLAN','ANALYSES','NEWS','CRÉDITS','STREAK','ACTIVITÉ','STATUT','ACTIONS'].map(h => (
+                    <span key={h} style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 2, color: 'rgba(232,244,248,0.25)' }}>{h}</span>
                   ))}
                 </div>
 
                 {users.map((u, i) => (
                   <div key={u.id}
                     style={{
-                      display: 'grid', gridTemplateColumns: '1fr 110px 75px 70px 90px 250px',
+                      display: 'grid', gridTemplateColumns: '1.4fr 90px 65px 60px 65px 80px 70px 90px 220px',
                       padding: '12px 16px', alignItems: 'center',
                       borderBottom: '1px solid rgba(0,255,178,0.04)',
                       background: u.suspended ? 'rgba(255,58,92,0.04)' : i % 2 === 0 ? 'transparent' : 'rgba(0,255,178,0.01)',
                       transition: 'background .15s', opacity: u.suspended ? 0.6 : 1,
+                      minWidth: 900,
                     }}
                   >
                     {/* User info */}
@@ -600,10 +623,26 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Analyses */}
-                    <span style={{ fontFamily: HUD, fontSize: 10, color: '#00FFB2' }}>{u.analyses_used}</span>
+                    <span style={{ fontFamily: HUD, fontSize: 10, color: '#00FFB2' }}>{u.analyses_used ?? 0}</span>
 
                     {/* News */}
-                    <span style={{ fontFamily: HUD, fontSize: 10, color: '#00D4FF' }}>{u.news_used}</span>
+                    <span style={{ fontFamily: HUD, fontSize: 10, color: '#00D4FF' }}>{u.news_used ?? 0}</span>
+
+                    {/* Crédits restants */}
+                    <span style={{ fontFamily: HUD, fontSize: 10, color: (u.credit_balance ?? 0) <= 5 ? '#FF3A5C' : '#C9A84C', fontWeight: 700 }}>
+                      {u.credit_balance ?? '—'}
+                    </span>
+
+                    {/* Streak */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <span style={{ fontFamily: HUD, fontSize: 10, color: '#FF9500' }}>🔥 {u.current_streak ?? 0}j</span>
+                      <span style={{ fontFamily: HUD, fontSize: 7, color: 'rgba(232,244,248,0.3)' }}>XP {u.total_xp ?? 0}</span>
+                    </div>
+
+                    {/* Dernière activité */}
+                    <span style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 11, color: 'rgba(232,244,248,0.5)' }}>
+                      {u.last_active_date ? new Date(u.last_active_date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) : '—'}
+                    </span>
 
                     {/* Statut */}
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>

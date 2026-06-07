@@ -22,21 +22,34 @@ export async function GET(req: NextRequest) {
   const offset = (page - 1) * limit
 
   let query = supabaseAdmin
-    .from('profiles')
+    .from('user_activity_summary')
     .select(`
-      id, public_id, full_name, email, user_plan, is_admin, suspended,
-      analyses_used, news_used, locale, currency,
-      notifications_push, created_at, updated_at,
-      subscriptions(status, amount, current_period_end)
+      id, full_name, user_plan, analyses_used, news_used,
+      credit_balance, current_streak, longest_streak, total_xp,
+      last_active_date, total_analyses, total_journal_entries
     `, { count: 'exact' })
+    .order('last_active_date', { ascending: false, nullsFirst: false })
+    .range(offset, offset + limit - 1)
+
+  // Récupérer aussi email, is_admin, suspended depuis profiles
+  const { data: profiles } = await supabaseAdmin
+    .from('profiles')
+    .select('id, public_id, email, is_admin, suspended, locale, currency, notifications_push, created_at, updated_at, subscriptions(status, amount, current_period_end)')
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
 
-  if (search) query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`)
+  if (search) query = query.or(`full_name.ilike.%${search}%`)
   if (plan && plan !== 'all') query = query.eq('user_plan', plan)
 
-  const { data: users, count, error } = await query
+  const { data: activity, count, error } = await query
   if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+
+  // Fusionner les deux sources
+  const profilesMap = new Map((profiles ?? []).map(p => [p.id, p]))
+  const users = (activity ?? []).map(a => ({
+    ...a,
+    ...(profilesMap.get(a.id) ?? {}),
+  }))
 
   return NextResponse.json({
     success: true,
