@@ -4,6 +4,8 @@
 // ============================================================
 import { useState, useEffect, useCallback } from 'react'
 import Sidebar from '@/components/dashboard/Sidebar'
+import TopBar from '@/components/dashboard/TopBar'
+import { supabasePublic } from '@/lib/supabase'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -92,6 +94,18 @@ export default function CalculatorPage() {
   const [tp,         setTp]         = useState('')
   const [copied,     setCopied]     = useState(false)
 
+  // Profil pour TopBar (navigation mobile)
+  const [profile, setProfile] = useState<Record<string,unknown>|null>(null)
+  const [locale,  setLocale]  = useState('fr')
+
+  useEffect(() => {
+    supabasePublic.auth.getSession().then(({ data: { session } }) => {
+      if (!session?.user) return
+      supabasePublic.from('profiles').select('*').eq('id', session.user.id).single()
+        .then(({ data }) => { if (data) { setProfile(data); setLocale((data.locale as string) || 'fr') } })
+    })
+  }, [])
+
   // Résultats calculés
   const [result, setResult] = useState({
     riskAmount: 0, lotSize: 0, slPips: 0,
@@ -146,6 +160,7 @@ export default function CalculatorPage() {
     <div style={{ display:'flex', minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY }}>
       <Sidebar active="calculator" />
       <main style={{ flex:1, padding:'1.5rem 1rem', maxWidth:640, margin:'0 auto', width:'100%' }}>
+        <TopBar locale={locale} profile={profile} />
 
         {/* Header */}
         <div style={{ marginBottom:'1.5rem' }}>
