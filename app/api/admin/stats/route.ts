@@ -62,6 +62,13 @@ export async function GET(req: NextRequest) {
 
     const mrr_total_xof = Number(stats?.mrr_pro_xof ?? 0) + Number(stats?.mrr_elite_xof ?? 0)
 
+    // Utilisateurs en ligne (actifs dans les 10 dernières minutes)
+    const { count: online_count } = await supabaseAdmin
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+      .gt('last_seen_at', new Date(Date.now() - 10 * 60 * 1000).toISOString())
+      .eq('is_admin', false)
+
     return NextResponse.json({
       success: true,
       data: {
@@ -75,6 +82,7 @@ export async function GET(req: NextRequest) {
         analyses_24h:         stats?.analyses_24h ?? 0,
         total_news_signals:   stats?.total_news_signals ?? 0,
         active_subscriptions: stats?.active_subscriptions ?? 0,
+        online_count:         online_count ?? 0,
         mrr_total_xof,
         push_subscribers:     stats?.push_subscribers ?? 0,
         growth,

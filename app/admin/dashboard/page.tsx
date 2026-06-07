@@ -22,7 +22,7 @@ interface Stats {
   total_news_signals:number
   active_subscriptions:number
   mrr_total_xof:     number
-  push_subscribers:  number
+  online_count:      number
   growth:            { day: string; count: number }[]
   top_pairs:         { pair: string; count: number }[]
   analyses_per_day:  { day: string; count: number }[]
@@ -45,6 +45,7 @@ interface User {
   last_active_date?:   string
   total_analyses?:     number
   total_journal_entries?: number
+  is_online?:          boolean
   created_at:          string
   subscriptions:       { status: string; amount: number }[]
 }
@@ -432,6 +433,7 @@ export default function AdminDashboard() {
               {/* Métriques principales */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
                 <MetricCard label="UTILISATEURS TOTAL"  value={stats.total_users}        sub={`+${stats.new_users_24h} aujourd'hui`} icon="ti-users"        color="#00D4FF" />
+                <MetricCard label="EN LIGNE MAINTENANT" value={stats.online_count ?? 0}  sub="Actifs < 10 min"               icon="ti-activity"    color="#00FFB2" />
                 <MetricCard label="ABONNÉS ACTIFS"       value={stats.active_subscriptions} sub={`${stats.pro_users} Pro · ${stats.elite_users} Elite`}     icon="ti-crown"       color="#00FFB2" />
                 <MetricCard label="MRR"                  value={fXOF(stats.mrr_total_xof)}  sub="Revenus mensuels récurrents"                                icon="ti-coin"        color="#C9A84C" />
                 <MetricCard label="PUSH SUBSCRIBERS"    value={stats.push_subscribers}     sub="Alertes activées"                                           icon="ti-bell"        color="#FF3A5C" />
@@ -646,12 +648,18 @@ export default function AdminDashboard() {
 
                     {/* Statut */}
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      {u.is_online && (
+                        <span style={{ display:'flex', alignItems:'center', gap:3, fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: '#00FFB2', background: 'rgba(0,255,178,0.08)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 3, padding: '2px 6px' }}>
+                          <span style={{ width:5, height:5, borderRadius:'50%', background:'#00FFB2', boxShadow:'0 0 5px #00FFB2', animation:'pulse 2s infinite', display:'inline-block' }} />
+                          EN LIGNE
+                        </span>
+                      )}
                       {u.is_admin && (
                         <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: '#FF3A5C', background: 'rgba(255,58,92,0.1)', border: '1px solid rgba(255,58,92,0.2)', borderRadius: 3, padding: '2px 6px' }}>ADMIN</span>
                       )}
                       {u.suspended ? (
                         <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: '#FF8800', background: 'rgba(255,136,0,0.1)', border: '1px solid rgba(255,136,0,0.2)', borderRadius: 3, padding: '2px 6px' }}>SUSPENDU</span>
-                      ) : !u.is_admin && (
+                      ) : !u.is_admin && !u.is_online && (
                         <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: '#00E676', background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.15)', borderRadius: 3, padding: '2px 6px' }}>ACTIF</span>
                       )}
                     </div>

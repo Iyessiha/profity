@@ -21,5 +21,8 @@ export async function POST(req: NextRequest) {
   const { data, error } = await admin.rpc('update_streak_and_reward', { p_user_id: user.id })
   if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 })
 
+  // Mettre à jour last_seen_at à chaque connexion (pour le badge "en ligne" dans l'admin)
+  await admin.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('id', user.id)
+
   return NextResponse.json({ success: true, ...(data as object) })
 }
