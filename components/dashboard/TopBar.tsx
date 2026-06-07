@@ -104,8 +104,8 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
             {name[0]?.toUpperCase() ?? 'T'}
           </div>
           <div className="topbar-name" style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontFamily: HUD, fontSize: 9, color: 'var(--tx0)', letterSpacing: 1, whiteSpace: 'nowrap', maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis' }}>{name.toUpperCase()}</span>
-            <span style={{ fontFamily: BODY, fontSize: 10, color: 'var(--tx3)' }}>{plan.toUpperCase()}</span>
+            <span style={{ fontFamily: HUD, fontSize: 9, color: 'var(--tx0)', letterSpacing: 1, whiteSpace: 'nowrap', maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis' }}>{(name ?? '').toUpperCase()}</span>
+            <span style={{ fontFamily: BODY, fontSize: 10, color: 'var(--tx3)' }}>{(plan ?? 'free').toUpperCase()}</span>
           </div>
         </div>
       </div>
