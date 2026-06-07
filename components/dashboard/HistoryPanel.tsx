@@ -13,7 +13,7 @@ interface ChartRecord {
   id:string; pair:string; timeframe:string; direction:'LONG'|'SHORT'|'NEUTRE'
   entry:number; stop_loss:number; tp1:number; tp2?:number; tp3?:number; rr_ratio:number
   conclusion:string; market_state?:string; confidence?:string; smc_analysis?:string
-  confluence_factors?:string[]; created_at:string
+  confluence_factors?:string[]; created_at:string; trade_result?:'WIN'|'LOSS'|'PENDING'|'CANCELLED'
 }
 interface NewsRecord {
   id:string; event_title:string; country:string; direction:'LONG'|'SHORT'|'NEUTRE'
@@ -159,6 +159,13 @@ export default function HistoryPanel({ locale, userId }: Props) {
                   <div style={{ display:'flex', alignItems:'center', gap:5 }}>
                     <span style={{ width:6, height:6, borderRadius:'50%', background:dc, display:'inline-block', flexShrink:0 }} />
                     <span style={{ fontFamily:HUD, fontSize:10, fontWeight:700, color:dc }}>{dir}</span>
+                    {chart?.trade_result && (
+                      <span style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, padding:'2px 5px', borderRadius:2,
+                        background: chart.trade_result==='WIN'?'rgba(0,230,118,0.12)':chart.trade_result==='LOSS'?'rgba(220,38,38,0.12)':'rgba(255,255,255,0.05)',
+                        color: chart.trade_result==='WIN'?'#00E676':chart.trade_result==='LOSS'?'#FF3A5C':'var(--tx3)' }}>
+                        {chart.trade_result==='WIN'?'✅':chart.trade_result==='LOSS'?'❌':'⏳'}
+                      </span>
+                    )}
                   </div>
                   <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)' }}>{fmt(row.entry)}</div>
                   <div style={{ fontFamily:HUD, fontSize:11, color:'#FF3A5C', opacity:0.85 }}>{fmt(row.stop_loss)}</div>

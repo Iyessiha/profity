@@ -13,6 +13,8 @@ import WatchlistFeed from '@/components/dashboard/WatchlistFeed'
 import MarketClocks from '@/components/dashboard/MarketClocks'
 import ReferralCard from '@/components/dashboard/ReferralCard'
 import AlertsPanel from '@/components/dashboard/AlertsPanel'
+import TradingJournal from '@/components/dashboard/TradingJournal'
+import Leaderboard from '@/components/dashboard/Leaderboard'
 import Onboarding from '@/components/Onboarding'
 import StreakToast from '@/components/StreakToast'
 
@@ -145,6 +147,12 @@ export default function DashboardPage() {
 
           {/* Alertes de prix */}
           {token && <AlertsPanel token={token} plan={plan} />}
+
+          {/* Journal de trading */}
+          {token && <TradingJournal token={token} />}
+
+          {/* Classement */}
+          <Leaderboard currentUserId={user?.id} />
 
           {/* Modules */}
           <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'var(--tx2)', marginBottom: 10 }}>{locale === 'fr' ? 'ACCÈS RAPIDE' : 'QUICK ACCESS'}</div>

@@ -8,6 +8,43 @@ const BODY = "'Rajdhani', sans-serif"
 type Plan = 'free' | 'pro' | 'elite'
 const RANK: Record<Plan,number> = { free:0, pro:1, elite:2 }
 
+// Bandeau urgence dynamique
+function UrgencyBanner() {
+  const [count, setCount]   = useState(0)
+  const [secs,  setSecs]    = useState(0)
+
+  useEffect(() => {
+    // Nombre "live" de traders actifs (pseudo-aléatoire ancré sur l'heure)
+    const base = 12 + (new Date().getHours() % 8)
+    setCount(base)
+    // Compte à rebours vers la prochaine heure pile
+    const tick = () => {
+      const now = new Date()
+      setSecs(3600 - (now.getMinutes()*60 + now.getSeconds()))
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  const m = String(Math.floor(secs / 60)).padStart(2,'0')
+  const s = String(secs % 60).padStart(2,'0')
+
+  return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, background:'linear-gradient(135deg,rgba(220,38,38,0.08),rgba(255,58,92,0.05))', border:'1px solid rgba(220,38,38,0.2)', borderRadius:10, padding:'12px 20px', marginBottom:'2rem', flexWrap:'wrap', gap:12 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+        <span style={{ width:8, height:8, borderRadius:'50%', background:'#FF3A5C', animation:'pulse 1s infinite', display:'inline-block' }} />
+        <span style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'#FF3A5C' }}>🔥 {count} traders ont rejoint Pro cette semaine</span>
+      </div>
+      <div style={{ height:16, width:1, background:'rgba(255,255,255,0.1)' }} />
+      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+        <span style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'var(--tx3)' }}>Prochaine recharge crédits dans</span>
+        <span style={{ fontFamily:HUD, fontSize:13, fontWeight:900, color:'#C9A84C' }}>{m}:{s}</span>
+      </div>
+    </div>
+  )
+}
+
 const PLANS = [
   {
     key: 'free' as Plan, name: 'STARTER', price: '0', period: 'pour toujours',
@@ -159,6 +196,9 @@ export default function PricingPage() {
             1 crédit = 1 analyse chart ou 1 signal news. Choisissez votre plan, achetez des crédits supplémentaires si besoin.
           </p>
         </div>
+
+        {/* Bandeau urgence */}
+        <UrgencyBanner />
 
         {/* Comment fonctionnent les crédits */}
         <div style={{ background:'color-mix(in srgb, var(--ac) 5%, var(--bg1))', border:'1px solid color-mix(in srgb, var(--ac) 20%, transparent)', borderRadius:12, padding:'1.5rem', marginBottom:'2rem' }}>
