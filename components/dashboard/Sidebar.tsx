@@ -15,8 +15,9 @@ const NAV = [
   { key: 'chart',      icon: 'ti-chart-candle',      fr: 'ANALYSE IA',     en: 'AI ANALYSIS',  href: '/analysis',  badge: null },
   { key: 'calendar',   icon: 'ti-news',               fr: 'ANNONCES MACRO', en: 'MACRO NEWS',   href: '/news',      badge: null },
   { key: 'history',    icon: 'ti-history',            fr: 'HISTORIQUE',     en: 'HISTORY',      href: '/history',   badge: null },
-  { key: 'journal',    icon: 'ti-notebook',           fr: 'JOURNAL',        en: 'JOURNAL',      href: '/journal',   badge: 'NEW' },
-  { key: 'referral',   icon: 'ti-users-plus',         fr: 'PARRAINAGE',     en: 'REFERRAL',     href: '/referral',  badge: null },
+  { key: 'journal',     icon: 'ti-notebook',     fr: 'JOURNAL',      en: 'JOURNAL',     href: '/journal',     badge: 'NEW' },
+  { key: 'calculator', icon: 'ti-calculator',   fr: 'CALCULATEUR',  en: 'CALCULATOR',  href: '/calculator',  badge: null  },
+  { key: 'referral',   icon: 'ti-users-plus',   fr: 'PARRAINAGE',   en: 'REFERRAL',    href: '/referral',    badge: null  },
 ] as const
 
 const PLAN_COLORS: Record<string, string> = { free: '#888', pro: '#00B890', elite: '#92671A' }
