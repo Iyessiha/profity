@@ -118,8 +118,22 @@ export default function AnalysisPage() {
               <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'var(--ac2)', marginBottom:4 }}>MODULE</div>
               <h1 style={{ fontFamily:HUD, fontSize:'clamp(18px,4vw,26px)', fontWeight:900, color:'var(--tx0)' }}>ANALYSE <span style={{ color:'var(--ac)' }}>IA</span></h1>
             </div>
-            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-              {isPremium && <div style={{ background:'color-mix(in srgb, var(--ac) 8%, transparent)', border:'1px solid var(--bd2)', borderRadius:6, padding:'6px 12px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)' }}>✦ SMC ACTIVÉ</div>}
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
+              {isPremium ? (
+                /* SMC actif — Pro/Elite */
+                <div style={{ display:'flex', alignItems:'center', gap:6, background:'color-mix(in srgb, var(--ac) 8%, transparent)', border:'1px solid var(--bd2)', borderRadius:6, padding:'6px 12px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)' }}>
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3H12l-2.5 1.8 1 3L8 8.5l-2.5 1.3 1-3L4 5h2.5z" fill="var(--ac)"/></svg>
+                  SMC ACTIVÉ
+                </div>
+              ) : (
+                /* SMC verrouillé — Free */
+                <a href="/pricing" style={{ display:'flex', alignItems:'center', gap:6, background:'rgba(201,168,76,0.08)', border:'1px solid rgba(201,168,76,0.25)', borderRadius:6, padding:'6px 12px', textDecoration:'none', cursor:'pointer', transition:'all .2s' }}
+                  title="Passer Pro pour activer l'analyse SMC">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#C9A84C" strokeWidth="1.8"/><path d="M8 11V7a4 4 0 1 1 8 0v4" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                  <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#C9A84C' }}>SMC</span>
+                  <span style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'rgba(201,168,76,0.6)', background:'rgba(201,168,76,0.1)', borderRadius:2, padding:'1px 5px' }}>PRO</span>
+                </a>
+              )}
               <button onClick={() => setOnboarding(true)} style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx2)', background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:4, padding:'6px 12px', cursor:'pointer' }}>
                 <i className="ti ti-settings" style={{ marginRight:4, fontSize:12 }} />PRÉFÉRENCES
               </button>
@@ -161,9 +175,17 @@ export default function AnalysisPage() {
               <i className="ti ti-sparkles" style={{ fontSize:20, color:'var(--ac)' }} />
               <div style={{ fontFamily:HUD, fontSize:12, letterSpacing:1, color:'var(--tx0)' }}>SIGNAL IA</div>
               <div style={{ flex:1 }} />
-              <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'4px 10px', borderRadius:3, border:'1px solid var(--bd)', color:isPremium?'var(--ac)':'var(--tx3)', background:'color-mix(in srgb, var(--ac) 5%, transparent)' }}>
-                {plan === 'elite' ? '🔷 ELITE · SMC' : plan === 'pro' ? '⬛ PRO · SMC' : '⬜ FREE · BASIQUE'}
-              </div>
+              {isPremium ? (
+                <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'4px 10px', borderRadius:3, border:'1px solid var(--bd2)', color:'var(--ac)', background:'color-mix(in srgb, var(--ac) 8%, transparent)', display:'flex', alignItems:'center', gap:5 }}>
+                  {plan === 'elite' ? '💎 ELITE · SMC' : '⭐ PRO · SMC'}
+                </div>
+              ) : (
+                <a href="/pricing" style={{ display:'flex', alignItems:'center', gap:6, fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'4px 10px', borderRadius:3, border:'1px solid rgba(201,168,76,0.3)', color:'rgba(201,168,76,0.8)', background:'rgba(201,168,76,0.06)', textDecoration:'none' }}>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#C9A84C" strokeWidth="2"/><path d="M8 11V7a4 4 0 1 1 8 0v4" stroke="#C9A84C" strokeWidth="2" strokeLinecap="round"/></svg>
+                  FREE · BASIQUE
+                  <span style={{ color:'rgba(201,168,76,0.5)', marginLeft:2 }}>→ SMC</span>
+                </a>
+              )}
             </div>
 
             {/* Quota alert */}
