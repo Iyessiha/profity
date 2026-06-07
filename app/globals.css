@@ -36,21 +36,62 @@
   --bg2: #F5F8FD;
   --bg3: #EBF0F8;
   --tx0: #0A1929;
-  --tx1: rgba(10,25,41,0.78);
-  --tx2: rgba(10,25,41,0.5);
-  --tx3: rgba(10,25,41,0.28);
+  --tx1: rgba(10,25,41,0.90);
+  --tx2: rgba(10,25,41,0.68);
+  --tx3: rgba(10,25,41,0.52);
   --ac:  #00875A;
   --ac2: #0066A6;
   --ac3: #8B6800;
   --red: #D32F2F;
   --ora: #C66900;
   --ok:  #1B8A48;
-  --bd:  rgba(10,25,41,0.08);
+  --bd:  rgba(10,25,41,0.10);
   --bd1: rgba(0,135,90,0.2);
   --bd2: rgba(0,135,90,0.35);
   --sh: rgba(10,25,41,0.1);
   --scr: rgba(0,135,90,0.3);
   --card-glow: rgba(0,135,90,0.03);
+}
+
+/* ── Light mode — override rgba blanc codés en dur ──────────── */
+/* Ces règles corrigent les inline-styles avec rgba(232,244,248) */
+[data-theme="light"] .app-main,
+[data-theme="light"] .admin-main {
+  color: #0A1929;
+}
+
+/* Textes génériques en mode clair */
+[data-theme="light"] p,
+[data-theme="light"] span,
+[data-theme="light"] div,
+[data-theme="light"] label,
+[data-theme="light"] td,
+[data-theme="light"] th {
+  color: inherit;
+}
+
+/* Sidebar en mode clair */
+[data-theme="light"] .sidebar-nav-item {
+  color: rgba(10,25,41,0.55) !important;
+}
+[data-theme="light"] .sidebar-nav-item.active,
+[data-theme="light"] .sidebar-nav-item:hover {
+  color: var(--ac) !important;
+}
+
+/* Tables historique */
+[data-theme="light"] .table-scroll {
+  color: #0A1929;
+}
+
+/* Forcé : textes qui utilisent les couleurs E8F4F8 (blanc) en inline */
+[data-theme="light"] [style*="232,244,248"] {
+  color: rgba(10,25,41,0.68);
+}
+
+/* QuotaBar */
+[data-theme="light"] .quota-bar {
+  border-bottom: 1px solid rgba(10,25,41,0.08);
 }
 
 /* ── Reset & base ──────────────────────────────────────────── */

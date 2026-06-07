@@ -52,11 +52,11 @@ function DetailModal({ item, type, locale, onClose }: { item:ChartRecord|NewsRec
         {/* Bouton fermer flottant */}
         <button
           onClick={onClose}
-          style={{ position:'sticky', top:0, float:'right', zIndex:10, background:'rgba(6,9,15,0.9)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'50%', width:32, height:32, cursor:'pointer', color:'rgba(232,244,248,0.6)', fontSize:16, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:8 }}
+          style={{ position:'sticky', top:0, float:'right', zIndex:10, background:'rgba(6,9,15,0.9)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'50%', width:32, height:32, cursor:'pointer', color:'var(--tx2)', fontSize:16, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:8 }}
         >✕</button>
 
         {/* Date en haut */}
-        <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.3)', marginBottom:10, clear:'both' }}>
+        <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', marginBottom:10, clear:'both' }}>
           {fmtDate(item.created_at, locale)}
         </div>
 
