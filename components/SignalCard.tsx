@@ -28,11 +28,11 @@ function PriceLevelsSVG({ signal: s }: { signal: ChartSignal }) {
   const lines: { price:number; label:string; color:string; dashed:boolean }[] = []
   if (s.entry)          lines.push({ price:s.entry,         label:'ENTRÉE', color:'#00FFB2', dashed:false })
   if (s.stop_loss)      lines.push({ price:s.stop_loss,     label:'STOP',   color:'#FF3A5C', dashed:false })
-  if (s.tp1)            lines.push({ price:s.tp1,           label:'TP1',    color:'#00FFB2', dashed:true })
-  if (s.tp2)            lines.push({ price:s.tp2!,          label:'TP2',    color:'#00D4FF', dashed:true })
-  if (s.tp3)            lines.push({ price:s.tp3!,          label:'TP3',    color:'#7B61FF', dashed:true })
+  if (s.tp1)            lines.push({ price:s.tp1,           label:'TP 1',   color:'#00FFB2', dashed:true })
+  if (s.tp2)            lines.push({ price:s.tp2!,          label:'TP 2',   color:'#00D4FF', dashed:true })
+  if (s.tp3)            lines.push({ price:s.tp3!,          label:'TP 3',   color:'#7B61FF', dashed:true })
   if (s.bos_level)      lines.push({ price:s.bos_level!,    label:'BOS',    color:'#00D4FF', dashed:true })
-  if (s.choch_level)    lines.push({ price:s.choch_level!,  label:'CHOCH',  color:'#FF6B35', dashed:true })
+  if (s.choch_level)    lines.push({ price:s.choch_level!,  label:'CHoCH',  color:'#FF6B35', dashed:true })
   if (s.liquidity_high) lines.push({ price:s.liquidity_high!,label:'BSL',   color:'#FF3A5C', dashed:true })
   if (s.liquidity_low)  lines.push({ price:s.liquidity_low!, label:'SSL',   color:'#00FFB2', dashed:true })
 
@@ -69,13 +69,16 @@ function PriceLevelsSVG({ signal: s }: { signal: ChartSignal }) {
         {/* Lignes niveaux */}
         {lines.map((l,i)=>{
           const y=toY(l.price); if(y<0||y>H)return null
+          const lw = l.label.length * 6 + 8
           return (
             <g key={i}>
               <line x1={0} y1={y} x2={W} y2={y} stroke={l.color} strokeWidth={1.5} strokeOpacity={0.85}
-                strokeDasharray={l.dashed?'5,3':undefined}/>
-              <rect x={2} y={y-9} width={l.label.length*5.5+6} height={11} rx={2} fill={l.color} fillOpacity={0.1}/>
-              <text x={5} y={y} dominantBaseline="middle" fill={l.color} fontSize={8} fontFamily="Orbitron,monospace">{l.label}</text>
-              <text x={W-4} y={y} dominantBaseline="middle" textAnchor="end" fill={l.color} fontSize={8} fontFamily="Orbitron,monospace" opacity={0.85}>{fmtP(l.price)}</text>
+                strokeDasharray={l.dashed?'6,3':undefined}/>
+              {/* Badge label gauche */}
+              <rect x={2} y={y-9} width={lw} height={12} rx={2} fill={l.color} fillOpacity={0.15}/>
+              <text x={6} y={y} dominantBaseline="middle" fill={l.color} fontSize={9} fontFamily="Orbitron,monospace" fontWeight="bold">{l.label}</text>
+              {/* Prix côté droit */}
+              <text x={W-4} y={y} dominantBaseline="middle" textAnchor="end" fill={l.color} fontSize={9} fontFamily="Orbitron,monospace" opacity={0.9}>{fmtP(l.price)}</text>
             </g>
           )
         })}
