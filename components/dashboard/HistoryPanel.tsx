@@ -166,6 +166,17 @@ export default function HistoryPanel({ locale, userId }: Props) {
                         {chart.trade_result==='WIN'?'✅':chart.trade_result==='LOSS'?'❌':'⏳'}
                       </span>
                     )}
+                    {chart?.trade_result === 'WIN' && (
+                      <a
+                        href={`/share/${chart.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
+                        style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, padding:'2px 6px', borderRadius:2, background:'rgba(0,255,178,0.08)', color:'#00FFB2', border:'1px solid rgba(0,255,178,0.2)', textDecoration:'none', display:'inline-flex', alignItems:'center', gap:3 }}>
+                        <svg width="8" height="8" viewBox="0 0 16 16" fill="none"><path d="M10 2h4v4M14 2l-7 7M7 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9" stroke="#00FFB2" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                        PARTAGER
+                      </a>
+                    )}
                   </div>
                   <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)' }}>{fmt(row.entry)}</div>
                   <div style={{ fontFamily:HUD, fontSize:11, color:'#FF3A5C', opacity:0.85 }}>{fmt(row.stop_loss)}</div>
