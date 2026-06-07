@@ -12,6 +12,7 @@ import GamificationBar from '@/components/dashboard/GamificationBar'
 import WatchlistFeed from '@/components/dashboard/WatchlistFeed'
 import MarketClocks from '@/components/dashboard/MarketClocks'
 import ReferralCard from '@/components/dashboard/ReferralCard'
+import AlertsPanel from '@/components/dashboard/AlertsPanel'
 import Onboarding from '@/components/Onboarding'
 import StreakToast from '@/components/StreakToast'
 
@@ -141,6 +142,9 @@ export default function DashboardPage() {
 
           {/* Parrainage */}
           {token && <ReferralCard token={token} />}
+
+          {/* Alertes de prix */}
+          {token && <AlertsPanel token={token} plan={plan} />}
 
           {/* Modules */}
           <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'var(--tx2)', marginBottom: 10 }}>{locale === 'fr' ? 'ACCÈS RAPIDE' : 'QUICK ACCESS'}</div>
