@@ -36,6 +36,13 @@ export const PLAN_PRICES: Record<string, Record<string, number>> = {
   MAD: { free: 0, pro: 450,   elite: 900   },
 }
 
+// ─── PACKS DE CRÉDITS ────────────────────────────────────────
+export const CREDIT_PACK_PRICES: Record<string, { credits: number; amount: number; label: string }> = {
+  starter:     { credits: 30,  amount: 2000, label: 'Pack Starter — 30 crédits'      },
+  standard:    { credits: 80,  amount: 4500, label: 'Pack Standard — 80 crédits'     },
+  pro_oneshot: { credits: 200, amount: 9900, label: 'Pack Pro One-shot — 200 crédits' },
+}
+
 // ============================================================
 // Extraire un message d'erreur lisible de la réponse GeniusPay
 // Format doc : { success:false, error:{ code, message } }
