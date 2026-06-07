@@ -61,7 +61,22 @@ export default function LoginPage() {
       return
     }
 
-    if (data.user) await goToDashboard(data.user.id)
+    if (data.user) {
+      // Appliquer le code parrain en attente (stocké avant la confirmation email)
+      const pendingRef = localStorage.getItem('px_ref')
+      if (pendingRef && data.session?.access_token) {
+        try {
+          await fetch('/api/referral', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session.access_token}` },
+            body: JSON.stringify({ code: pendingRef }),
+          })
+        } catch {} finally {
+          localStorage.removeItem('px_ref')
+        }
+      }
+      await goToDashboard(data.user.id)
+    }
   }
 
   const handleSignup = async () => {
@@ -72,7 +87,7 @@ export default function LoginPage() {
 
     const { data: signUpData, error: e } = await supabasePublic.auth.signUp({
       email, password,
-      options: { data: { full_name: name || email.split('@')[0] } },
+      options: { data: { full_name: name || email.split('@')[0], ref_code: refCode || localStorage.getItem('px_ref') || '' } },
     })
 
     if (e) {
