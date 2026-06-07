@@ -86,7 +86,14 @@ export default function AnalysisPage() {
       const json = await res.json()
       if (json.code === 'QUOTA_EXCEEDED') setQuotaErr(true)
       else if (!json.success) setError(json.error || 'Erreur analyse')
-      else setSignal(json.data)
+      else {
+        setSignal(json.data)
+        // Notifier CreditBalance de se rafraîchir
+        window.dispatchEvent(new Event('creditUpdate'))
+        // Mettre à jour le solde local
+        fetch('/api/credits', { headers: { Authorization: `Bearer ${token}` } })
+          .then(r => r.json()).then(j => { if (j.success) setBalance(j.balance) }).catch(() => {})
+      }
     } catch { setError('Erreur réseau') }
     setAnalyzing(false)
   }
