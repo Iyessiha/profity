@@ -1,307 +1,297 @@
 // ============================================================
-// PROFITYX — SignalCard v2 (style landing page mockup)
+// PROFITYX — SignalCard v3 (SMC complet)
 // ============================================================
 'use client'
-import { useState } from 'react'
-import type { ChartSignal, NewsSignal } from '@/types'
-
-type Signal = ChartSignal | NewsSignal
-interface Props { signal: Signal; type: 'chart' | 'news'; creditBalance?: number; plan?: string }
+import type { ChartSignal, NewsSignal, OrderType } from '@/types'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 
-const DIR_CFG = {
-  LONG:   { color: '#00FFB2', bg: 'rgba(0,255,178,0.1)',  border: 'rgba(0,255,178,0.3)'  },
-  SHORT:  { color: '#FF3A5C', bg: 'rgba(255,58,92,0.1)',  border: 'rgba(255,58,92,0.3)'  },
-  NEUTRE: { color: '#C9A84C', bg: 'rgba(201,168,76,0.1)', border: 'rgba(201,168,76,0.3)' },
+// ── Config order types ─────────────────────────────────────
+const ORDER_TYPE_CFG: Record<OrderType, { label:string; color:string; bg:string; icon:string; desc:string }> = {
+  BUY_LIMIT:   { label:'BUY LIMIT',   color:'#00FFB2', bg:'rgba(0,255,178,0.1)',  icon:'⬇️', desc:'Retour sur zone attendu' },
+  SELL_LIMIT:  { label:'SELL LIMIT',  color:'#FF3A5C', bg:'rgba(255,58,92,0.1)',  icon:'⬆️', desc:'Retour sur zone attendu' },
+  BUY_STOP:    { label:'BUY STOP',    color:'#00D4FF', bg:'rgba(0,212,255,0.1)',  icon:'⬆️', desc:'Cassure confirmation' },
+  SELL_STOP:   { label:'SELL STOP',   color:'#FF6B35', bg:'rgba(255,107,53,0.1)', icon:'⬇️', desc:'Cassure confirmation' },
+  MARKET_BUY:  { label:'MARKET BUY',  color:'#00FFB2', bg:'rgba(0,255,178,0.08)', icon:'▲',  desc:'Entrée immédiate' },
+  MARKET_SELL: { label:'MARKET SELL', color:'#FF3A5C', bg:'rgba(255,58,92,0.08)', icon:'▼',  desc:'Entrée immédiate' },
+  WAIT:        { label:'ATTENDRE',    color:'#C9A84C', bg:'rgba(201,168,76,0.08)',icon:'⏳', desc:'Setup insuffisant' },
 }
 
-function fmt(n: number | null | undefined): string {
-  if (n == null || isNaN(n as number)) return '—'
-  return (n as number) > 1000
-    ? (n as number).toLocaleString('fr-FR', { maximumFractionDigits: 2 })
-    : (n as number).toFixed(5)
+const CONFIDENCE_CFG = {
+  HIGH:   { color:'#00FFB2', label:'ÉLEVÉE',  stars:'●●●' },
+  MEDIUM: { color:'#C9A84C', label:'MOYENNE', stars:'●●○' },
+  LOW:    { color:'#FF3A5C', label:'FAIBLE',  stars:'●○○' },
 }
 
-function ConfidenceBar({ value }: { value?: string }) {
-  if (!value) return null
-  const pct = /ELEV|HIGH/i.test(value) ? 87 : /MOY|MED/i.test(value) ? 62 : 38
-  const col = pct >= 75 ? '#00FFB2' : pct >= 50 ? '#C9A84C' : '#FF3A5C'
-  return (
-    <div style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 16px', borderTop:'1px solid rgba(0,255,178,0.06)' }}>
-      <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.35)', whiteSpace:'nowrap' }}>CONFIANCE IA</span>
-      <div style={{ flex:1, height:5, background:'rgba(255,255,255,0.06)', borderRadius:3 }}>
-        <div style={{ width:`${pct}%`, height:'100%', background:`linear-gradient(90deg, ${col}, ${col}99)`, borderRadius:3, transition:'width .8s ease' }} />
-      </div>
-      <span style={{ fontFamily:HUD, fontSize:12, fontWeight:900, color:col }}>{pct}%</span>
-    </div>
-  )
+function fmt(n: number | null | undefined, dec?: number): string {
+  if (n == null || n === 0) return '—'
+  const decimals = dec ?? (n > 100 ? 2 : 5)
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+}
+function rr(n: number | null | undefined): string {
+  if (!n) return '—'
+  return `1 : ${n.toFixed(2)}`
 }
 
-function MiniChart({ direction }: { direction: string }) {
-  const isLong  = direction === 'LONG'
-  const lineClr = '#00FFB2'
-  // Chemin haussier ou baissier selon direction
-  const path = isLong
-    ? 'M0,62 L32,55 L64,58 L96,44 L128,40 L160,46 L192,32 L224,26 L256,32 L288,18 L320,22 L352,14 L380,8'
-    : 'M0,8  L32,14 L64,10 L96,22 L128,28 L160,20 L192,36 L224,42 L256,36 L288,50 L320,46 L352,54 L380,62'
-  const fill = isLong
-    ? 'M0,62 L32,55 L64,58 L96,44 L128,40 L160,46 L192,32 L224,26 L256,32 L288,18 L320,22 L352,14 L380,8 L380,72 L0,72Z'
-    : 'M0,8  L32,14 L64,10 L96,22 L128,28 L160,20 L192,36 L224,42 L256,36 L288,50 L320,46 L352,54 L380,62 L380,0 L0,0Z'
-  const entryY = isLong ? 26 : 46
-  const slY    = isLong ? 46 : 20
-  const tpY    = isLong ? 8  : 60
-  const candles = isLong
-    ? [[32,51,59],[96,40,48],[160,42,50],[224,22,30],[288,14,22],[352,10,18]]
-    : [[32,10,18],[96,18,28],[160,16,26],[224,38,46],[288,44,52],[352,50,58]]
-  const reds = isLong
-    ? [[64,54,61],[128,36,44],[256,28,36]]
-    : [[64,8,14],[128,24,32],[256,32,40]]
-
-  return (
-    <div style={{ background:'rgba(0,0,0,0.25)', border:'1px solid rgba(0,255,178,0.07)', borderRadius:10, padding:'10px 12px', marginBottom:12 }}>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
-        <span style={{ fontFamily:HUD, fontSize:8, color:'#00FFB2', letterSpacing:1 }}>CHART IA</span>
-        <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-          <span style={{ width:6, height:6, borderRadius:'50%', background:'#00E676', display:'inline-block', animation:'pxPulse 1.5s infinite' }} />
-          <span style={{ fontFamily:HUD, fontSize:7, color:'rgba(232,244,248,0.4)' }}>LIVE</span>
-        </div>
-      </div>
-      <svg width="100%" height="72" viewBox="0 0 380 72" preserveAspectRatio="none">
-        {[18,36,54].map(y => <line key={y} x1="0" y1={y} x2="380" y2={y} stroke="rgba(255,255,255,0.04)" strokeWidth="1"/>)}
-        <defs>
-          <linearGradient id={`cf${direction}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={lineClr} stopOpacity={isLong?0.15:0.08}/>
-            <stop offset="100%" stopColor={lineClr} stopOpacity="0"/>
-          </linearGradient>
-        </defs>
-        <path d={fill} fill={`url(#cf${direction})`}/>
-        <path d={path} stroke={lineClr} strokeWidth="2" fill="none" strokeLinecap="round"/>
-        {candles.map(([x,y1,y2],i) => <line key={'g'+i} x1={x} y1={y1} x2={x} y2={y2} stroke="#00FFB2" strokeWidth="5" strokeLinecap="round" opacity="0.85"/>)}
-        {reds.map(([x,y1,y2],i) => <line key={'r'+i} x1={x} y1={y1} x2={x} y2={y2} stroke="#FF3A5C" strokeWidth="5" strokeLinecap="round" opacity="0.85"/>)}
-        {/* Lignes TP / ENTRÉE / SL */}
-        <line x1="180" y1={tpY}    x2="380" y2={tpY}    stroke="#00D4FF" strokeWidth="1" strokeDasharray="4,3"/>
-        <line x1="180" y1={entryY} x2="380" y2={entryY} stroke="#00FFB2" strokeWidth="1.2" strokeDasharray="4,3"/>
-        <line x1="180" y1={slY}    x2="380" y2={slY}    stroke="#FF3A5C" strokeWidth="1" strokeDasharray="4,3"/>
-        <text x="310" y={tpY-3}    fontFamily="monospace" fontSize="7.5" fill="#00D4FF">TP</text>
-        <text x="296" y={entryY-3} fontFamily="monospace" fontSize="7.5" fill="#00FFB2">ENTRÉE</text>
-        <text x="316" y={slY-3}    fontFamily="monospace" fontSize="7.5" fill="#FF3A5C">SL</text>
-      </svg>
-      <style>{`@keyframes pxPulse{0%,100%{opacity:1}50%{opacity:.3}}`}</style>
-    </div>
-  )
+interface Props {
+  signal: ChartSignal | NewsSignal
+  type?: 'chart' | 'news'
+  locale?: string
 }
 
-export default function SignalCard({ signal, type, creditBalance, plan = 'free' }: Props) {
-  const dir    = signal.direction in DIR_CFG ? signal.direction : 'NEUTRE'
-  const cfg    = DIR_CFG[dir as keyof typeof DIR_CFG]
-  const pair   = type === 'chart' ? (signal as ChartSignal).pair : (signal as NewsSignal).pair_cible
-  const tf     = type === 'chart' ? (signal as ChartSignal).timeframe : null
-  const cs     = type === 'chart' ? signal as ChartSignal : null
-  const concl  = cs?.conclusion ?? (signal as NewsSignal).interpretation
-  const rr     = signal.rr_ratio
-  const isPro  = plan === 'pro' || plan === 'elite'
-  const [showText, setShowText] = useState(false)
+export default function SignalCard({ signal, type = 'chart', locale = 'fr' }: Props) {
+  const isChart  = type === 'chart'
+  const cs       = isChart ? signal as ChartSignal : null
+  const ns       = !isChart ? signal as NewsSignal : null
 
-  const signalText = [
-    `${dir === 'LONG' ? '🟢' : dir === 'SHORT' ? '🔴' : '🟡'} SIGNAL PROFITYX — ${dir} ${pair || ''}${tf ? ` (${tf})` : ''}`,
-    '',
-    `🎯 ENTRÉE   : ${fmt(signal.entry)}`,
-    `🛑 STOP     : ${fmt(signal.stop_loss)}`,
-    `✅ TP1      : ${fmt(signal.tp1)}`,
-    ...(signal.tp2 ? [`✅ TP2      : ${fmt(signal.tp2)}`] : []),
-    ...(signal.tp3 ? [`✅ TP3      : ${fmt(signal.tp3)}`] : []),
-    '',
-    `⚖️  R/R      : 1:${rr ?? '—'}`,
-    ...(cs?.confidence ? [`📊 Confiance : ${cs.confidence}`] : []),
-    ...(concl ? ['', `📝 ${concl.slice(0, 200)}${(concl.length > 200) ? '…' : ''}`] : []),
-    '',
-    `🤖 Généré par ProfityX — profity-x.com`,
-  ].join('\n')
+  const dir      = signal.direction
+  const dirColor = dir === 'LONG' ? '#00FFB2' : dir === 'SHORT' ? '#FF3A5C' : '#C9A84C'
+  const dirBg    = dir === 'LONG' ? 'rgba(0,255,178,0.08)' : dir === 'SHORT' ? 'rgba(255,58,92,0.08)' : 'rgba(201,168,76,0.08)'
+
+  const orderCfg = cs?.order_type ? ORDER_TYPE_CFG[cs.order_type] : null
+  const confCfg  = cs?.confidence ? CONFIDENCE_CFG[cs.confidence] : null
+  const pair     = cs?.pair ?? ns?.pair_cible ?? '—'
+  const tf       = cs?.timeframe
+  const hasOB    = !!cs?.order_block
+  const hasFVG   = !!cs?.fvg
+  const hasBOS   = !!(cs?.bos_level || cs?.choch_level)
 
   return (
-    <div style={{ background:'linear-gradient(160deg,#0A1628,#060B14)', border:`1px solid ${cfg.border}`, borderRadius:14, overflow:'hidden', boxShadow:`0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,255,178,0.05)`, fontFamily:BODY }}>
+    <div style={{ background:'linear-gradient(145deg,#0A1628,#060B14)', border:'1px solid rgba(0,255,178,0.15)',
+      borderRadius:14, overflow:'hidden', fontFamily:BODY }}>
 
-      {/* Barre couleur top */}
-      <div style={{ height:2, background:`linear-gradient(90deg, transparent, ${cfg.color}, transparent)` }} />
+      {/* Top gradient line */}
+      <div style={{ height:3, background:`linear-gradient(90deg, transparent, ${dirColor}, ${orderCfg?.color || dirColor}, transparent)` }} />
 
-      <div style={{ padding:'14px 16px' }}>
-
-        {/* Chart IA */}
-        <MiniChart direction={dir} />
-
-        {/* Signal principal */}
-        <div style={{ background:'linear-gradient(135deg,rgba(0,255,178,0.05),rgba(0,212,255,0.03))', border:`1px solid ${cfg.border}`, borderRadius:10, padding:'14px 16px' }}>
-
-          {/* Direction + Paire + R/R */}
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:12 }}>
-            <div>
-              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
-                <span style={{ fontFamily:HUD, fontSize:22, fontWeight:900, color:cfg.color, lineHeight:1 }}>{dir}</span>
-                <span style={{ fontFamily:HUD, fontSize:13, color:'#E8F4F8' }}>{pair || '—'}</span>
-                {tf && <span style={{ fontFamily:HUD, fontSize:9, color:'#00D4FF', background:'rgba(0,212,255,0.1)', border:'1px solid rgba(0,212,255,0.2)', borderRadius:4, padding:'2px 8px' }}>{tf}</span>}
-              </div>
-              {cs?.smc_analysis && (
-                <div style={{ fontFamily:BODY, fontSize:12, color:'rgba(232,244,248,0.45)', lineHeight:1.4, maxWidth:220 }}>
-                  {cs.smc_analysis.slice(0, 55)}{cs.smc_analysis.length > 55 ? '…' : ''}
-                </div>
-              )}
-              {!cs?.smc_analysis && concl && (
-                <div style={{ fontFamily:BODY, fontSize:12, color:'rgba(232,244,248,0.45)' }}>
-                  {concl.slice(0, 55)}{concl.length > 55 ? '…' : ''}
-                </div>
-              )}
+      {/* Header */}
+      <div style={{ padding:'16px 16px 12px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:10, marginBottom:12 }}>
+          {/* Paire + TF */}
+          <div>
+            <div style={{ fontFamily:HUD, fontSize:24, fontWeight:900, color:dirColor, letterSpacing:1 }}>
+              {pair}
             </div>
-            {rr && (
-              <div style={{ background:'rgba(0,255,178,0.08)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:8, padding:'8px 12px', textAlign:'center', minWidth:60 }}>
-                <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(232,244,248,0.4)', marginBottom:2 }}>R/R</div>
-                <div style={{ fontFamily:HUD, fontSize:16, fontWeight:900, color:'#00FFB2', lineHeight:1 }}>1:{rr}</div>
+            {tf && (
+              <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(232,244,248,0.35)', marginTop:2 }}>
+                TIMEFRAME · {tf}
               </div>
             )}
           </div>
 
-          {/* ENTRÉE / STOP / TP1 */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
-            {[
-              { l:'ENTRÉE', v:fmt(signal.entry),     c:'#00FFB2' },
-              { l:'STOP',   v:fmt(signal.stop_loss), c:'#FF3A5C' },
-              { l:'TP1',    v:fmt(signal.tp1),       c:'#00D4FF' },
-            ].map(s => (
-              <div key={s.l} style={{ background:'rgba(0,0,0,0.3)', borderRadius:7, padding:'9px 10px', textAlign:'center' }}>
-                <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(232,244,248,0.35)', marginBottom:4 }}>{s.l}</div>
-                <div style={{ fontFamily:HUD, fontSize:14, fontWeight:700, color:s.c, lineHeight:1 }}>{s.v}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* TP2 / TP3 si disponibles */}
-          {(signal.tp2 || signal.tp3) && (
-            <div style={{ display:'grid', gridTemplateColumns:`repeat(${[signal.tp2,signal.tp3].filter(Boolean).length},1fr)`, gap:8, marginTop:8 }}>
-              {[{l:'TP2',v:signal.tp2},{l:'TP3',v:signal.tp3}].filter(t=>t.v).map(t => (
-                <div key={t.l} style={{ background:'rgba(0,255,178,0.04)', border:'1px solid rgba(0,255,178,0.1)', borderRadius:7, padding:'9px 10px', textAlign:'center' }}>
-                  <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(232,244,248,0.35)', marginBottom:4 }}>{t.l}</div>
-                  <div style={{ fontFamily:HUD, fontSize:13, fontWeight:700, color:'#00E676', lineHeight:1 }}>{fmt(t.v)}</div>
-                </div>
-              ))}
+          {/* Direction + Order type */}
+          <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6 }}>
+            <div style={{ fontFamily:HUD, fontSize:13, fontWeight:900, color:dirColor,
+              background:dirBg, border:`1px solid ${dirColor}30`,
+              padding:'5px 14px', borderRadius:6 }}>
+              {dir === 'LONG' ? '▲ LONG' : dir === 'SHORT' ? '▼ SHORT' : '⟷ NEUTRE'}
             </div>
+            {orderCfg && (
+              <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:orderCfg.color,
+                background:orderCfg.bg, border:`1px solid ${orderCfg.color}30`,
+                padding:'4px 10px', borderRadius:4 }}>
+                {orderCfg.icon} {orderCfg.label}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Confiance + trend + phase */}
+        {(confCfg || cs?.trend) && (
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+            {confCfg && (
+              <div style={{ display:'flex', alignItems:'center', gap:5, background:'rgba(255,255,255,0.04)',
+                border:'1px solid rgba(255,255,255,0.07)', borderRadius:6, padding:'4px 10px' }}>
+                <span style={{ fontFamily:HUD, fontSize:11, color:confCfg.color }}>{confCfg.stars}</span>
+                <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:confCfg.color }}>
+                  CONFIANCE {confCfg.label}
+                </span>
+              </div>
+            )}
+            {cs?.trend && (
+              <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'4px 10px', borderRadius:6,
+                background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)',
+                color:'rgba(232,244,248,0.5)' }}>
+                {cs.trend === 'BULLISH' ? '📈' : cs.trend === 'BEARISH' ? '📉' : '↔️'} {cs.trend}
+                {cs.phase && <span style={{ color:'rgba(232,244,248,0.3)', marginLeft:4 }}>· {cs.phase.toUpperCase()}</span>}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Niveaux principaux */}
+      <div style={{ padding:'14px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.3)', marginBottom:10 }}>
+          NIVEAUX DU SIGNAL
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8, marginBottom:10 }}>
+          {/* Entrée */}
+          <div style={{ background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:8, padding:'10px', textAlign:'center' }}>
+            <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(0,255,178,0.6)', marginBottom:4 }}>
+              {orderCfg ? orderCfg.label : 'ENTRÉE'}
+            </div>
+            <div style={{ fontFamily:HUD, fontSize:16, fontWeight:900, color:'#00FFB2' }}>
+              {fmt(signal.entry)}
+            </div>
+            {orderCfg?.desc && (
+              <div style={{ fontFamily:BODY, fontSize:9, color:'rgba(0,255,178,0.4)', marginTop:2 }}>
+                {orderCfg.desc}
+              </div>
+            )}
+          </div>
+          {/* Stop Loss */}
+          <div style={{ background:'rgba(255,58,92,0.06)', border:'1px solid rgba(255,58,92,0.2)', borderRadius:8, padding:'10px', textAlign:'center' }}>
+            <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(255,58,92,0.6)', marginBottom:4 }}>STOP LOSS</div>
+            <div style={{ fontFamily:HUD, fontSize:16, fontWeight:900, color:'#FF3A5C' }}>{fmt(signal.stop_loss)}</div>
+            <div style={{ fontFamily:BODY, fontSize:9, color:'rgba(255,58,92,0.4)', marginTop:2 }}>Invalidation</div>
+          </div>
+          {/* R/R */}
+          <div style={{ background:'rgba(201,168,76,0.06)', border:'1px solid rgba(201,168,76,0.2)', borderRadius:8, padding:'10px', textAlign:'center' }}>
+            <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(201,168,76,0.6)', marginBottom:4 }}>RATIO R/R</div>
+            <div style={{ fontFamily:HUD, fontSize:16, fontWeight:900, color:'#C9A84C' }}>{rr(signal.rr_ratio)}</div>
+            <div style={{ fontFamily:BODY, fontSize:9, color: (signal.rr_ratio ?? 0) >= 2 ? '#00FFB2' : (signal.rr_ratio ?? 0) >= 1.5 ? '#C9A84C' : '#FF3A5C', marginTop:2 }}>
+              {(signal.rr_ratio ?? 0) >= 2 ? '✅ Excellent' : (signal.rr_ratio ?? 0) >= 1.5 ? '⚠️ Acceptable' : '❌ Faible'}
+            </div>
+          </div>
+        </div>
+
+        {/* TPs */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:6 }}>
+          {[['TP1', signal.tp1, '#00FFB2'], ['TP2', signal.tp2, '#00D4FF'], ['TP3', signal.tp3, '#7B61FF']].map(([label, val, color]) =>
+            val ? (
+              <div key={String(label)} style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:6, padding:'8px', textAlign:'center' }}>
+                <div style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'rgba(232,244,248,0.3)', marginBottom:3 }}>{label}</div>
+                <div style={{ fontFamily:HUD, fontSize:13, fontWeight:700, color:String(color) }}>{fmt(Number(val))}</div>
+              </div>
+            ) : null
           )}
         </div>
-
-        {/* Badges SMC / marché — Pro uniquement */}
-        {isPro && cs && (cs.market_state || cs.confluence_factors) && (
-          <div style={{ marginTop:10, display:'flex', flexWrap:'wrap', gap:6 }}>
-            {cs.market_state && (
-              <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#00D4FF', background:'rgba(0,212,255,0.08)', border:'1px solid rgba(0,212,255,0.2)', borderRadius:3, padding:'3px 9px' }}>
-                {cs.market_state.replace(/_/g,' ')}
-              </span>
-            )}
-            {(cs.confluence_factors ?? []).slice(0,3).map((f:string,i:number) => (
-              <span key={i} style={{ fontFamily:BODY, fontSize:11, color:'rgba(0,255,178,0.7)', background:'rgba(0,255,178,0.05)', border:'1px solid rgba(0,255,178,0.12)', borderRadius:100, padding:'2px 9px' }}>
-                ✓ {f}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Conclusion IA — Pro complète, Free floutée */}
-        {concl && (
-          isPro ? (
-            <div style={{ marginTop:10, background:'rgba(0,212,255,0.04)', border:'1px solid rgba(0,212,255,0.1)', borderRadius:8, padding:'12px 14px' }}>
-              <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'#00D4FF', marginBottom:7 }}>
-                &gt; {type === 'chart' ? 'ANALYSE IA' : 'INTERPRÉTATION IA'}
-              </div>
-              <p style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.65)', lineHeight:1.7, margin:0 }}>{concl}</p>
-            </div>
-          ) : (
-            /* ── TEASER FREE : contenu floutté + CTA upgrade ── */
-            <div style={{ marginTop:10, position:'relative', borderRadius:8, overflow:'hidden' }}>
-              {/* Contenu floutté */}
-              <div style={{ background:'rgba(0,212,255,0.04)', border:'1px solid rgba(0,212,255,0.1)', borderRadius:8, padding:'12px 14px', filter:'blur(4px)', userSelect:'none', pointerEvents:'none' }}>
-                <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'#00D4FF', marginBottom:7 }}>
-                  &gt; ANALYSE SMC COMPLÈTE
-                </div>
-                <p style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.65)', lineHeight:1.7, margin:0 }}>
-                  {concl.slice(0, 80)}... Order Block haussier confirmé sur H4. FVG comblé à 2318.50. Liquidité institutionnelle au-dessus de 2351. Structure de marché bullish. Confluence SMC élevée.
-                </p>
-                <div style={{ marginTop:8, display:'flex', gap:6, flexWrap:'wrap' }}>
-                  {['Order Block H4','FVG confirmé','BOS haussier','Liquidité 2351'].map(f => (
-                    <span key={f} style={{ fontFamily:BODY, fontSize:11, color:'rgba(0,255,178,0.7)', background:'rgba(0,255,178,0.05)', border:'1px solid rgba(0,255,178,0.12)', borderRadius:100, padding:'2px 9px' }}>✓ {f}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Overlay de déverrouillage */}
-              <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:10, background:'rgba(6,9,15,0.55)', backdropFilter:'blur(2px)', borderRadius:8 }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(201,168,76,0.12)', border:'1px solid rgba(201,168,76,0.3)', borderRadius:6, padding:'6px 12px' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#C9A84C" strokeWidth="1.8"/><path d="M8 11V7a4 4 0 1 1 8 0v4" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round"/></svg>
-                  <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#C9A84C' }}>ANALYSE SMC VERROUILLÉE</span>
-                </div>
-                <div style={{ fontFamily:BODY, fontSize:12, color:'rgba(232,244,248,0.5)', textAlign:'center', maxWidth:200 }}>
-                  Order Blocks · FVG · Liquidité · Confluence
-                </div>
-                <a href="/pricing" style={{ display:'flex', alignItems:'center', gap:7, background:'linear-gradient(135deg,#00FFB2,#00D4FF)', color:'#020408', fontFamily:HUD, fontSize:9, letterSpacing:2, fontWeight:900, padding:'10px 20px', borderRadius:5, textDecoration:'none', boxShadow:'0 4px 16px rgba(0,255,178,0.3)' }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#020408" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  DÉBLOQUER AVEC PRO →
-                </a>
-              </div>
-            </div>
-          )
-        )}
       </div>
 
-      {/* Barre confiance IA */}
-      <ConfidenceBar value={cs?.confidence} />
+      {/* Zones SMC (OB, FVG, BOS) */}
+      {(hasOB || hasFVG || hasBOS || cs?.liquidity_high || cs?.liquidity_low) && (
+        <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.3)', marginBottom:8 }}>
+            STRUCTURE SMC
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
 
-      {/* Footer + bouton texte */}
-      <div style={{ borderTop:'1px solid rgba(0,255,178,0.06)' }}>
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'8px 16px', background:'rgba(0,255,178,0.03)', gap:8 }}>
-          <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(232,244,248,0.3)' }}>
-            {creditBalance !== undefined ? `1 CRÉDIT UTILISÉ · SOLDE : ${creditBalance}` : `✓ ANALYSE ${type==='chart'?'SMC ':''}COMPLÈTE`}
-          </span>
-          <button
-            onClick={() => setShowText(v => !v)}
-            style={{ display:'flex', alignItems:'center', gap:5, background: showText ? 'rgba(0,255,178,0.12)' : 'rgba(255,255,255,0.04)', border:`1px solid ${showText ? 'rgba(0,255,178,0.25)' : 'rgba(255,255,255,0.08)'}`, borderRadius:5, padding:'5px 12px', cursor:'pointer', flexShrink:0 }}>
-            <svg width="11" height="11" viewBox="0 0 16 16" fill="none">
-              <rect x="5" y="5" width="9" height="9" rx="1.5" stroke={showText ? '#00FFB2' : 'rgba(232,244,248,0.5)'} strokeWidth="1.3"/>
-              <path d="M3 11V3a1 1 0 0 1 1-1h8" stroke={showText ? '#00FFB2' : 'rgba(232,244,248,0.5)'} strokeWidth="1.3" strokeLinecap="round"/>
-            </svg>
-            <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color: showText ? '#00FFB2' : 'rgba(232,244,248,0.5)' }}>
-              {showText ? 'FERMER' : 'PARTAGER'}
-            </span>
-          </button>
-        </div>
+            {cs?.order_block && (
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+                background: cs.order_block.type==='bullish' ? 'rgba(0,255,178,0.05)' : 'rgba(255,58,92,0.05)',
+                border: `1px solid ${cs.order_block.type==='bullish' ? 'rgba(0,255,178,0.2)' : 'rgba(255,58,92,0.2)'}`,
+                borderRadius:7, padding:'8px 12px' }}>
+                <div>
+                  <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1,
+                    color: cs.order_block.type==='bullish' ? '#00FFB2' : '#FF3A5C', marginBottom:2 }}>
+                    📦 ORDER BLOCK {cs.order_block.type.toUpperCase()} · {cs.order_block.label}
+                  </div>
+                  <div style={{ fontFamily:HUD, fontSize:9, color:'rgba(232,244,248,0.5)' }}>
+                    {fmt(cs.order_block.low)} – {fmt(cs.order_block.high)}
+                  </div>
+                </div>
+                <div style={{ fontFamily:HUD, fontSize:7, color:'rgba(232,244,248,0.3)' }}>Zone d'intérêt</div>
+              </div>
+            )}
 
-        {/* Panneau partage amélioré */}
-        {showText && (
-          <div style={{ padding:'12px 16px', borderTop:'1px solid rgba(0,255,178,0.06)', background:'rgba(0,0,0,0.3)' }}>
-            <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.3)', marginBottom:8 }}>
-              PARTAGER LE SIGNAL
-            </div>
-            <pre style={{ margin:'0 0 10px', fontFamily:'monospace', fontSize:12, color:'rgba(232,244,248,0.8)', lineHeight:1.7, whiteSpace:'pre-wrap', wordBreak:'break-word', background:'rgba(0,255,178,0.03)', border:'1px solid rgba(0,255,178,0.1)', borderRadius:6, padding:'10px 12px', userSelect:'text', WebkitUserSelect:'text' }}>
-              {signalText}
-            </pre>
-            {/* Boutons partage rapide */}
-            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-              <a href={`https://wa.me/?text=${encodeURIComponent(signalText)}`} target="_blank" rel="noopener noreferrer"
-                style={{ flex:1, minWidth:120, display:'flex', alignItems:'center', justifyContent:'center', gap:6, background:'#25D366', borderRadius:6, padding:'8px 12px', textDecoration:'none' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.122 1.533 5.856L.053 23.947 6.34 22.49A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.89 0-3.663-.493-5.197-1.355l-.371-.22-3.847.977.997-3.763-.242-.389A9.937 9.937 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-                <span style={{ fontFamily:HUD, fontSize:8, color:'white', letterSpacing:1 }}>WHATSAPP</span>
-              </a>
-              <a href={`https://t.me/share/url?url=https://profity-x.com&text=${encodeURIComponent(signalText)}`} target="_blank" rel="noopener noreferrer"
-                style={{ flex:1, minWidth:120, display:'flex', alignItems:'center', justifyContent:'center', gap:6, background:'#0088cc', borderRadius:6, padding:'8px 12px', textDecoration:'none' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-                <span style={{ fontFamily:HUD, fontSize:8, color:'white', letterSpacing:1 }}>TELEGRAM</span>
-              </a>
-              <button
-                onClick={() => { navigator.clipboard?.writeText(signalText).catch(() => {}) }}
-                style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'8px 12px', cursor:'pointer', flexShrink:0 }}>
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="rgba(232,244,248,0.5)" strokeWidth="1.3"/><path d="M3 11V3a1 1 0 0 1 1-1h8" stroke="rgba(232,244,248,0.5)" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                <span style={{ fontFamily:HUD, fontSize:8, color:'rgba(232,244,248,0.5)', letterSpacing:1 }}>COPIER</span>
-              </button>
+            {cs?.fvg && (
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between',
+                background:'rgba(201,168,76,0.05)', border:'1px solid rgba(201,168,76,0.2)',
+                borderRadius:7, padding:'8px 12px' }}>
+                <div>
+                  <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#C9A84C', marginBottom:2 }}>
+                    ⚡ FAIR VALUE GAP · {cs.fvg.label}
+                  </div>
+                  <div style={{ fontFamily:HUD, fontSize:9, color:'rgba(232,244,248,0.5)' }}>
+                    {fmt(cs.fvg.low)} – {fmt(cs.fvg.high)}
+                  </div>
+                </div>
+                <div style={{ fontFamily:HUD, fontSize:7, color:'rgba(232,244,248,0.3)' }}>Déséquilibre</div>
+              </div>
+            )}
+
+            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+              {cs?.bos_level && (
+                <div style={{ flex:1, background:'rgba(0,212,255,0.05)', border:'1px solid rgba(0,212,255,0.2)',
+                  borderRadius:7, padding:'8px 10px' }}>
+                  <div style={{ fontFamily:HUD, fontSize:7, color:'#00D4FF', letterSpacing:1, marginBottom:2 }}>🔀 BOS</div>
+                  <div style={{ fontFamily:HUD, fontSize:12, color:'#00D4FF' }}>{fmt(cs.bos_level)}</div>
+                </div>
+              )}
+              {cs?.choch_level && (
+                <div style={{ flex:1, background:'rgba(255,107,53,0.05)', border:'1px solid rgba(255,107,53,0.2)',
+                  borderRadius:7, padding:'8px 10px' }}>
+                  <div style={{ fontFamily:HUD, fontSize:7, color:'#FF6B35', letterSpacing:1, marginBottom:2 }}>↩️ CHOCH</div>
+                  <div style={{ fontFamily:HUD, fontSize:12, color:'#FF6B35' }}>{fmt(cs.choch_level)}</div>
+                </div>
+              )}
+              {cs?.liquidity_high && (
+                <div style={{ flex:1, background:'rgba(255,58,92,0.05)', border:'1px solid rgba(255,58,92,0.15)',
+                  borderRadius:7, padding:'8px 10px' }}>
+                  <div style={{ fontFamily:HUD, fontSize:7, color:'rgba(255,58,92,0.7)', letterSpacing:1, marginBottom:2 }}>💧 BSL</div>
+                  <div style={{ fontFamily:HUD, fontSize:12, color:'#FF3A5C' }}>{fmt(cs.liquidity_high)}</div>
+                </div>
+              )}
+              {cs?.liquidity_low && (
+                <div style={{ flex:1, background:'rgba(0,255,178,0.04)', border:'1px solid rgba(0,255,178,0.12)',
+                  borderRadius:7, padding:'8px 10px' }}>
+                  <div style={{ fontFamily:HUD, fontSize:7, color:'rgba(0,255,178,0.5)', letterSpacing:1, marginBottom:2 }}>💧 SSL</div>
+                  <div style={{ fontFamily:HUD, fontSize:12, color:'#00FFB2' }}>{fmt(cs.liquidity_low)}</div>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
+      )}
+
+      {/* Confluences */}
+      {cs?.confluence_factors && cs.confluence_factors.length > 0 && (
+        <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.3)', marginBottom:8 }}>
+            CONFLUENCES ({cs.confluence_factors.length})
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+            {cs.confluence_factors.map((c, i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <span style={{ color:'#00FFB2', fontSize:10 }}>✓</span>
+                <span style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.7)' }}>{c}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Analyse SMC */}
+      {(cs?.smc_analysis || cs?.market_state) && (
+        <div style={{ padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+          {cs.market_state && (
+            <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'rgba(0,212,255,0.7)',
+              background:'rgba(0,212,255,0.06)', border:'1px solid rgba(0,212,255,0.1)',
+              borderRadius:5, padding:'5px 10px', marginBottom:8 }}>
+              📊 {cs.market_state}
+            </div>
+          )}
+          {cs.smc_analysis && (
+            <p style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.6)', lineHeight:1.7, margin:0 }}>
+              {cs.smc_analysis}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Conclusion + news interpretation */}
+      <div style={{ padding:'14px 16px' }}>
+        <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.3)', marginBottom:8 }}>
+          CONCLUSION
+        </div>
+        <p style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.75)', lineHeight:1.7, margin:0 }}>
+          {cs?.conclusion || ns?.interpretation || ''}
+        </p>
+        {/* Avertissement risk */}
+        <div style={{ marginTop:12, fontFamily:BODY, fontSize:10, color:'rgba(232,244,248,0.2)', fontStyle:'italic' }}>
+          ⚠️ Signal éducatif uniquement — gérez votre risque. Ne jamais risquer plus de 2% par trade.
+        </div>
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
-import { getChartPrompt }            from '@/lib/prompts'
+import { getBasicPrompt, getAdvancedPrompt, getElitePrompt } from '@/lib/prompts'
 import { parseClaudeJSON, validateChartSignal } from '@/lib/parser'
 import { saveChartAnalysis }         from '@/lib/supabase'
 import { rateLimit }                 from '@/lib/rate-limit'
@@ -57,11 +57,13 @@ export async function POST(req: NextRequest) {
   const plan   = prof?.user_plan ?? 'free'
   const locale = (prof?.locale as string) ?? 'fr'
 
-  let tier: 'basic' | 'advanced' = 'basic'
+  let tier: 'basic' | 'advanced' | 'elite' = 'basic'
   let freeDailySmc = false
   let smcAlreadyUsed = false
 
-  if (prof?.is_admin || plan === 'pro' || plan === 'elite') {
+  if (prof?.is_admin || plan === 'elite') {
+    tier = 'elite'
+  } else if (plan === 'pro') {
     tier = 'advanced'
   } else {
     // Free : vérifier et consommer le SMC gratuit du jour
@@ -115,8 +117,10 @@ export async function POST(req: NextRequest) {
       headers: { 'Content-Type':'application/json', 'x-api-key':process.env.ANTHROPIC_API_KEY!, 'anthropic-version':'2023-06-01' },
       body: JSON.stringify({
         model:      'claude-sonnet-4-6',
-        max_tokens: 800,
-        system:     getChartPrompt(locale, tier),
+        system:     tier === 'elite' ? getElitePrompt(locale)
+                          : tier === 'advanced' ? getAdvancedPrompt(locale)
+                          : getBasicPrompt(locale),
+        max_tokens: tier === 'elite' ? 1500 : tier === 'advanced' ? 1200 : 600,
         messages: [{
           role:'user',
           content:[

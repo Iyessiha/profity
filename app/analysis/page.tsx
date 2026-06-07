@@ -6,6 +6,7 @@ import Sidebar from '@/components/dashboard/Sidebar'
 import TopBar from '@/components/dashboard/TopBar'
 import QuotaBar from '@/components/dashboard/QuotaBar'
 import SignalCard from '@/components/SignalCard'
+import ChartAnnotation from '@/components/ChartAnnotation'
 import OnboardingModal from '@/components/OnboardingModal'
 import { RandomAd } from '@/components/AdSlot'
 import Confetti from '@/components/Confetti'
@@ -73,12 +74,15 @@ export default function AnalysisPage() {
     tvRef.current.innerHTML = `<iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_px&symbol=BINANCE%3ABTCUSDT&interval=60&hidesidetoolbar=0&hidetoptoolbar=0&symboledit=1&saveimage=0&toolbarbg=020408&studies=%5B%5D&theme=dark&style=1&timezone=Etc%2FUTC&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=fr&utm_source=profity-x.com" style="width:100%;height:450px;border:none;" allowtransparency="true"></iframe>`
   }, [showTV])
 
+  const [imageFile, setImageFile] = useState<File | null>(null)
+
   const handleFile = (f: File) => {
     if (!f.type.startsWith('image/')) { setError('Image requise (JPG, PNG, WEBP)'); return }
     if (f.size > 8*1024*1024) { setError('Image trop lourde — max 8 Mo'); return }
     const r = new FileReader()
     r.onload = e => setPreview(e.target?.result as string)
     r.readAsDataURL(f)
+    setImageFile(f)
     setSignal(null); setError(null); setQuotaErr(false)
   }
 
@@ -281,7 +285,16 @@ export default function AnalysisPage() {
               </>
             ) : (
               <div>
-                <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" creditBalance={balance} plan={freeSMCUsed || isPremium ? (isPremium ? plan : 'pro') : plan} />
+                <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" locale={locale} />
+                {(plan === 'pro' || plan === 'elite' || isAdmin) && (
+                  <div style={{ marginTop: 16 }}>
+                    <ChartAnnotation
+                      imageFile={imageFile}
+                      signal={signal as Parameters<typeof import('@/components/SignalCard').default>[0]['signal']}
+                      plan={plan}
+                    />
+                  </div>
+                )}
 
                 {/* Prompt de notation — uniquement après SMC gratuit non encore noté */}
                 {freeSMCUsed && !smcRated && smcAnalysisId && (
