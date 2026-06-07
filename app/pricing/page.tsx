@@ -94,10 +94,36 @@ const PLANS = [
 ]
 
 const CREDIT_PACKS = [
-  { credits: 25,  price: '2 000',  label: 'Starter',  badge: null,             color: '#888'     },
-  { credits: 75,  price: '5 000',  label: 'Standard', badge: '🔥 POPULAIRE',  color: '#00B890'  },
-  { credits: 200, price: '12 000', label: 'Premium',  badge: null,             color: '#00C6FF'  },
-  { credits: 500, price: '25 000', label: 'Elite+',   badge: '⭐ MEILLEURE VALEUR', color: '#92671A' },
+  {
+    credits: 30,
+    price: '2 000',
+    priceNum: 2000,
+    label: 'Starter',
+    badge: null,
+    color: '#00B890',
+    desc: 'Pour tester sans engagement',
+    perCredit: 67,
+  },
+  {
+    credits: 80,
+    price: '4 500',
+    priceNum: 4500,
+    label: 'Standard',
+    badge: '🔥 POPULAIRE',
+    color: '#00FFB2',
+    desc: 'Idéal pour le trader actif',
+    perCredit: 56,
+  },
+  {
+    credits: 200,
+    price: '9 900',
+    priceNum: 9900,
+    label: 'Pro One-shot',
+    badge: '⭐ MEILLEURE VALEUR',
+    color: '#C9A84C',
+    desc: 'Même crédits qu\'un mois Pro',
+    perCredit: 50,
+  },
 ]
 
 const FAQS = [
@@ -290,28 +316,68 @@ export default function PricingPage() {
 
         {/* Packs de crédits supplémentaires */}
         <div style={{ marginBottom:'2rem' }}>
-          <div style={{ textAlign:'center', marginBottom:'1.25rem' }}>
-            <div style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'var(--tx0)', marginBottom:6 }}>PACKS DE CRÉDITS SUPPLÉMENTAIRES</div>
-            <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>Valables sur tous les plans · Cumulables avec les crédits mensuels · N'expirent jamais</div>
+          <div style={{ textAlign:'center', marginBottom:'1.5rem' }}>
+            <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'var(--ac2)', marginBottom:8 }}>SANS ABONNEMENT</div>
+            <div style={{ fontFamily:HUD, fontSize:18, color:'var(--tx0)', marginBottom:6 }}>PACKS DE CRÉDITS</div>
+            <div style={{ fontFamily:BODY, fontSize:14, color:'var(--tx3)' }}>N'expirent jamais · Cumulables avec votre plan · Paiement unique</div>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:12 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:16 }}>
             {CREDIT_PACKS.map(pack => (
-              <div key={pack.credits} style={{ background:'var(--bg1)', border:`1px solid ${pack.badge?'var(--bd2)':'var(--bd)'}`, borderRadius:10, padding:'1.1rem', position:'relative', textAlign:'center' }}>
+              <div key={pack.credits} style={{ background:'var(--bg1)', border:`1px solid ${pack.badge ? pack.color + '40' : 'var(--bd)'}`, borderRadius:12, padding:'1.5rem', position:'relative', textAlign:'center', display:'flex', flexDirection:'column', gap:0 }}>
+
+                {/* Badge populaire */}
                 {pack.badge && (
-                  <div style={{ position:'absolute', top:-10, left:'50%', transform:'translateX(-50%)', background:`${pack.color}20`, border:`1px solid ${pack.color}40`, color:pack.color, fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'3px 10px', borderRadius:10, whiteSpace:'nowrap' }}>{pack.badge}</div>
+                  <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', background:`var(--bg0)`, border:`1px solid ${pack.color}40`, color:pack.color, fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'4px 12px', borderRadius:10, whiteSpace:'nowrap' }}>
+                    {pack.badge}
+                  </div>
                 )}
-                <div style={{ fontFamily:HUD, fontSize:28, fontWeight:900, color:pack.color, lineHeight:1, marginBottom:4, marginTop:pack.badge?8:0 }}>{pack.credits}</div>
-                <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', marginBottom:10 }}>CRÉDITS</div>
-                <div style={{ fontFamily:HUD, fontSize:16, fontWeight:900, color:'var(--tx0)', marginBottom:2 }}>{pack.price} <span style={{ fontSize:11, fontWeight:400, color:'var(--tx3)' }}>FCFA</span></div>
-                <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginBottom:12 }}>{Math.round(parseInt(pack.price.replace(' ','')) / pack.credits)} FCFA / crédit</div>
-                <a href={token ? '/dashboard' : '/auth/login'} style={{ display:'block', background:`color-mix(in srgb, ${pack.color} 12%, transparent)`, border:`1px solid color-mix(in srgb, ${pack.color} 30%, transparent)`, color:pack.color, fontFamily:HUD, fontSize:8, letterSpacing:1, fontWeight:700, padding:'8px', borderRadius:5, textDecoration:'none', cursor:'pointer' }}>
-                  ACHETER →
-                </a>
+
+                {/* Nom */}
+                <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:12, marginTop: pack.badge ? 8 : 0 }}>{pack.label.toUpperCase()}</div>
+
+                {/* Crédits en grand */}
+                <div style={{ fontFamily:HUD, fontSize:48, fontWeight:900, color:pack.color, lineHeight:1, marginBottom:4 }}>{pack.credits}</div>
+                <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx3)', marginBottom:16 }}>CRÉDITS</div>
+
+                {/* Prix */}
+                <div style={{ fontFamily:HUD, fontSize:22, fontWeight:900, color:'var(--tx0)', marginBottom:2 }}>
+                  {pack.price} <span style={{ fontSize:12, fontWeight:400, color:'var(--tx3)' }}>FCFA</span>
+                </div>
+                <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', marginBottom:6 }}>
+                  {pack.perCredit} FCFA / crédit
+                </div>
+                <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)', marginBottom:20, flex:1 }}>{pack.desc}</div>
+
+                {/* Économie vs Starter */}
+                {pack.credits > 30 && (
+                  <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:pack.color, background:`${pack.color}10`, border:`1px solid ${pack.color}20`, borderRadius:4, padding:'4px 8px', marginBottom:12 }}>
+                    -{Math.round((1 - pack.perCredit / 67) * 100)}% vs Starter
+                  </div>
+                )}
+
+                {/* Bouton achat */}
+                <button
+                  onClick={() => {
+                    if (!token) { window.location.href = '/auth/login'; return }
+                    const wa = `https://wa.me/2250700000000?text=${encodeURIComponent(`Bonjour, je souhaite acheter le pack ${pack.label} — ${pack.credits} crédits à ${pack.price} FCFA pour mon compte ProfityX.`)}`
+                    window.open(wa, '_blank')
+                  }}
+                  style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, width:'100%', background:`color-mix(in srgb, ${pack.color} 15%, transparent)`, border:`1px solid color-mix(in srgb, ${pack.color} 40%, transparent)`, color:pack.color, fontFamily:HUD, fontSize:9, letterSpacing:1, fontWeight:700, padding:'12px', borderRadius:7, cursor:'pointer', transition:'all .2s' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill={pack.color}><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.122 1.533 5.856L.053 23.947 6.34 22.49A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.89 0-3.663-.493-5.197-1.355l-.371-.22-3.847.977.997-3.763-.242-.389A9.937 9.937 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                  COMMANDER VIA WHATSAPP
+                </button>
               </div>
             ))}
           </div>
-          <div style={{ textAlign:'center', marginTop:10, fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>
-            💡 Achetez vos packs depuis le <strong style={{ color:'var(--ac)' }}>Dashboard → bouton crédits</strong> (icône 🪙)
+
+          {/* Note explicative */}
+          <div style={{ marginTop:'1rem', background:'rgba(0,255,178,0.04)', border:'1px solid rgba(0,255,178,0.1)', borderRadius:8, padding:'12px 16px', display:'flex', alignItems:'center', gap:10 }}>
+            <span style={{ fontSize:18, flexShrink:0 }}>💡</span>
+            <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx2)', lineHeight:1.6 }}>
+              Les packs sont activés manuellement dans les <strong style={{ color:'var(--ac)' }}>24h</strong> après réception du paiement.
+              Paiement accepté : <strong>Wave · Orange Money · MTN · Visa/Mastercard</strong>.
+              Les crédits s'ajoutent à votre solde existant et n'expirent jamais.
+            </div>
           </div>
         </div>
 
