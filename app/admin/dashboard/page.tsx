@@ -838,7 +838,10 @@ export default function AdminDashboard() {
           {/* ══ LOGS ══════════════════════════════════════ */}
           {/* ══ NOTIFICATIONS ═══════════════════════════ */}
           {tab === 'notifications' && (
-            <NotifSenderPanel token={token} showToast={showToast} />
+            <>
+              <NotifSenderPanel token={token} showToast={showToast} />
+              <EmailTestPanel token={token} showToast={showToast} />
+            </>
           )}
 
           {/* ══ EXPORT ═══════════════════════════════════ */}
@@ -1566,6 +1569,114 @@ function ExportPanel({ token }: { token: string }) {
         <i className="ti ti-shield-lock" style={{ fontSize:16, color:'var(--ac)', flexShrink:0, marginTop:2 }} />
         <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', lineHeight:1.6 }}>
           Les exports sont réservés aux administrateurs. Les données sensibles (mots de passe, tokens) ne sont jamais incluses. Fichiers conformes RGPD — traitez-les avec précaution.
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Test Email Panel ──────────────────────────────────────
+function EmailTestPanel({ token, showToast }: { token:string; showToast:(m:string,ok:boolean)=>void }) {
+  const HUD  = "'Orbitron', monospace"
+  const BODY = "'Rajdhani', sans-serif"
+  const EDGE = `${process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://crlfkiniwalhzvpxrqav.supabase.co'}/functions/v1/send-email`
+
+  const TEMPLATES = [
+    { key:'welcome',        label:'🎉 Bienvenue',          desc:'Email inscription + 10 crédits' },
+    { key:'plan_activated', label:'✅ Plan activé',         desc:'Confirmation paiement Pro/Elite' },
+    { key:'low_credits',    label:'⚡ Crédits bas',         desc:'Alerte solde < 5 crédits' },
+    { key:'referral',       label:'🎁 Parrainage accepté', desc:'+20 crédits au parrain' },
+    { key:'reset',          label:'🔐 Mot de passe',        desc:'Reset password' },
+    { key:'reactivation',   label:'📊 Réactivation',       desc:'Relance utilisateur inactif' },
+  ]
+
+  const [to,       setTo]       = useState('')
+  const [name,     setName]     = useState('Yessiha')
+  const [template, setTemplate] = useState('welcome')
+  const [sending,  setSending]  = useState(false)
+  const [lastResult, setLast]   = useState<string|null>(null)
+
+  const send = async () => {
+    if (!to) { showToast('Email destinataire requis', false); return }
+    setSending(true); setLast(null)
+    try {
+      const res  = await fetch(EDGE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          template,
+          to,
+          name,
+          data: {
+            url:     'https://profity-x.com',
+            plan:    'pro',
+            credits: '150',
+            balance: '3',
+          },
+        }),
+      })
+      const json = await res.json()
+      if (json.success) {
+        showToast(`✅ Email "${template}" envoyé à ${to}`, true)
+        setLast(`✅ MessageID: ${json.messageId}`)
+      } else {
+        showToast(`❌ ${json.error}`, false)
+        setLast(`❌ Erreur: ${json.error}`)
+      }
+    } catch (e) {
+      showToast('Erreur réseau', false)
+      setLast(`❌ ${String(e)}`)
+    }
+    setSending(false)
+  }
+
+  const inp = { background:'var(--bg2)', border:'1px solid var(--bd)', color:'var(--tx0)', fontFamily:BODY, fontSize:14, padding:'9px 12px', borderRadius:4, width:'100%', boxSizing:'border-box' as const }
+  const lbl = { fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', marginBottom:5, display:'block' as const }
+
+  return (
+    <div style={{ marginTop:'2rem', background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem' }}>
+      <div style={{ fontFamily:HUD, fontSize:11, color:'var(--ac2)', letterSpacing:1, marginBottom:'1.25rem' }}>📧 TESTER LES EMAILS BREVO</div>
+
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:14 }}>
+        {/* Formulaire */}
+        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+          <div>
+            <span style={lbl}>DESTINATAIRE</span>
+            <input style={inp} value={to} onChange={e=>setTo(e.target.value)} placeholder="monweci@gmail.com" type="email" />
+          </div>
+          <div>
+            <span style={lbl}>NOM</span>
+            <input style={inp} value={name} onChange={e=>setName(e.target.value)} placeholder="Yessiha" />
+          </div>
+          <div>
+            <span style={lbl}>TEMPLATE</span>
+            <select style={inp} value={template} onChange={e=>setTemplate(e.target.value)}>
+              {TEMPLATES.map(t => <option key={t.key} value={t.key}>{t.label} — {t.desc}</option>)}
+            </select>
+          </div>
+          <button onClick={send} disabled={sending || !to}
+            style={{ padding:'11px', borderRadius:6, border:'none', background:sending||!to?'var(--bd)':'var(--ac2)', color:sending||!to?'var(--tx3)':'#020408', fontFamily:HUD, fontSize:10, letterSpacing:2, fontWeight:700, cursor:sending?'wait':'pointer' }}>
+            {sending ? '⏳ ENVOI...' : '📤 ENVOYER L\'EMAIL TEST'}
+          </button>
+          {lastResult && (
+            <div style={{ fontFamily:BODY, fontSize:13, color:lastResult.startsWith('✅')?'var(--ok)':'var(--red)', padding:'8px 10px', background:'var(--bg1)', borderRadius:5 }}>
+              {lastResult}
+            </div>
+          )}
+        </div>
+
+        {/* Templates disponibles */}
+        <div>
+          <span style={lbl}>TEMPLATES DISPONIBLES</span>
+          <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+            {TEMPLATES.map(t => (
+              <button key={t.key} onClick={()=>setTemplate(t.key)}
+                style={{ background:template===t.key?'color-mix(in srgb, var(--ac2) 10%, transparent)':'var(--bg1)', border:`1px solid ${template===t.key?'var(--ac2)':'var(--bd)'}`, borderRadius:6, padding:'8px 12px', textAlign:'left', cursor:'pointer' }}>
+                <div style={{ fontFamily:HUD, fontSize:9, color:template===t.key?'var(--ac2)':'var(--tx1)', marginBottom:2 }}>{t.label}</div>
+                <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>{t.desc}</div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
