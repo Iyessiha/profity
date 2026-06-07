@@ -36,6 +36,35 @@ const PAIRS = [
   // Crypto
   { label:'BTC/USD',  group:'Crypto',   pipSize:1,      pipValuePerLot:1,    contractSize:1     },
   { label:'ETH/USD',  group:'Crypto',   pipSize:0.01,   pipValuePerLot:1,    contractSize:1     },
+  // Weltrade SyntX — FX Vol. (réplique Forex, volatilité annuelle fixe)
+  { label:'FX Vol. 20',   group:'Weltrade SyntX', pipSize:0.00001, pipValuePerLot:10, contractSize:100000 },
+  { label:'FX Vol. 50',   group:'Weltrade SyntX', pipSize:0.00001, pipValuePerLot:10, contractSize:100000 },
+  { label:'FX Vol. 75',   group:'Weltrade SyntX', pipSize:0.00001, pipValuePerLot:10, contractSize:100000 },
+  { label:'FX Vol. 99',   group:'Weltrade SyntX', pipSize:0.00001, pipValuePerLot:10, contractSize:100000 },
+  // Weltrade SyntX — SFX Vol. (FX Vol. + spikes toutes les 30 min)
+  { label:'SFX Vol. 20',  group:'Weltrade SyntX', pipSize:0.00001, pipValuePerLot:10, contractSize:100000 },
+  { label:'SFX Vol. 50',  group:'Weltrade SyntX', pipSize:0.00001, pipValuePerLot:10, contractSize:100000 },
+  { label:'SFX Vol. 75',  group:'Weltrade SyntX', pipSize:0.00001, pipValuePerLot:10, contractSize:100000 },
+  { label:'SFX Vol. 99',  group:'Weltrade SyntX', pipSize:0.00001, pipValuePerLot:10, contractSize:100000 },
+  // Weltrade SyntX — PainX (prix monte en continu, chute périodique)
+  { label:'PainX 400',    group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  { label:'PainX 800',    group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  { label:'PainX 999',    group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  { label:'PainX 1200',   group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  // Weltrade SyntX — GainX (prix descend en continu, saut périodique)
+  { label:'GainX 400',    group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  { label:'GainX 800',    group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  { label:'GainX 999',    group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  { label:'GainX 1200',   group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  // Weltrade SyntX — FlipX (50/50 direction, pas fixe)
+  { label:'FlipX',        group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  // Weltrade SyntX — SwitchX (alterne PainX ↔ GainX)
+  { label:'SwitchX 600',  group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  { label:'SwitchX 1200', group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  { label:'SwitchX 1800', group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  // Weltrade SyntX — BreakX (GainX qui change de comportement sur gros saut)
+  { label:'BreakX 600',   group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
+  { label:'BreakX 1200',  group:'Weltrade SyntX', pipSize:0.01, pipValuePerLot:1, contractSize:1 },
 ]
 
 const CURRENCIES = [
