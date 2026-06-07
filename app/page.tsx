@@ -18,7 +18,6 @@ function ThemeToggleLanding() {
 // ── Composant FAQ accordéon ──────────────────────────────────
 function FaqItem({ q, a }: { q:string; a:string }) {
   const [open, setOpen] = useState(false)
-  const [stats, setStats] = useState({ analyses: 1240, users: 380, signals: 95 })
   return (
     <div style={{ borderBottom:'1px solid rgba(0,255,178,0.08)', padding:'1.125rem 0', cursor:'pointer' }} onClick={()=>setOpen(v=>!v)}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:16 }}>
@@ -32,6 +31,7 @@ function FaqItem({ q, a }: { q:string; a:string }) {
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false)
+  const [stats, setStats] = useState({ analyses: 1240, users: 380, signals: 95 })
   const [time, setTime] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
 
