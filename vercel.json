@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/check-alerts",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 */1 * * *"
     },
     {
       "path": "/api/cron/pre-event-signals",
-      "schedule": "*/30 * * * *"
+      "schedule": "0 7,12,17,20 * * *"
     },
     {
       "path": "/api/cron/monthly-refill",
