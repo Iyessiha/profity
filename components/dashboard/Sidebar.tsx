@@ -100,7 +100,7 @@ export default function Sidebar({ plan, locale }: Props) {
         <div style={{ padding: '0.75rem 1rem' }}>
           <div style={{ background: planColor + '15', border: `1px solid ${planColor}30`, borderRadius: 6, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: planColor }} />
-            <span style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: planColor }}>{plan.toUpperCase()}</span>
+            <span style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: planColor }}>{(plan ?? 'free').toUpperCase()}</span>
           </div>
         </div>
 
