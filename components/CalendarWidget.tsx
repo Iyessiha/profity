@@ -244,7 +244,7 @@ export default function CalendarWidget({ locale = 'fr' }: Props) {
   const [analyzingId, setAnalyzingId] = useState<string | null>(null)
   const [focusMode, setFocusMode] = useState(true)
 
-  const { events, loading, error, lastFetch, refetch } = useCalendar({ impact, country })
+  const { events, loading, error, lastFetch, nextPoll, refetch } = useCalendar({ impact, country })
   const { analyze, signal, loading: sigLoading, error: sigError, reset } = useNewsSignal()
 
   // Mode focus : priorise les annonces en cours / récentes / à venir aujourd'hui
@@ -379,16 +379,35 @@ export default function CalendarWidget({ locale = 'fr' }: Props) {
           </div>
         </div>
 
-        {/* Dernière mise à jour */}
+        {/* Barre de statut LIVE */}
         {lastFetch && (
           <div style={{
-            background: 'rgba(0,255,178,0.02)',
+            background: 'rgba(0,255,178,0.03)',
             padding: '5px 16px',
-            borderBottom: '1px solid rgba(0,255,178,0.05)',
-            fontFamily: HUD_FONT, fontSize: 8, color: 'rgba(232,244,248,0.25)', letterSpacing: 1,
+            borderBottom: '1px solid rgba(0,255,178,0.06)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
           }}>
-            {lbl(locale, 'lastUpdate')} : {lastFetch.toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-US')}
-            {' · '}ForexFactory · Cache 30min
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              {/* Point animé */}
+              <span style={{
+                width: 5, height: 5, borderRadius: '50%',
+                background: nextPoll <= 30_000 ? '#FF6B35' : '#00FFB2',
+                display: 'inline-block',
+                boxShadow: nextPoll <= 30_000 ? '0 0 6px #FF6B35' : '0 0 6px #00FFB2',
+                animation: 'pulse 1.5s ease-in-out infinite',
+              }} />
+              <span style={{ fontFamily: HUD_FONT, fontSize: 7, letterSpacing: 1,
+                color: nextPoll <= 30_000 ? '#FF6B35' : 'rgba(0,255,178,0.6)' }}>
+                {nextPoll <= 30_000 ? '⚡ IMMINENT · MAJ 30s' :
+                 nextPoll <= 60_000 ? '🔄 MAJ 1 MIN' : '🔄 MAJ 2 MIN'}
+              </span>
+            </div>
+            <span style={{ fontFamily: HUD_FONT, fontSize: 7, letterSpacing: 1,
+              color: 'rgba(232,244,248,0.2)' }}>
+              {lbl(locale, 'lastUpdate')} {lastFetch.toLocaleTimeString(
+                locale === 'fr' ? 'fr-FR' : 'en-US', { hour:'2-digit', minute:'2-digit', second:'2-digit' }
+              )}
+            </span>
           </div>
         )}
 

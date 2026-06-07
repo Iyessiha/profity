@@ -9,7 +9,7 @@ import { createClient }              from '@supabase/supabase-js'
 import type { FFEvent, ApiResponse } from '@/types'
 
 const FF_URL        = 'https://nfs.faireconomy.media/ff_calendar_thisweek.json'
-const CACHE_TTL_MS  = 30 * 60 * 1000   // 30 minutes
+const CACHE_TTL_MS  = 5 * 60 * 1000   // 5 minutes
 const HIGH_IMPACT   = ['High']          // filtrer par défaut sur High uniquement
 
 const supabaseAdmin = createClient(
