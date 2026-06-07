@@ -12,6 +12,7 @@ import GamificationBar from '@/components/dashboard/GamificationBar'
 import WatchlistFeed from '@/components/dashboard/WatchlistFeed'
 import MarketClocks from '@/components/dashboard/MarketClocks'
 import ReferralCard from '@/components/dashboard/ReferralCard'
+import Onboarding from '@/components/Onboarding'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -22,6 +23,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null)
   const [plan,    setPlan]    = useState('free')
   const [locale,  setLocale]  = useState('fr')
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
   useEffect(() => {
     ;(async () => {
@@ -30,7 +32,13 @@ export default function DashboardPage() {
       setUser(session.user as { id: string; email?: string })
       setToken(session.access_token)
       const { data: p } = await supabasePublic.from('profiles').select('*').eq('id', session.user.id).single()
-      if (p) { setProfile(p); setPlan(p.user_plan as string || 'free'); setLocale(p.locale as string || 'fr') }
+      if (p) {
+        setProfile(p)
+        setPlan(p.user_plan as string || 'free')
+        setLocale(p.locale as string || 'fr')
+        // Afficher l'onboarding au premier login
+        if (!p.onboarding_done) setShowOnboarding(true)
+      }
     })()
   }, [])
 
@@ -55,6 +63,15 @@ export default function DashboardPage() {
 
   return (
     <div className="app-shell">
+      {/* Onboarding au premier login */}
+      {showOnboarding && user && (
+        <Onboarding
+          userId={user.id}
+          name={(profile?.full_name as string)?.split(' ')[0] || 'Trader'}
+          credits={10}
+          onDone={() => setShowOnboarding(false)}
+        />
+      )}
       <Sidebar tab="chart" setTab={() => {}} plan={plan} locale={locale} />
       <div className="app-main" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg0)', width: '100%', overflow: 'hidden' }}>
         <TopBar locale={locale} profile={profile} />
