@@ -32,7 +32,7 @@ async function getPrice(pair: string): Promise<number | null> {
 
 export async function GET(req: NextRequest) {
   const secret = req.headers.get('x-cron-secret') || new URL(req.url).searchParams.get('secret')
-  if (secret !== process.env.CRON_SECRET && process.env.NODE_ENV !== 'development') {
+  if (secret !== process.env.PROFITY_CRON_KEY && process.env.NODE_ENV !== 'development') {
     return NextResponse.json({ error:'Unauthorized' }, { status:401 })
   }
 

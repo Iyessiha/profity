@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 
 export async function GET(req: NextRequest) {
   const secret = req.headers.get('x-cron-secret') || new URL(req.url).searchParams.get('secret')
-  if (secret !== process.env.CRON_SECRET && process.env.NODE_ENV !== 'development') {
+  if (secret !== process.env.PROFITY_CRON_KEY && process.env.NODE_ENV !== 'development') {
     return NextResponse.json({ error:'Unauthorized' }, { status:401 })
   }
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth:{autoRefreshToken:false,persistSession:false} })
