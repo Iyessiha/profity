@@ -101,6 +101,7 @@ export default function DashboardPage() {
         <QuotaBar token={token} locale={locale} plan={plan} />
 
         <div className="resp-pad" style={{ padding: '1.25rem 1.5rem', flex: 1, width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
 
           {/* Bienvenue */}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: 10 }}>
@@ -142,21 +143,21 @@ export default function DashboardPage() {
           {/* Horloges des marchés mondiaux */}
           <MarketClocks locale={locale} />
 
-          {/* Parrainage */}
-          {token && <ReferralCard token={token} />}
+          {/* Parrainage + Alertes — côte à côte sur PC */}
+          <div className="dash-two-col" style={{ display:'grid', gridTemplateColumns:'1fr', gap:0 }}>
+            {token && <ReferralCard token={token} />}
+            {token && <AlertsPanel token={token} plan={plan} />}
+          </div>
 
-          {/* Alertes de prix */}
-          {token && <AlertsPanel token={token} plan={plan} />}
-
-          {/* Journal de trading */}
-          {token && <TradingJournal token={token} />}
-
-          {/* Classement */}
-          <Leaderboard currentUserId={user?.id} />
+          {/* Journal + Classement — côte à côte sur PC */}
+          <div className="dash-two-col" style={{ display:'grid', gridTemplateColumns:'1fr', gap:0 }}>
+            {token && <TradingJournal token={token} />}
+            <Leaderboard currentUserId={user?.id} />
+          </div>
 
           {/* Modules */}
           <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'var(--tx2)', marginBottom: 10 }}>{locale === 'fr' ? 'ACCÈS RAPIDE' : 'QUICK ACCESS'}</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginBottom: '1.25rem' }}>
+          <div className="dash-modules" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginBottom: '1.25rem' }}>
             {MODULES.map(m => (
               <a key={m.href} href={m.href} style={{ background: 'var(--bg1)', border: `1px solid ${m.color}18`, borderRadius: 10, padding: '1.25rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden', transition: 'transform .2s, box-shadow .2s' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px ${m.color}20` }}
@@ -183,6 +184,8 @@ export default function DashboardPage() {
 
           {/* Watchlist + Feed */}
           {user && <WatchlistFeed userId={user.id} locale={locale} />}
+
+          </div>{/* fin maxWidth 1100 */}
         </div>
 
       {/* Footer légal */}
@@ -195,7 +198,6 @@ export default function DashboardPage() {
         <span style={{color:"var(--tx3)"}}>·</span>
         <a href="/support">Assistance</a>
       </footer>
-          </div>
     </div>
   )
 }

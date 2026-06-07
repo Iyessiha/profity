@@ -70,7 +70,7 @@ export default function TradingJournal({ token }: { token:string }) {
         </div>
 
         {/* Stats rapides */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom: open || trades.length > 0 ? '1rem' : 0 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(70px, 1fr))', gap:8, marginBottom: open || trades.length > 0 ? '1rem' : 0 }}>
           {[
             { l:'WINRATE',  v:`${stats.winrate}%`, c: stats.winrate >= 50 ? 'var(--ok)' : 'var(--red)' },
             { l:'WINS',     v:String(stats.wins),   c:'var(--ok)'  },
