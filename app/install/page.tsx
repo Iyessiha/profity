@@ -137,7 +137,7 @@ const FEATURES = [
 ]
 
 export default function InstallPage() {
-  const [os, setOs] = useState<OS>('unknown')
+  const [os, setOs] = useState<OS>('android')  // android par défaut (cible principale)
   const [installed, setInstalled] = useState(false)
   const [step, setStep] = useState(0)
 
@@ -214,7 +214,7 @@ export default function InstallPage() {
             {/* Étapes */}
             <div style={{ marginBottom: '2rem' }}>
               <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: '#00FFB2', marginBottom: '1rem' }}>
-                INSTALLATION — {osLabel.toUpperCase()}
+                INSTALLATION — {(osLabel ?? 'Android').toUpperCase()}
               </div>
 
               {steps.map((s, i) => (
