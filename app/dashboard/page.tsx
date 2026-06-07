@@ -186,18 +186,19 @@ export default function DashboardPage() {
           {user && <WatchlistFeed userId={user.id} locale={locale} />}
 
           </div>{/* fin maxWidth 1100 */}
-        </div>
+        </div>{/* fin resp-pad */}
 
-      {/* Footer légal */}
-      <footer className="app-footer">
-        <a href="/legal/cgu">CGU</a>
-        <span style={{color:"var(--tx3)"}}>·</span>
-        <a href="/legal/confidentialite">Confidentialité</a>
-        <span style={{color:"var(--tx3)"}}>·</span>
-        <a href="/legal/mentions">Mentions légales</a>
-        <span style={{color:"var(--tx3)"}}>·</span>
-        <a href="/support">Assistance</a>
-      </footer>
+        {/* Footer légal */}
+        <footer className="app-footer">
+          <a href="/legal/cgu">CGU</a>
+          <span style={{color:"var(--tx3)"}}>·</span>
+          <a href="/legal/confidentialite">Confidentialité</a>
+          <span style={{color:"var(--tx3)"}}>·</span>
+          <a href="/legal/mentions">Mentions légales</a>
+          <span style={{color:"var(--tx3)"}}>·</span>
+          <a href="/support">Assistance</a>
+        </footer>
+      </div>{/* fin app-main */}
     </div>
   )
 }
