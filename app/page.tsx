@@ -18,6 +18,7 @@ function ThemeToggleLanding() {
 // ── Composant FAQ accordéon ──────────────────────────────────
 function FaqItem({ q, a }: { q:string; a:string }) {
   const [open, setOpen] = useState(false)
+  const [stats, setStats] = useState({ analyses: 1240, users: 380, signals: 95 })
   return (
     <div style={{ borderBottom:'1px solid rgba(0,255,178,0.08)', padding:'1.125rem 0', cursor:'pointer' }} onClick={()=>setOpen(v=>!v)}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:16 }}>
@@ -40,6 +41,10 @@ export default function LandingPage() {
     const tick = () => setTime(new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }))
     tick()
     const t = setInterval(tick, 1000)
+    // Stats dynamiques
+    fetch('/api/stats').then(r => r.json()).then(d => {
+      if (d.analyses) setStats(d)
+    }).catch(() => {})
     return () => { window.removeEventListener('scroll', onScroll); clearInterval(t) }
   }, [])
 
@@ -356,6 +361,24 @@ export default function LandingPage() {
       </section>
 
       {/* ── FEATURES ── */}
+      {/* ── STATS RÉELLES ── */}
+      <section style={{ position:'relative', zIndex:1, padding:'2rem', borderTop:'1px solid rgba(0,255,178,0.06)', borderBottom:'1px solid rgba(0,255,178,0.06)', background:'rgba(0,255,178,0.02)' }}>
+        <div style={{ maxWidth:900, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px,1fr))', gap:24, textAlign:'center' }}>
+          {[
+            { v: stats.analyses, label:'Analyses générées', suffix:'', color:'#00FFB2' },
+            { v: stats.users,    label:'Traders inscrits',  suffix:'', color:'#00D4FF' },
+            { v: stats.signals,  label:'Signaux macro',     suffix:'', color:'#C9A84C' },
+          ].map(s => (
+            <div key={s.label}>
+              <div style={{ fontFamily:"'Orbitron',monospace", fontSize:'clamp(28px,5vw,42px)', fontWeight:900, color:s.color, lineHeight:1 }}>
+                {s.v.toLocaleString('fr-FR')}{s.suffix}
+              </div>
+              <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:14, color:'rgba(232,244,248,0.4)', marginTop:6, letterSpacing:1 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section id="features" style={{ position: 'relative', zIndex: 1, padding: '5rem 2rem', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 4, color: '#00D4FF', marginBottom: 12 }}>FONCTIONNALITÉS</div>

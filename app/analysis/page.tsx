@@ -8,6 +8,7 @@ import QuotaBar from '@/components/dashboard/QuotaBar'
 import SignalCard from '@/components/SignalCard'
 import OnboardingModal from '@/components/OnboardingModal'
 import { RandomAd } from '@/components/AdSlot'
+import Confetti from '@/components/Confetti'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -31,6 +32,7 @@ export default function AnalysisPage() {
   const [balance, setBalance]     = useState<number|undefined>(undefined)
   const [showOnboarding, setOnboarding] = useState(false)
   const [freeSMCUsed, setFreeSMCUsed]  = useState(false)
+  const [showConfetti, setConfetti]    = useState(false)
 
   const fileRef  = useRef<HTMLInputElement>(null)
   const [preview, setPreview]   = useState<string|null>(null)
@@ -89,6 +91,9 @@ export default function AnalysisPage() {
       else if (!json.success) setError(json.error || 'Erreur analyse')
       else {
         setSignal(json.data)
+        // Confettis sur la toute première analyse
+        const analysesCount = (profile?.analyses_used as number) ?? 0
+        if (analysesCount === 0) setConfetti(true)
         // Si SMC gratuit du jour vient d'être utilisé
         if (json.free_daily_smc) setFreeSMCUsed(true)
         // Notifier CreditBalance de se rafraîchir
@@ -107,6 +112,8 @@ export default function AnalysisPage() {
   const isPremium = plan === 'pro' || plan === 'elite'
 
   return (
+    <>
+      {showConfetti && <Confetti duration={4000} />}
     <div className="app-shell">
       {showOnboarding && user && <OnboardingModal userId={user.id} locale={locale} onClose={() => { setOnboarding(false); window.location.reload() }} />}
       <Sidebar tab="chart" setTab={() => {}} plan={plan} locale={locale} />
@@ -285,5 +292,6 @@ export default function AnalysisPage() {
       </div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
+    </>
   )
 }

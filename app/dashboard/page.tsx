@@ -15,6 +15,7 @@ import ReferralCard from '@/components/dashboard/ReferralCard'
 import AlertsPanel from '@/components/dashboard/AlertsPanel'
 import TradingJournal from '@/components/dashboard/TradingJournal'
 import Leaderboard from '@/components/dashboard/Leaderboard'
+import { SkeletonDashboard } from '@/components/Skeleton'
 import Onboarding from '@/components/Onboarding'
 import StreakToast from '@/components/StreakToast'
 
@@ -26,6 +27,7 @@ export default function DashboardPage() {
   const [user,    setUser]    = useState<{ id: string; email?: string } | null>(null)
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null)
   const [plan,    setPlan]    = useState('free')
+  const [loading, setLoading] = useState(true)
   const [locale,  setLocale]  = useState('fr')
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [streakReward, setStreakReward] = useState<{ streak:number; reward:number; milestone:number } | null>(null)
@@ -43,6 +45,7 @@ export default function DashboardPage() {
         setLocale(p.locale as string || 'fr')
         if (!p.onboarding_done) setShowOnboarding(true)
       }
+      setLoading(false)
 
       // Mettre à jour le streak + vérifier les récompenses
       try {
@@ -116,6 +119,7 @@ export default function DashboardPage() {
         <div className="resp-pad" style={{ padding: '1.25rem 1.5rem', flex: 1, width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
           <div style={{ maxWidth: 1100, margin: '0 auto', width: '100%' }}>
 
+          {loading ? <SkeletonDashboard /> : (<>
           {/* Bienvenue */}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: 10 }}>
             <div>
@@ -197,6 +201,7 @@ export default function DashboardPage() {
 
           {/* Watchlist + Feed */}
           {user && <WatchlistFeed userId={user.id} locale={locale} />}
+          </>)}
 
           </div>{/* fin maxWidth 1100 */}
         </div>{/* fin resp-pad */}
