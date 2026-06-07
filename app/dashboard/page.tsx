@@ -11,6 +11,7 @@ import QuotaBar from '@/components/dashboard/QuotaBar'
 import GamificationBar from '@/components/dashboard/GamificationBar'
 import WatchlistFeed from '@/components/dashboard/WatchlistFeed'
 import MarketClocks from '@/components/dashboard/MarketClocks'
+import ReferralCard from '@/components/dashboard/ReferralCard'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -100,6 +101,9 @@ export default function DashboardPage() {
 
           {/* Horloges des marchés mondiaux */}
           <MarketClocks locale={locale} />
+
+          {/* Parrainage */}
+          {token && <ReferralCard token={token} />}
 
           {/* Modules */}
           <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'var(--tx2)', marginBottom: 10 }}>{locale === 'fr' ? 'ACCÈS RAPIDE' : 'QUICK ACCESS'}</div>

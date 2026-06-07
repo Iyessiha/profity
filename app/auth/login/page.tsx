@@ -1,7 +1,7 @@
 'use client'
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabasePublic } from '@/lib/supabase'
 
 export default function LoginPage() {
@@ -12,6 +12,21 @@ export default function LoginPage() {
   const [loading,  setLoading] = useState(false)
   const [error,    setError]   = useState<string | null>(null)
   const [success,  setSuccess] = useState<string | null>(null)
+  const [refCode,  setRefCode] = useState('')
+
+  useEffect(() => {
+    // Capturer le code parrain depuis l'URL et le stocker
+    const params = new URLSearchParams(window.location.search)
+    const ref = params.get('ref')
+    if (ref) {
+      localStorage.setItem('px_ref', ref.toUpperCase())
+      setRefCode(ref.toUpperCase())
+      setMode('signup') // Basculer directement vers l'inscription
+    } else {
+      const stored = localStorage.getItem('px_ref')
+      if (stored) setRefCode(stored)
+    }
+  }, [])
 
   const HUD  = "'Orbitron', monospace"
   const BODY = "'Rajdhani', sans-serif"
@@ -55,7 +70,7 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
-    const { error: e } = await supabasePublic.auth.signUp({
+    const { data: signUpData, error: e } = await supabasePublic.auth.signUp({
       email, password,
       options: { data: { full_name: name || email.split('@')[0] } },
     })
@@ -63,7 +78,24 @@ export default function LoginPage() {
     if (e) {
       setError(e.message.includes('already registered') ? 'Cet email est déjà utilisé.' : e.message)
     } else {
-      setSuccess('Compte créé ! Vérifiez votre email pour confirmer.')
+      // Appliquer le code parrain si présent
+      const ref = refCode || localStorage.getItem('px_ref')
+      if (ref && signUpData?.user) {
+        try {
+          const session = await supabasePublic.auth.getSession()
+          const token = session.data.session?.access_token
+          if (token) {
+            await fetch('/api/referral', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ code: ref }),
+            })
+          }
+        } catch {} finally {
+          localStorage.removeItem('px_ref')
+        }
+      }
+      setSuccess(`Compte créé !${ref ? ' +10 crédits bonus parrainage offerts.' : ''} Vérifiez votre email.`)
       setMode('login')
     }
     setLoading(false)
@@ -136,6 +168,15 @@ export default function LoginPage() {
               <input type="text" value={name} placeholder="Jean Kouassi" onChange={e => setName(e.target.value)} style={inputStyle}
                 onFocus={e => (e.target.style.borderColor = 'rgba(0,255,178,0.5)')}
                 onBlur={e  => (e.target.style.borderColor = 'rgba(0,255,178,0.15)')} />
+            </div>
+          )}
+
+          {/* Badge code parrain détecté */}
+          {mode === 'signup' && refCode && (
+            <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:6, padding:'9px 12px' }}>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 2l1.5 3H12l-2.5 1.8 1 3L8 10l-2.5 1.8 1-3L4 7h2.5z" fill="#00FFB2"/></svg>
+              <span style={{ fontFamily:"'Orbitron',monospace", fontSize:9, color:'#00FFB2', letterSpacing:1 }}>CODE PARRAIN : {refCode}</span>
+              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:12, color:'rgba(232,244,248,0.5)', marginLeft:'auto' }}>+10 crédits offerts</span>
             </div>
           )}
 
