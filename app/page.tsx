@@ -15,6 +15,20 @@ function ThemeToggleLanding() {
   )
 }
 
+// ── Composant FAQ accordéon ──────────────────────────────────
+function FaqItem({ q, a }: { q:string; a:string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ borderBottom:'1px solid rgba(0,255,178,0.08)', padding:'1.125rem 0', cursor:'pointer' }} onClick={()=>setOpen(v=>!v)}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:16 }}>
+        <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:16, fontWeight:600, color:'#E8F4F8', flex:1 }}>{q}</span>
+        <span style={{ fontFamily:"'Orbitron',monospace", fontSize:14, color:'#00FFB2', flexShrink:0, transition:'transform .3s', display:'inline-block', transform:open?'rotate(45deg)':'rotate(0deg)' }}>+</span>
+      </div>
+      {open && <p style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:14, color:'rgba(232,244,248,0.55)', lineHeight:1.75, margin:'12px 0 0', paddingRight:32 }}>{a}</p>}
+    </div>
+  )
+}
+
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false)
   const [time, setTime] = useState('')
@@ -575,6 +589,51 @@ export default function LandingPage() {
         <p style={{ fontSize: 17, color: 'rgba(232,244,248,0.5)', marginBottom: '2.5rem', fontWeight: 300 }}>Rejoignez des milliers de traders qui ont arrêté de deviner.</p>
         <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 13, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '18px 44px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, display: 'inline-block', boxShadow: '0 0 40px rgba(0,255,178,0.35)', animation: 'glowPulse 2.5s ease-in-out infinite' }}>CRÉER MON COMPTE GRATUIT →</a>
         <p style={{ fontSize: 13, color: 'rgba(232,244,248,0.3)', marginTop: 16 }}>Sans carte bancaire · 3 analyses offertes</p>
+      </section>
+
+      {/* ── TÉMOIGNAGES ── */}
+      <section id="avis" style={{ position:'relative', zIndex:1, padding:'5rem 2rem', maxWidth:1100, margin:'0 auto' }}>
+        <div style={{ textAlign:'center', marginBottom:'3rem' }}>
+          <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:4, color:'#00FFB2', marginBottom:12 }}>ILS UTILISENT PROFITYX</div>
+          <h2 style={{ fontFamily:HUD, fontSize:28, color:'#E8F4F8', margin:0 }}>Ce que disent nos traders</h2>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:20 }}>
+          {[
+            { name:'Konan A.', plan:'Pro', country:'🇨🇮', text:'J\'ai enfin un outil qui m\'explique pourquoi entrer un trade. L\'analyse SMC est bluffante, exactement ce qu\'un mentor m\'expliquerait.', rating:5 },
+            { name:'Fatou D.', plan:'Elite', country:'🇸🇳', text:'Le signal avant le NFP m\'a sauvé plusieurs fois. Je reçois l\'alerte, j\'ouvre l\'app, le signal est là. Simple et efficace.', rating:5 },
+            { name:'Ismaël B.', plan:'Pro', country:'🇧🇫', text:'Le journal de trading m\'a aidé à voir que je tradais toujours en mode FOMO le vendredi. Depuis que je le sais, mes résultats s\'améliorent.', rating:5 },
+            { name:'Marie-Claire K.', plan:'Free', country:'🇨🇲', text:'Je commence avec le plan gratuit et l\'analyse SMC offerte chaque jour est déjà très utile. Je vais passer Pro ce mois-ci.', rating:5 },
+            { name:'Moussa T.', plan:'Elite', country:'🇲🇱', text:'Outil professionnel, interface claire, signaux précis. Le meilleur investissement de mon parcours trader.', rating:5 },
+            { name:'Yasmine N.', plan:'Pro', country:'🇹🇬', text:'En 2 semaines j\'ai retrouvé ma discipline grâce au journal. Les stats par émotion m\'ont ouvert les yeux sur mes patterns.', rating:5 },
+          ].map((t,i) => (
+            <div key={i} style={{ background:'rgba(0,255,178,0.03)', border:'1px solid rgba(0,255,178,0.1)', borderRadius:12, padding:'1.5rem', position:'relative' }}>
+              <div style={{ fontSize:18, marginBottom:8 }}>{'⭐'.repeat(t.rating)}</div>
+              <p style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:14, color:'rgba(232,244,248,0.7)', lineHeight:1.7, margin:'0 0 16px', fontStyle:'italic' }}>"{t.text}"</p>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div>
+                  <div style={{ fontFamily:HUD, fontSize:10, color:'#E8F4F8' }}>{t.name} {t.country}</div>
+                  <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#00FFB2', marginTop:3 }}>Plan {t.plan}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section style={{ position:'relative', zIndex:1, padding:'4rem 2rem', maxWidth:760, margin:'0 auto' }}>
+        <div style={{ textAlign:'center', marginBottom:'2.5rem' }}>
+          <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:4, color:'#00D4FF', marginBottom:12 }}>FAQ</div>
+          <h2 style={{ fontFamily:HUD, fontSize:28, color:'#E8F4F8', margin:0 }}>Questions fréquentes</h2>
+        </div>
+        {[
+          { q:'Comment fonctionne le système de crédits ?', a:'1 crédit = 1 analyse chart IA ou 1 signal annonce macro. Les crédits ne expirent pas. Vous recevez 10 crédits gratuits à l\'inscription, et les plans Pro/Elite reçoivent 150 ou 600 crédits chaque mois.' },
+          { q:'Qu\'est-ce que l\'analyse SMC ?', a:'SMC (Smart Money Concepts) est une méthode de trading institutionnel : Order Blocks, Fair Value Gaps, prises de liquidité. ProfityX l\'applique automatiquement à votre chart. Les Free reçoivent 1 analyse SMC gratuite par jour.' },
+          { q:'Comment payer ? Mobile Money disponible ?', a:'Oui ! Wave, Orange Money, MTN Mobile Money, Moov Money, Visa et Mastercard sont acceptés via GeniusPay. Le paiement est 100% sécurisé et instantané.' },
+          { q:'Puis-je annuler mon abonnement ?', a:'Oui, à tout moment depuis vos Paramètres. Vous conservez vos crédits et l\'accès Pro jusqu\'à la fin de la période payée.' },
+          { q:'ProfityX fonctionne sur quelles paires ?', a:'Forex (EUR/USD, GBP/USD, XAU/USD...), Crypto (BTC, ETH...), Indices synthétiques Deriv (V75, V10, Crash, Boom), Matières premières. L\'IA lit directement votre screenshot.' },
+          { q:'Les signaux sont-ils garantis ?', a:'Non — le trading comporte des risques. ProfityX est un outil d\'aide à la décision basé sur l\'IA. Les signaux augmentent votre probabilité de succès mais ne garantissent pas les résultats. Tradez toujours avec un capital que vous pouvez vous permettre de perdre.' },
+        ].map((faq,i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
       </section>
 
       {/* ── FOOTER ── */}

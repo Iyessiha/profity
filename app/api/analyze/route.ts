@@ -3,6 +3,7 @@ import { createClient }              from '@supabase/supabase-js'
 import { getChartPrompt }            from '@/lib/prompts'
 import { parseClaudeJSON, validateChartSignal } from '@/lib/parser'
 import { saveChartAnalysis }         from '@/lib/supabase'
+import { rateLimit }                 from '@/lib/rate-limit'
 import type { ApiResponse, ChartSignal } from '@/types'
 
 const MAX_SIZE_MB = 4.5
@@ -17,6 +18,12 @@ export async function POST(req: NextRequest) {
   const { data:{ user }, error:authErr } = await anon.auth.getUser(token)
   if (authErr || !user)
     return NextResponse.json<ApiResponse<null>>({ success:false, error:'Token invalide', code:'UNAUTHORIZED' }, { status:401 })
+
+  // Rate limiting : max 10 analyses/min par utilisateur
+  const rl = rateLimit(`analyze:${user.id}`, { limit:10, window:60 })
+  if (!rl.ok) {
+    return NextResponse.json({ success:false, error:'Trop de requêtes. Attendez 1 minute.', code:'RATE_LIMITED' }, { status:429 })
+  }
 
   const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
