@@ -38,7 +38,7 @@ export default function HistoryPage() {
               HISTO<span style={{ color:'var(--ac)' }}>RIQUE</span>
             </h1>
           </div>
-          {user && <HistoryPanel locale={locale} userId={user.id} />}
+          {user && <HistoryPanel locale={locale} userId={user.id} token={token} />}
         </div>
 
       {/* Footer légal */}
