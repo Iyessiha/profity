@@ -3,7 +3,6 @@
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import Anthropic from '@anthropic-ai/sdk'
 import { sendText, sendButtons, markAsRead, extractText } from '@/lib/whatsapp'
 import { AGENT_SYSTEM_PROMPT } from '@/lib/whatsapp-prompt'
 
@@ -75,16 +74,23 @@ export async function POST(req: NextRequest) {
       await db.from('whatsapp_leads').upsert({ phone, updated_at: new Date().toISOString() }, { onConflict: 'phone' })
     }
 
-    // Appel Claude
-    const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
-    const response = await claude.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 400,
-      system: AGENT_SYSTEM_PROMPT,
-      messages: messages_hist,
+    // Appel Claude via fetch direct (pas de SDK)
+    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY!,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        system: AGENT_SYSTEM_PROMPT,
+        messages: messages_hist,
+      }),
     })
-
-    const reply = response.content[0].type === 'text' ? response.content[0].text : ''
+    const claudeData = await claudeRes.json()
+    const reply = claudeData.content?.[0]?.text ?? "Désolé, je n'ai pas pu traiter votre message. Réessayez."
 
     // Sauvegarder la réponse
     await db.from('whatsapp_conversations').insert({ phone, role: 'assistant', content: reply })
