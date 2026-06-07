@@ -173,8 +173,8 @@ export default function LandingPage() {
           </div>
 
           <h1 style={{ fontFamily: HUD, fontSize: 'clamp(36px, 5.5vw, 72px)', fontWeight: 900, lineHeight: 1.04, letterSpacing: 1, marginBottom: '1.5rem' }}>
-            ARRÊTEZ DE TRADER<br /><span style={{ color: '#FF3A5C' }}>À L'AVEUGLE.</span><br />
-            <span style={{ color: '#00FFB2', textShadow: '0 0 30px rgba(0,255,178,0.4)' }}>LAISSEZ L'IA</span> DÉCIDER.
+            TRADEZ PLUS<br /><span style={{ color: '#00FFB2', textShadow: '0 0 30px rgba(0,255,178,0.4)' }}>INTELLIGENT.</span><br />
+            <span style={{ color: '#FF3A5C' }}>L'IA ANALYSE,</span> VOUS GAGNEZ.
           </h1>
 
           <p style={{ fontSize: 'clamp(15px,1.8vw,19px)', color: 'rgba(232,244,248,0.55)', lineHeight: 1.7, maxWidth: 520, marginBottom: '2.5rem', fontWeight: 300 }}>
