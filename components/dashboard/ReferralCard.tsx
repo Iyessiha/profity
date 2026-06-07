@@ -54,7 +54,7 @@ export default function ReferralCard({ token }: { token: string }) {
   if (!data) return null
 
   return (
-    <div style={{ background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:12, overflow:'hidden', marginTop:'1.25rem' }}>
+    <div id="referral" style={{ background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:12, overflow:'hidden', marginTop:'1.25rem' }}>
       {/* Barre top */}
       <div style={{ height:2, background:'linear-gradient(90deg, transparent, var(--ac), var(--ac2), transparent)' }} />
 
