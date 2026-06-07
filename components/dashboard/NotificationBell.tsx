@@ -1,9 +1,10 @@
 // ============================================================
-// PROFITYX — NotificationBell (cloche + panel responsive)
+// PROFITYX — NotificationBell + sons Web Audio API
 // ============================================================
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { supabasePublic } from '@/lib/supabase'
+import { playForPriority, isSoundEnabled, toggleSound } from '@/lib/notif-sound'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -24,6 +25,7 @@ const TYPE_CONFIG: Record<string, { icon:string; color:string }> = {
   plan_expiry:    { icon:'ti-calendar-off',   color:'var(--red)' },
   success:        { icon:'ti-circle-check',   color:'var(--ok)'  },
   info:           { icon:'ti-info-circle',    color:'var(--ac2)' },
+  social:         { icon:'ti-trophy',         color:'var(--ac3)' },
 }
 
 function timeAgo(d: string) {
@@ -39,15 +41,21 @@ function timeAgo(d: string) {
 const PRIORITY_ORDER: Record<string, number> = { urgent:0, high:1, normal:2, low:3 }
 
 export default function NotificationBell({ token }: { token: string }) {
-  const [notifs,  setNotifs]  = useState<Notif[]>([])
-  const [open,    setOpen]    = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [tab,     setTab]     = useState<'all' | 'unread'>('unread')
+  const [notifs,     setNotifs]     = useState<Notif[]>([])
+  const [open,       setOpen]       = useState(false)
+  const [loading,    setLoading]    = useState(false)
+  const [tab,        setTab]        = useState<'all' | 'unread'>('unread')
+  const [soundOn,    setSoundOn]    = useState(true)
+  const [soundFlash, setSoundFlash] = useState(false)  // feedback visuel toggle
+  const prevUnread = useRef(0)
   const ref = useRef<HTMLDivElement>(null)
 
   const unread = notifs.filter(n => !n.read).length
 
-  // ── Chargement (renommé loadNotifs pour éviter conflit avec window.fetch)
+  // Lire préférence son au montage
+  useEffect(() => { setSoundOn(isSoundEnabled()) }, [])
+
+  // ── Charger les notifications
   const loadNotifs = useCallback(async () => {
     if (!token) return
     setLoading(true)
@@ -61,13 +69,27 @@ export default function NotificationBell({ token }: { token: string }) {
           (PRIORITY_ORDER[a.priority] ?? 2) - (PRIORITY_ORDER[b.priority] ?? 2) ||
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
+
+        // Son si nouvelles notifs non lues arrivées
+        const newUnread = sorted.filter(n => !n.read).length
+        if (newUnread > prevUnread.current && prevUnread.current !== -1) {
+          const newest = sorted.find(n => !n.read)
+          if (newest && isSoundEnabled()) {
+            playForPriority(newest.priority)
+          }
+        }
+        prevUnread.current = newUnread === 0 ? 0 : newUnread
+
         setNotifs(sorted)
       }
     } catch {}
     setLoading(false)
   }, [token])
 
-  useEffect(() => { loadNotifs() }, [loadNotifs])
+  useEffect(() => {
+    prevUnread.current = -1  // Premier chargement : pas de son
+    loadNotifs()
+  }, [loadNotifs])
 
   // Polling 30s
   useEffect(() => {
@@ -97,6 +119,17 @@ export default function NotificationBell({ token }: { token: string }) {
     )
   }
 
+  const handleToggleSound = () => {
+    const next = toggleSound()
+    setSoundOn(next)
+    setSoundFlash(true)
+    setTimeout(() => setSoundFlash(false), 600)
+    if (next) {
+      // Tester le son immédiatement
+      setTimeout(() => playForPriority('normal'), 50)
+    }
+  }
+
   const handleClick = async (n: Notif) => {
     if (!n.read) await markRead(n.id)
     if (n.action_url) window.location.href = n.action_url
@@ -111,8 +144,8 @@ export default function NotificationBell({ token }: { token: string }) {
       {/* ── Bouton cloche ── */}
       <button
         onClick={() => { setOpen(v => !v); if (!open) loadNotifs() }}
-        style={{ width:36, height:36, borderRadius:8, border:'1px solid var(--bd1)', background:'var(--bg2)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--tx2)', position:'relative', flexShrink:0 }}
-        aria-label={`Notifications${unread > 0 ? ` (${unread} non lues)` : ''}`}
+        style={{ width:36, height:36, borderRadius:8, border:'1px solid var(--bd1)', background:'var(--bg2)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', position:'relative', flexShrink:0 }}
+        aria-label={`Notifications${unread > 0 ? ` (${unread})` : ''}`}
       >
         <i className="ti ti-bell" style={{ fontSize:17, color: unread > 0 ? 'var(--ac)' : 'var(--tx2)' }} />
         {unread > 0 && (
@@ -122,73 +155,54 @@ export default function NotificationBell({ token }: { token: string }) {
         )}
       </button>
 
-      {/* ── Panel — responsive mobile (fixed sur écrans < 480px) ── */}
+      {/* ── Panel ── */}
       {open && (
         <>
-          {/* Overlay mobile cliquable */}
+          <div onClick={() => setOpen(false)} style={{ position:'fixed', inset:0, zIndex:199 }} />
           <div
-            onClick={() => setOpen(false)}
-            style={{ position:'fixed', inset:0, zIndex:199 }}
-          />
-          <div style={{
-            position:  'fixed',
-            zIndex:    200,
-            animation: 'fadeIn .18s ease',
-            // Desktop : dropdown relatif au bouton
-            // Mobile  : plein bas d'écran
-            top:      'var(--notif-top, auto)',
-            right:    'var(--notif-right, 10px)',
-            bottom:   'var(--notif-bottom, auto)',
-            left:     'var(--notif-left, auto)',
-            width:    'min(380px, calc(100vw - 20px))',
-            maxHeight: 'calc(100dvh - 80px)',
-            background: 'var(--bg1)',
-            border:     '1px solid var(--bd1)',
-            borderRadius: 12,
-            boxShadow: '0 12px 40px var(--sh)',
-            overflow:  'hidden',
-            display:   'flex',
-            flexDirection: 'column',
-          }}
-            // JS pour positionner correctement selon la taille d'écran
             ref={(el) => {
               if (!el || !ref.current) return
-              const btn  = ref.current.getBoundingClientRect()
-              const vw   = window.innerWidth
-              const vh   = window.innerHeight
-              const w    = Math.min(380, vw - 20)
-              const isMobile = vw < 480
-
-              if (isMobile) {
-                // Mobile : ancré en haut sous la TopBar
-                el.style.setProperty('top',    '70px')
-                el.style.setProperty('left',   '10px')
-                el.style.setProperty('right',  '10px')
-                el.style.setProperty('width',  'calc(100vw - 20px)')
-                el.style.setProperty('bottom', 'auto')
+              const btn = ref.current.getBoundingClientRect()
+              const vw  = window.innerWidth
+              if (vw < 500) {
+                el.style.top    = '70px'
+                el.style.left   = '10px'
+                el.style.right  = '10px'
+                el.style.width  = 'calc(100vw - 20px)'
               } else {
-                // Desktop : dropdown sous le bouton
                 const rightEdge = vw - btn.right
-                el.style.setProperty('top',   `${btn.bottom + 10}px`)
-                el.style.setProperty('right', `${Math.max(10, rightEdge)}px`)
-                el.style.setProperty('left',  'auto')
-                el.style.setProperty('width', `${w}px`)
+                el.style.top    = `${btn.bottom + 10}px`
+                el.style.right  = `${Math.max(10, rightEdge)}px`
+                el.style.left   = 'auto'
+                el.style.width  = '380px'
               }
             }}
+            style={{ position:'fixed', zIndex:200, animation:'fadeIn .18s ease', maxHeight:'calc(100dvh - 80px)', background:'var(--bg1)', border:'1px solid var(--bd1)', borderRadius:12, boxShadow:'0 12px 40px var(--sh)', overflow:'hidden', display:'flex', flexDirection:'column' }}
           >
-            {/* Barre colorée */}
+            {/* Top gradient */}
             <div style={{ height:2, background:'linear-gradient(90deg, var(--ac), var(--ac2))', flexShrink:0 }} />
 
             {/* Header */}
-            <div style={{ padding:'12px 14px 8px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid var(--bd)', flexShrink:0 }}>
+            <div style={{ padding:'11px 14px 8px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid var(--bd)', flexShrink:0, gap:8 }}>
               <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:1, color:'var(--tx0)' }}>NOTIFICATIONS</div>
-              <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+              <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+
+                {/* Toggle son */}
+                <button
+                  onClick={handleToggleSound}
+                  title={soundOn ? 'Désactiver le son' : 'Activer le son'}
+                  style={{ width:28, height:28, borderRadius:6, border:`1px solid ${soundFlash ? 'var(--ac)' : 'var(--bd)'}`, background: soundOn ? 'rgba(0,255,178,0.08)' : 'transparent', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', transition:'all .2s' }}
+                >
+                  <i className={`ti ${soundOn ? 'ti-volume' : 'ti-volume-off'}`}
+                    style={{ fontSize:13, color: soundOn ? 'var(--ac)' : 'var(--tx3)' }} />
+                </button>
+
                 {unread > 0 && (
-                  <button onClick={() => markRead()} style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--ac)', background:'transparent', border:'none', cursor:'pointer' }}>
+                  <button onClick={() => markRead()} style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--ac)', background:'transparent', border:'none', cursor:'pointer', whiteSpace:'nowrap' }}>
                     TOUT LIRE
                   </button>
                 )}
-                <button onClick={() => setOpen(false)} style={{ background:'transparent', border:'none', color:'var(--tx3)', cursor:'pointer', fontSize:20, lineHeight:1 }}>✕</button>
+                <button onClick={() => setOpen(false)} style={{ background:'transparent', border:'none', color:'var(--tx3)', cursor:'pointer', fontSize:20, lineHeight:1, padding:'0 2px' }}>✕</button>
               </div>
             </div>
 
@@ -202,8 +216,8 @@ export default function NotificationBell({ token }: { token: string }) {
               ))}
             </div>
 
-            {/* Liste scrollable */}
-            <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch' }}>
+            {/* Liste */}
+            <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch' } as React.CSSProperties}>
               {loading && displayed.length === 0 && (
                 <div style={{ padding:'2rem', textAlign:'center', fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>Chargement...</div>
               )}
@@ -216,11 +230,11 @@ export default function NotificationBell({ token }: { token: string }) {
                 </div>
               )}
               {displayed.map(n => {
-                const cfg        = TYPE_CONFIG[n.type] ?? TYPE_CONFIG.info
+                const cfg = TYPE_CONFIG[n.type] ?? TYPE_CONFIG.info
                 const isPriority = n.priority === 'urgent' || n.priority === 'high'
                 return (
                   <div key={n.id} onClick={() => handleClick(n)}
-                    style={{ padding:'12px 14px', borderBottom:'1px solid var(--bd)', cursor:'pointer', background: n.read ? 'transparent' : 'rgba(0,255,178,0.03)', transition:'background .15s', display:'flex', gap:10, alignItems:'flex-start' }}
+                    style={{ padding:'12px 14px', borderBottom:'1px solid var(--bd)', cursor:'pointer', background: n.read ? 'transparent' : 'rgba(0,255,178,0.03)', display:'flex', gap:10, alignItems:'flex-start' }}
                     onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg2)'}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = n.read ? 'transparent' : 'rgba(0,255,178,0.03)'}
                   >
@@ -233,7 +247,7 @@ export default function NotificationBell({ token }: { token: string }) {
                           {isPriority && !n.read && <span style={{ color: n.priority==='urgent' ? 'var(--red)' : 'var(--ora)', marginRight:4 }}>●</span>}
                           {n.title}
                         </div>
-                        {!n.read && <span style={{ width:7, height:7, borderRadius:'50%', background:'var(--ac)', display:'block', flexShrink:0, marginTop:3 }} />}
+                        {!n.read && <span style={{ width:7, height:7, borderRadius:'50%', background:'var(--ac)', flexShrink:0, marginTop:3 }} />}
                       </div>
                       <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx2)', lineHeight:1.5, marginBottom:5 }}>{n.message}</div>
                       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:4 }}>
@@ -246,6 +260,14 @@ export default function NotificationBell({ token }: { token: string }) {
                   </div>
                 )
               })}
+            </div>
+
+            {/* Footer — indicateur son */}
+            <div style={{ padding:'8px 14px', borderTop:'1px solid var(--bd)', display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
+              <i className={`ti ${soundOn ? 'ti-volume' : 'ti-volume-off'}`} style={{ fontSize:11, color: soundOn ? 'var(--ac)' : 'var(--tx3)' }} />
+              <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color: soundOn ? 'var(--ac)' : 'var(--tx3)' }}>
+                SON {soundOn ? 'ACTIVÉ' : 'DÉSACTIVÉ'}
+              </span>
             </div>
           </div>
         </>
