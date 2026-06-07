@@ -3,6 +3,10 @@
 // ============================================================
 'use client'
 import type { ChartSignal, NewsSignal, OrderType } from '@/types'
+import dynamic from 'next/dynamic'
+
+// ChartAnnotation chargé dynamiquement (canvas côté client uniquement)
+const ChartAnnotation = dynamic(() => import('@/components/ChartAnnotation'), { ssr: false })
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -130,12 +134,14 @@ function rr(n: number | null | undefined): string {
 }
 
 interface Props {
-  signal: ChartSignal | NewsSignal
-  type?: 'chart' | 'news'
-  locale?: string
+  signal:     ChartSignal | NewsSignal
+  type?:      'chart' | 'news'
+  locale?:    string
+  imageFile?: File | null   // image uploadée — si fournie, affiche le chart annoté
+  plan?:      string
 }
 
-export default function SignalCard({ signal, type = 'chart', locale = 'fr' }: Props) {
+export default function SignalCard({ signal, type = 'chart', locale = 'fr', imageFile, plan = 'free' }: Props) {
   const isChart  = type === 'chart'
   const cs       = isChart ? signal as ChartSignal : null
   const ns       = !isChart ? signal as NewsSignal : null
@@ -215,9 +221,9 @@ export default function SignalCard({ signal, type = 'chart', locale = 'fr' }: Pr
         )}
       </div>
 
-      {/* SVG niveaux de prix — après étoiles de confiance */}
-      {cs && (cs.entry > 0 || cs.stop_loss > 0) && (
-        <PriceLevelsSVG signal={cs} />
+      {/* Chart annoté après étoiles de confiance */}
+      {cs && imageFile && (
+        <ChartAnnotation imageFile={imageFile} signal={cs} plan={plan} />
       )}
 
       {/* Niveaux principaux */}

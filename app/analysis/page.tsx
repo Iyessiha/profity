@@ -285,16 +285,13 @@ export default function AnalysisPage() {
               </>
             ) : (
               <div>
-                <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" locale={locale} />
-                {(plan === 'pro' || plan === 'elite' || isAdmin) && (
-                  <div style={{ marginTop: 16 }}>
-                    <ChartAnnotation
-                      imageFile={imageFile}
-                      signal={signal as Parameters<typeof import('@/components/SignalCard').default>[0]['signal']}
-                      plan={plan}
-                    />
-                  </div>
-                )}
+                <SignalCard
+                  signal={signal as Parameters<typeof SignalCard>[0]['signal']}
+                  type="chart"
+                  locale={locale}
+                  imageFile={(plan === 'pro' || plan === 'elite' || isAdmin) ? imageFile : null}
+                  plan={plan}
+                />
 
                 {/* Prompt de notation — uniquement après SMC gratuit non encore noté */}
                 {freeSMCUsed && !smcRated && smcAnalysisId && (

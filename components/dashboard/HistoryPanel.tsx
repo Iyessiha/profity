@@ -258,7 +258,8 @@ function DetailModal({ item, type, locale, token, onClose, onRated }: {
           <SignalCard signal={signal as ChartSignal} type={type==='charts'?'chart':'news'} locale={locale} />
         </div>
 
-        {/* SVG dans SignalCard — pas besoin de doublon ici */}
+        {/* SVG niveaux — historique uniquement (pas d'image originale disponible) */}
+        {chart && <PriceLevelsSVG record={chart} />}
 
         {/* Notation */}
         {chart && isOldEnough(chart.created_at) && (
