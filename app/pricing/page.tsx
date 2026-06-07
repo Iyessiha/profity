@@ -359,7 +359,7 @@ export default function PricingPage() {
                 <button
                   onClick={() => {
                     if (!token) { window.location.href = '/auth/login'; return }
-                    const wa = `https://wa.me/2250700000000?text=${encodeURIComponent(`Bonjour, je souhaite acheter le pack ${pack.label} — ${pack.credits} crédits à ${pack.price} FCFA pour mon compte ProfityX.`)}`
+                    const wa = `https://wa.me/2250500446464?text=${encodeURIComponent(`Bonjour, je souhaite acheter le pack ${pack.label} — ${pack.credits} crédits à ${pack.price} FCFA pour mon compte ProfityX.`)}`
                     window.open(wa, '_blank')
                   }}
                   style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, width:'100%', background:`color-mix(in srgb, ${pack.color} 15%, transparent)`, border:`1px solid color-mix(in srgb, ${pack.color} 40%, transparent)`, color:pack.color, fontFamily:HUD, fontSize:9, letterSpacing:1, fontWeight:700, padding:'12px', borderRadius:7, cursor:'pointer', transition:'all .2s' }}>
