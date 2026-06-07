@@ -15,6 +15,7 @@ const NAV = [
   { key: 'chart',      icon: 'ti-chart-candle',      fr: 'ANALYSE IA',     en: 'AI ANALYSIS',  href: '/analysis'  },
   { key: 'calendar',   icon: 'ti-news',               fr: 'ANNONCES MACRO', en: 'MACRO NEWS',   href: '/news'      },
   { key: 'history',    icon: 'ti-history',            fr: 'HISTORIQUE',     en: 'HISTORY',      href: '/history'   },
+  { key: 'journal',    icon: 'ti-notebook',           fr: 'JOURNAL',        en: 'JOURNAL',      href: '/journal'   },
   { key: 'referral',   icon: 'ti-users-plus',         fr: 'PARRAINAGE',     en: 'REFERRAL',     href: '/referral'  },
 ] as const
 
