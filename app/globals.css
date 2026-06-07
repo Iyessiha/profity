@@ -140,6 +140,11 @@ body {
   .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
   .table-scroll > * { min-width:600px; }
   .settings-shell { grid-template-columns:1fr !important; padding:0.75rem !important; }
+
+/* Tabs paramètres — scroll horizontal sur mobile */
+.settings-tabs-scroll { -webkit-overflow-scrolling:touch; }
+.settings-tabs-scroll::-webkit-scrollbar { display:none; }
+.settings-tab-pill { outline:none; }
   .app-main, .admin-main { width:100% !important; max-width:100vw !important; overflow-x:hidden !important; }
   .stats-grid { grid-template-columns:1fr 1fr !important; }
   .cal-filters { overflow-x:auto !important; flex-wrap:nowrap !important; padding-bottom:4px; }

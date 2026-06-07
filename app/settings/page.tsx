@@ -259,60 +259,60 @@ export default function SettingsPage() {
       {/* Header */}
       <div style={{
         background:'#06090F', borderBottom:'1px solid rgba(0,255,178,0.06)',
-        padding:'1.25rem 2rem', display:'flex', alignItems:'center',
-        justifyContent:'space-between',
+        padding:'0.875rem 1.25rem', display:'flex', alignItems:'center',
+        justifyContent:'space-between', gap:8, position:'sticky', top:0, zIndex:40,
       }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, minWidth:0 }}>
           <a href="/dashboard" style={{
-            fontFamily:HUD, fontSize:9, color:'rgba(232,244,248,0.3)',
-            textDecoration:'none', letterSpacing:2,
-            display:'flex', alignItems:'center', gap:6,
+            fontFamily:HUD, fontSize:8, color:'rgba(232,244,248,0.3)',
+            textDecoration:'none', letterSpacing:1, flexShrink:0,
+            display:'flex', alignItems:'center', gap:5,
           }}>
-            ← {locale === 'fr' ? 'DASHBOARD' : 'DASHBOARD'}
+            <i className="ti ti-arrow-left" style={{ fontSize:12 }} />
+            <span className="topbar-hide">DASHBOARD</span>
           </a>
-          <span style={{ color:'rgba(0,255,178,0.2)' }}>·</span>
-          <span style={{ fontFamily:HUD, fontSize:13, letterSpacing:3, color:'#00FFB2' }}>
+          <span style={{ color:'rgba(0,255,178,0.15)', flexShrink:0 }}>·</span>
+          <span style={{ fontFamily:HUD, fontSize:12, letterSpacing:2, color:'#00FFB2', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
             PARAMÈTRES
           </span>
         </div>
 
-        {/* Bouton sauvegarder */}
         <button onClick={saveProfile} disabled={saving}
           style={{
             background: saved ? 'rgba(0,255,178,0.15)' : '#00FFB2',
             border:     saved ? '1px solid rgba(0,255,178,0.3)' : 'none',
             color:      saved ? '#00FFB2' : '#020408',
-            fontFamily: HUD, fontSize:10, letterSpacing:2,
-            padding:'9px 20px', borderRadius:4, cursor:'pointer',
-            opacity: saving ? 0.6 : 1, transition:'all .3s',
+            fontFamily: HUD, fontSize:9, letterSpacing:2,
+            padding:'8px 16px', borderRadius:4, cursor:'pointer',
+            opacity: saving ? 0.6 : 1, transition:'all .3s', flexShrink:0,
           }}>
           {saving ? '...' : saved ? '✓ SAUVEGARDÉ' : 'SAUVEGARDER'}
         </button>
       </div>
 
-      <div className="settings-shell" style={{ maxWidth:900, margin:'0 auto', padding:'2rem', display:'grid', gridTemplateColumns:'200px 1fr', gap:'1.5rem' }}>
-
-        {/* Sidebar tabs */}
-        <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+      {/* Tabs horizontaux sur mobile */}
+      <div style={{ overflowX:'auto', borderBottom:'1px solid rgba(0,255,178,0.06)', background:'#06090F' }}
+        className="settings-tabs-scroll">
+        <div style={{ display:'flex', padding:'0 1rem', gap:4, minWidth:'max-content' }}>
           {TABS.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
+              className="settings-tab-pill"
               style={{
-                display:'flex', alignItems:'center', gap:10,
-                padding:'10px 12px', borderRadius:4,
-                background: tab === t.key ? 'rgba(0,255,178,0.08)' : 'transparent',
-                border: `1px solid ${tab === t.key ? 'rgba(0,255,178,0.2)' : 'transparent'}`,
-                color: tab === t.key ? '#00FFB2' : 'rgba(232,244,248,0.35)',
-                fontFamily:HUD, fontSize:9, letterSpacing:2,
-                cursor:'pointer', textAlign:'left', transition:'all .2s',
+                display:'flex', alignItems:'center', gap:7,
+                padding:'10px 14px', borderBottom:`2px solid ${tab===t.key?'#00FFB2':'transparent'}`,
+                background:'transparent', border:'none', borderBottom:`2px solid ${tab===t.key?'#00FFB2':'transparent'}`,
+                color: tab===t.key ? '#00FFB2' : 'rgba(232,244,248,0.35)',
+                fontFamily:HUD, fontSize:8, letterSpacing:2,
+                cursor:'pointer', whiteSpace:'nowrap', transition:'all .2s',
               }}>
-              <i className={`ti ${t.icon}`} style={{ fontSize:14 }} aria-hidden="true" />
+              <i className={`ti ${t.icon}`} style={{ fontSize:13 }} />
               {t.fr}
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Contenu */}
-        <div>
+      <div style={{ maxWidth:700, margin:'0 auto', padding:'1.5rem 1rem' }}>
 
           {/* ── PROFIL ───────────────────────────────────── */}
           {tab === 'profile' && (
@@ -722,6 +722,5 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
-    </div>
   )
 }
