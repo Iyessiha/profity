@@ -32,7 +32,8 @@ const LABELS: Record<string, Record<string, string>> = {
     forecast:     'Prévu',
     previous:     'Préc.',
     analyze:      'ANALYSER',
-    waiting:      'EN ATTENTE',
+    anticipate:   'ANTICIPER',
+    waiting:      'EN COURS',
     analyzing:    'ANALYSE...',
     lastUpdate:   'Mis à jour',
   },
@@ -48,7 +49,8 @@ const LABELS: Record<string, Record<string, string>> = {
     forecast:     'Forecast',
     previous:     'Prev.',
     analyze:      'ANALYZE',
-    waiting:      'PENDING',
+    anticipate:   'ANTICIPATE',
+    waiting:      'LIVE',
     analyzing:    'ANALYZING...',
     lastUpdate:   'Updated',
   },
@@ -69,7 +71,10 @@ function EventRow({
 }) {
   const ic = IMPACT_COLORS[event.impact] ?? IMPACT_COLORS['Low']
   const sc = STATUS_COLORS[event.status]
-  const canAnalyze = event.actual != null
+  // Analyser avant (anticipation) ou après (réaction) — toujours possible sauf si imminent (-5min)
+  const isImminent  = event.status === 'imminent' && event.minutes_until > -5 && event.minutes_until < 5
+  const canAnalyze  = !isImminent
+  const isAnticipation = event.actual == null  // pas encore publié → mode anticipation
   const [expanded, setExpanded] = useState(false)
 
   const impactLabel = event.impact === 'High' ? (locale === 'fr' ? 'Fort impact' : 'High impact')
@@ -176,7 +181,13 @@ function EventRow({
           whiteSpace: 'nowrap',
         }}
       >
-        {isAnalyzing ? lbl(locale, 'analyzing') : canAnalyze ? lbl(locale, 'analyze') : lbl(locale, 'waiting')}
+        {isAnalyzing
+          ? lbl(locale, 'analyzing')
+          : isImminent
+          ? lbl(locale, 'waiting')
+          : isAnticipation
+          ? lbl(locale, 'anticipate')
+          : lbl(locale, 'analyze')}
       </button>
 
       {/* Chevron */}
