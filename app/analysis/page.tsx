@@ -31,8 +31,12 @@ export default function AnalysisPage() {
   const [token, setToken]         = useState('')
   const [balance, setBalance]     = useState<number|undefined>(undefined)
   const [showOnboarding, setOnboarding] = useState(false)
-  const [freeSMCUsed, setFreeSMCUsed]  = useState(false)
-  const [showConfetti, setConfetti]    = useState(false)
+  const [freeSMCUsed, setFreeSMCUsed]   = useState(false)
+  const [showConfetti, setConfetti]     = useState(false)
+  const [smcAnalysisId, setSmcId]       = useState<string|null>(null)
+  const [smcRated, setSmcRated]         = useState(false)
+  const [smcBonus, setSmcBonus]         = useState(0)
+  const [needsRating, setNeedsRating]   = useState(false)
 
   const fileRef  = useRef<HTMLInputElement>(null)
   const [preview, setPreview]   = useState<string|null>(null)
@@ -91,10 +95,16 @@ export default function AnalysisPage() {
       else if (!json.success) setError(json.error || 'Erreur analyse')
       else {
         setSignal(json.data)
+        // Capturer l'ID si SMC gratuit pour la notation
+        if (json.free_daily_smc) {
+          setFreeSMCUsed(true)
+          setSmcId((json.data as Record<string,unknown>)?.id as string ?? null)
+        }
+        // Vérifier si notation requise
+        if (json.needs_rating) setNeedsRating(true)
         // Confettis sur la toute première analyse
         const analysesCount = (profile?.analyses_used as number) ?? 0
         if (analysesCount === 0) setConfetti(true)
-        // Si SMC gratuit du jour vient d'être utilisé
         if (json.free_daily_smc) setFreeSMCUsed(true)
         // Notifier CreditBalance de se rafraîchir
         window.dispatchEvent(new Event('creditUpdate'))
@@ -134,6 +144,11 @@ export default function AnalysisPage() {
                 <div style={{ display:'flex', alignItems:'center', gap:6, background:'color-mix(in srgb, var(--ac) 8%, transparent)', border:'1px solid var(--bd2)', borderRadius:6, padding:'6px 12px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)' }}>
                   <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3H12l-2.5 1.8 1 3L8 8.5l-2.5 1.3 1-3L4 5h2.5z" fill="var(--ac)"/></svg>
                   SMC ACTIVÉ
+                </div>
+              ) : needsRating ? (
+                /* Notation requise pour débloquer le SMC */
+                <div style={{ display:'flex', alignItems:'center', gap:6, background:'rgba(201,168,76,0.08)', border:'1px solid rgba(201,168,76,0.3)', borderRadius:6, padding:'6px 12px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#C9A84C' }}>
+                  ⚠️ NOTEZ HIER → SMC DÉBLOQUÉ
                 </div>
               ) : freeSMCUsed ? (
                 /* SMC gratuit vient d'être utilisé aujourd'hui */
@@ -267,6 +282,67 @@ export default function AnalysisPage() {
             ) : (
               <div>
                 <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" creditBalance={balance} plan={freeSMCUsed || isPremium ? (isPremium ? plan : 'pro') : plan} />
+
+                {/* Prompt de notation — uniquement après SMC gratuit non encore noté */}
+                {freeSMCUsed && !smcRated && smcAnalysisId && (
+                  <div style={{ marginTop:'1rem', background:'linear-gradient(135deg,rgba(0,255,178,0.05),rgba(0,212,255,0.03))', border:'1px solid rgba(0,255,178,0.2)', borderRadius:10, padding:'1.25rem' }}>
+                    <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'#00FFB2', marginBottom:6 }}>
+                      🎁 ÉVALUEZ VOTRE SIGNAL SMC GRATUIT
+                    </div>
+                    <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:13, color:'rgba(232,244,248,0.6)', marginBottom:'1rem' }}>
+                      Notez ce signal pour débloquer votre SMC gratuit de demain. Si vous partagez le résultat, vous gagnez <strong style={{ color:'#00FFB2' }}>+2 crédits</strong> bonus.
+                    </div>
+
+                    {/* Boutons de notation */}
+                    <div style={{ display:'flex', gap:8, marginBottom:'1rem', flexWrap:'wrap' }}>
+                      {[
+                        { r:'WIN',     l:'✅ WIN',      c:'#00FFB2', bg:'rgba(0,255,178,0.1)',  bc:'rgba(0,255,178,0.3)' },
+                        { r:'LOSS',    l:'❌ LOSS',     c:'#FF3A5C', bg:'rgba(255,58,92,0.1)',  bc:'rgba(255,58,92,0.3)' },
+                        { r:'PENDING', l:'⏳ EN COURS', c:'#C9A84C', bg:'rgba(201,168,76,0.1)', bc:'rgba(201,168,76,0.3)' },
+                      ].map(btn => (
+                        <button key={btn.r}
+                          onClick={async () => {
+                            const res = await fetch('/api/smc-rating', {
+                              method:'POST',
+                              headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
+                              body: JSON.stringify({ analysis_id: smcAnalysisId, result: btn.r, shared: false })
+                            })
+                            const j = await res.json()
+                            if (j.success) {
+                              setSmcRated(true)
+                              setSmcBonus(j.bonus_credits ?? 0)
+                              window.dispatchEvent(new Event('creditUpdate'))
+                            }
+                          }}
+                          style={{ flex:1, minWidth:100, padding:'10px 8px', border:`1px solid ${btn.bc}`, borderRadius:7, background:btn.bg, color:btn.c, fontFamily:HUD, fontSize:9, letterSpacing:1, cursor:'pointer', fontWeight:700, transition:'all .2s' }}>
+                          {btn.l}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div style={{ fontFamily:HUD, fontSize:7, color:'rgba(232,244,248,0.3)', letterSpacing:1, textAlign:'center' }}>
+                      Votre notation améliore la précision de l'IA pour tous les traders
+                    </div>
+                  </div>
+                )}
+
+                {/* Confirmation après notation */}
+                {smcRated && (
+                  <div style={{ marginTop:'1rem', background:'rgba(0,255,178,0.05)', border:'1px solid rgba(0,255,178,0.15)', borderRadius:10, padding:'1rem', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8 }}>
+                    <div>
+                      <div style={{ fontFamily:HUD, fontSize:9, color:'#00FFB2', letterSpacing:1, marginBottom:3 }}>
+                        ✅ NOTÉ — SMC DE DEMAIN DÉBLOQUÉ
+                      </div>
+                      {smcBonus > 0 && <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:12, color:'rgba(232,244,248,0.5)' }}>+{smcBonus} crédits bonus reçus</div>}
+                    </div>
+                    <a href={`/share/${smcAnalysisId}`} target="_blank" rel="noopener noreferrer"
+                      style={{ display:'flex', alignItems:'center', gap:6, background:'rgba(0,255,178,0.08)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:6, padding:'8px 14px', textDecoration:'none', color:'#00FFB2', fontFamily:HUD, fontSize:8, letterSpacing:1 }}>
+                      <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M10 2h4v4M14 2l-7 7M7 4H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9" stroke="#00FFB2" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                      PARTAGER (+2 CRÉDITS)
+                    </a>
+                  </div>
+                )}
+
                 <button onClick={()=>{setPreview(null);setSignal(null)}} style={{ marginTop:'1rem', background:'transparent', border:'1px solid var(--bd1)', color:'var(--ac)', fontFamily:HUD, fontSize:9, letterSpacing:2, padding:'10px 24px', borderRadius:4, cursor:'pointer', width:'100%' }}>+ NOUVELLE ANALYSE</button>
               </div>
             )}
