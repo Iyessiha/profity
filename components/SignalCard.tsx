@@ -7,6 +7,98 @@ import type { ChartSignal, NewsSignal, OrderType } from '@/types'
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 
+// ── SVG visualisation des niveaux ─────────────────────────
+function PriceLevelsSVG({ signal: s }: { signal: ChartSignal }) {
+  const prices = [
+    s.entry, s.stop_loss, s.tp1, s.tp2, s.tp3,
+    s.order_block?.high, s.order_block?.low,
+    s.fvg?.high, s.fvg?.low,
+    s.bos_level, s.choch_level,
+    s.liquidity_high, s.liquidity_low,
+  ].filter((p): p is number => p != null && p > 0)
+
+  if (prices.length < 2) return null
+
+  const hi = Math.max(...prices), lo = Math.min(...prices)
+  const rng = hi - lo || 1
+  const top = hi + rng * 0.15, bot = lo - rng * 0.15, span = top - bot
+  const W = 360, H = 180
+  const toY = (p: number) => ((top - p) / span) * H
+
+  const lines: { price:number; label:string; color:string; dashed:boolean }[] = []
+  if (s.entry)          lines.push({ price:s.entry,         label:'ENTRÉE', color:'#00FFB2', dashed:false })
+  if (s.stop_loss)      lines.push({ price:s.stop_loss,     label:'STOP',   color:'#FF3A5C', dashed:false })
+  if (s.tp1)            lines.push({ price:s.tp1,           label:'TP1',    color:'#00FFB2', dashed:true })
+  if (s.tp2)            lines.push({ price:s.tp2!,          label:'TP2',    color:'#00D4FF', dashed:true })
+  if (s.tp3)            lines.push({ price:s.tp3!,          label:'TP3',    color:'#7B61FF', dashed:true })
+  if (s.bos_level)      lines.push({ price:s.bos_level!,    label:'BOS',    color:'#00D4FF', dashed:true })
+  if (s.choch_level)    lines.push({ price:s.choch_level!,  label:'CHOCH',  color:'#FF6B35', dashed:true })
+  if (s.liquidity_high) lines.push({ price:s.liquidity_high!,label:'BSL',   color:'#FF3A5C', dashed:true })
+  if (s.liquidity_low)  lines.push({ price:s.liquidity_low!, label:'SSL',   color:'#00FFB2', dashed:true })
+
+  const zones: { y1:number; y2:number; color:string; label:string }[] = []
+  if (s.order_block) {
+    const c = s.direction === 'LONG' ? '#00FFB2' : '#FF3A5C'
+    const y1 = toY(s.order_block.high), y2 = toY(s.order_block.low)
+    zones.push({ y1:Math.min(y1,y2), y2:Math.max(y1,y2), color:c, label:s.order_block.label||'OB' })
+  }
+  if (s.fvg) {
+    const y1 = toY(s.fvg.high), y2 = toY(s.fvg.low)
+    zones.push({ y1:Math.min(y1,y2), y2:Math.max(y1,y2), color:'#C9A84C', label:s.fvg.label||'FVG' })
+  }
+
+  const fmtP = (n: number) => n >= 100 ? n.toLocaleString('fr-FR',{maximumFractionDigits:2}) : n.toLocaleString('fr-FR',{maximumFractionDigits:5})
+
+  return (
+    <div style={{ background:'#020408', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width:'100%', display:'block', maxHeight:200 }}>
+        <rect width={W} height={H} fill="#060B14"/>
+        {/* Grille */}
+        {[0.25,0.5,0.75].map(p=>(
+          <line key={p} x1={0} y1={H*p} x2={W} y2={H*p} stroke="rgba(255,255,255,0.03)" strokeWidth={1}/>
+        ))}
+        {/* Zones OB / FVG */}
+        {zones.map((z,i)=>(
+          <g key={i}>
+            <rect x={0} y={z.y1} width={W} height={Math.max(z.y2-z.y1,1)} fill={z.color} fillOpacity={0.07}/>
+            <line x1={0} y1={z.y1} x2={W} y2={z.y1} stroke={z.color} strokeWidth={0.8} strokeOpacity={0.35}/>
+            <line x1={0} y1={z.y2} x2={W} y2={z.y2} stroke={z.color} strokeWidth={0.8} strokeOpacity={0.35}/>
+            <text x={W-4} y={z.y1-2} textAnchor="end" fill={z.color} fontSize={7} fontFamily="Orbitron,monospace" opacity={0.6}>{z.label}</text>
+          </g>
+        ))}
+        {/* Lignes niveaux */}
+        {lines.map((l,i)=>{
+          const y=toY(l.price); if(y<0||y>H)return null
+          return (
+            <g key={i}>
+              <line x1={0} y1={y} x2={W} y2={y} stroke={l.color} strokeWidth={1.5} strokeOpacity={0.85}
+                strokeDasharray={l.dashed?'5,3':undefined}/>
+              <rect x={2} y={y-9} width={l.label.length*5.5+6} height={11} rx={2} fill={l.color} fillOpacity={0.1}/>
+              <text x={5} y={y} dominantBaseline="middle" fill={l.color} fontSize={8} fontFamily="Orbitron,monospace">{l.label}</text>
+              <text x={W-4} y={y} dominantBaseline="middle" textAnchor="end" fill={l.color} fontSize={8} fontFamily="Orbitron,monospace" opacity={0.85}>{fmtP(l.price)}</text>
+            </g>
+          )
+        })}
+      </svg>
+      {/* Légende */}
+      <div style={{ display:'flex', flexWrap:'wrap', gap:8, padding:'5px 14px 7px', borderTop:'1px solid rgba(255,255,255,0.04)' }}>
+        {lines.slice(0,6).map((l,i)=>(
+          <div key={i} style={{ display:'flex', alignItems:'center', gap:4 }}>
+            <span style={{ width:12, height:2, background:l.color, display:'inline-block', borderRadius:1 }}/>
+            <span style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'rgba(232,244,248,0.35)' }}>{l.label}</span>
+          </div>
+        ))}
+        {zones.map((z,i)=>(
+          <div key={'z'+i} style={{ display:'flex', alignItems:'center', gap:4 }}>
+            <span style={{ width:12, height:6, background:z.color, opacity:0.3, display:'inline-block', borderRadius:1 }}/>
+            <span style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'rgba(232,244,248,0.35)' }}>{z.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ── Config order types ─────────────────────────────────────
 const ORDER_TYPE_CFG: Record<OrderType, { label:string; color:string; bg:string; icon:string; desc:string }> = {
   BUY_LIMIT:   { label:'BUY LIMIT',   color:'#00FFB2', bg:'rgba(0,255,178,0.1)',  icon:'⬇️', desc:'Retour sur zone attendu' },
@@ -119,6 +211,11 @@ export default function SignalCard({ signal, type = 'chart', locale = 'fr' }: Pr
           </div>
         )}
       </div>
+
+      {/* SVG niveaux de prix — après étoiles de confiance */}
+      {cs && (cs.entry > 0 || cs.stop_loss > 0) && (
+        <PriceLevelsSVG signal={cs} />
+      )}
 
       {/* Niveaux principaux */}
       <div style={{ padding:'14px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
