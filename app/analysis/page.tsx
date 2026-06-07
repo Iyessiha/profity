@@ -47,6 +47,7 @@ export default function AnalysisPage() {
   const [error, setError]       = useState<string|null>(null)
   const [quotaErr, setQuotaErr] = useState(false)
   const [showTV, setShowTV]     = useState(false)
+  const [analysisMode, setAnalysisMode] = useState<'swing'|'scalp'>('swing')
   const tvRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export default function AnalysisPage() {
     try {
       const res = await fetch('/api/analyze', {
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
-        body: JSON.stringify({ image: preview.split(',')[1], mediaType: preview.split(';')[0].split(':')[1], locale }),
+        body: JSON.stringify({ image: preview.split(',')[1], mediaType: preview.split(';')[0].split(':')[1], locale, mode: analysisMode }),
       })
       const json = await res.json()
       if (json.code === 'QUOTA_EXCEEDED') setQuotaErr(true)
@@ -254,10 +255,36 @@ export default function AnalysisPage() {
                   <div>
                     <img src={preview} alt="Chart" style={{ width:'100%', maxHeight:300, objectFit:'contain', borderRadius:8, background:'var(--bg2)', marginBottom:'1rem' }} />
                     {error && <div style={{ background:'rgba(255,58,92,0.08)', border:'1px solid rgba(255,58,92,0.25)', borderRadius:6, padding:'10px 14px', marginBottom:'1rem', fontFamily:BODY, fontSize:13, color:'var(--red)' }}>{error}</div>}
+
+                    {/* Sélecteur mode d'analyse */}
+                    <div style={{ display:'flex', gap:6, marginBottom:10 }}>
+                      {([
+                        { key:'swing', label:'📈 SWING / DAY', desc:'SMC classique, R/R ≥ 1.5' },
+                        { key:'scalp', label:'⚡ SCALP',        desc:'Micro-structure, R/R ≥ 1.0' },
+                      ] as const).map(m => (
+                        <button key={m.key} onClick={() => setAnalysisMode(m.key)}
+                          style={{ flex:1, padding:'8px 10px', borderRadius:7, cursor:'pointer', transition:'all .2s',
+                            background: analysisMode===m.key
+                              ? m.key==='scalp' ? 'rgba(255,107,53,0.12)' : 'rgba(0,255,178,0.08)'
+                              : 'transparent',
+                            border: `1px solid ${analysisMode===m.key
+                              ? m.key==='scalp' ? 'rgba(255,107,53,0.4)' : 'rgba(0,255,178,0.3)'
+                              : 'rgba(255,255,255,0.08)'}` }}>
+                          <div style={{ fontFamily:"'Orbitron',monospace", fontSize:8, letterSpacing:1,
+                            color: analysisMode===m.key
+                              ? m.key==='scalp' ? '#FF6B35' : '#00FFB2'
+                              : 'rgba(232,244,248,0.4)',
+                            marginBottom:2 }}>{m.label}</div>
+                          <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:10,
+                            color:'rgba(232,244,248,0.3)' }}>{m.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+
                     <div style={{ display:'flex', gap:10 }}>
                       <button onClick={analyze} disabled={analyzing||(plan==='free'&&analysesLeft===0)}
-                        style={{ flex:1, background: analyzing||(plan==='free'&&analysesLeft===0)?'var(--bd)':'var(--ac)', border:'none', color:'#020408', fontFamily:HUD, fontSize:11, letterSpacing:2, fontWeight:700, padding:'14px', borderRadius:6, cursor: analyzing?'wait':'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, fontSize:12 }}>
-                        {analyzing ? <><div style={{ width:16, height:16, border:'2px solid rgba(0,0,0,0.2)', borderTop:'2px solid #020408', borderRadius:'50%', animation:'spin .8s linear infinite' }} />ANALYSE EN COURS...</> : <><i className="ti ti-sparkles" style={{ fontSize:16 }} />GÉNÉRER LE SIGNAL</>}
+                        style={{ flex:1, background: analyzing||(plan==='free'&&analysesLeft===0)?'var(--bd)': analysisMode==='scalp'?'#FF6B35':'var(--ac)', border:'none', color:'#020408', fontFamily:HUD, fontSize:11, letterSpacing:2, fontWeight:700, padding:'14px', borderRadius:6, cursor: analyzing?'wait':'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, fontSize:12 }}>
+                        {analyzing ? <><div style={{ width:16, height:16, border:'2px solid rgba(0,0,0,0.2)', borderTop:'2px solid #020408', borderRadius:'50%', animation:'spin .8s linear infinite' }} />ANALYSE EN COURS...</> : <><i className={`ti ${analysisMode==='scalp'?'ti-bolt':'ti-sparkles'}`} style={{ fontSize:16 }} />{analysisMode==='scalp'?'SCALP RAPIDE':'GÉNÉRER LE SIGNAL'}</>}
                       </button>
                       <button onClick={()=>{setPreview(null);setSignal(null);setError(null)}} style={{ background:'transparent', border:'1px solid var(--bd)', color:'var(--tx2)', fontFamily:HUD, fontSize:9, padding:'0 16px', borderRadius:6, cursor:'pointer' }}>✕</button>
                     </div>
@@ -291,6 +318,7 @@ export default function AnalysisPage() {
                   locale={locale}
                   imageFile={(plan === 'pro' || plan === 'elite' || isAdmin) ? imageFile : null}
                   plan={plan}
+                  mode={analysisMode}
                 />
 
                 {/* Prompt de notation — uniquement après SMC gratuit non encore noté */}

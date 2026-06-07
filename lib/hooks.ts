@@ -14,7 +14,7 @@ export function useChartAnalyze() {
   const [error,    setError]    = useState<string | null>(null)
   const [quotaErr, setQuotaErr] = useState(false)
 
-  const analyze = useCallback(async (file: File, locale = 'fr') => {
+  const analyze = useCallback(async (file: File, locale = 'fr', mode: 'swing' | 'scalp' = 'swing') => {
     setLoading(true)
     setError(null)
     setSignal(null)
@@ -32,6 +32,7 @@ export function useChartAnalyze() {
       const formData = new FormData()
       formData.append('image',  file)
       formData.append('locale', locale)
+      formData.append('mode',   mode)
 
       // Appel API
       const res = await fetch('/api/analyze', {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
-import { getBasicPrompt, getAdvancedPrompt, getElitePrompt } from '@/lib/prompts'
+import { getBasicPrompt, getAdvancedPrompt, getElitePrompt, getScalpPrompt } from '@/lib/prompts'
 import { parseClaudeJSON, validateChartSignal } from '@/lib/parser'
 import { saveChartAnalysis }         from '@/lib/supabase'
 import { rateLimit }                 from '@/lib/rate-limit'
@@ -82,6 +82,17 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ── Mode (swing / scalp) ────────────────────────────────
+  let analysisMode: 'swing' | 'scalp' = 'swing'
+  // Peek le body pour lire le mode avant de lire l'image en FormData
+  const contentTypeHdr = req.headers.get('content-type') ?? ''
+  if (contentTypeHdr.includes('application/json')) {
+    try {
+      const bodyClone = await req.clone().json()
+      if (bodyClone.mode === 'scalp') analysisMode = 'scalp'
+    } catch {}
+  }
+
   // ── Lire l'image ──────────────────────────────────────────
   let imageBase64: string, mimeType: string
   try {
@@ -117,7 +128,9 @@ export async function POST(req: NextRequest) {
       headers: { 'Content-Type':'application/json', 'x-api-key':process.env.ANTHROPIC_API_KEY!, 'anthropic-version':'2023-06-01' },
       body: JSON.stringify({
         model:      'claude-sonnet-4-6',
-        system:     tier === 'elite' ? getElitePrompt(locale)
+        system:     analysisMode === 'scalp'
+                          ? (tier === 'basic' ? getScalpPrompt(locale) : getScalpPrompt(locale))
+                          : tier === 'elite' ? getElitePrompt(locale)
                           : tier === 'advanced' ? getAdvancedPrompt(locale)
                           : getBasicPrompt(locale),
         max_tokens: tier === 'elite' ? 1500 : tier === 'advanced' ? 1200 : 600,
@@ -195,7 +208,7 @@ export async function POST(req: NextRequest) {
       action_url:'/pricing', action_label:'Voir les packs' })
   }
 
-  return NextResponse.json({ success:true, data:signal, free_daily_smc: freeDailySmc, smc_already_used: smcAlreadyUsed }, { status:200 })
+  return NextResponse.json({ success:true, data:signal, free_daily_smc: freeDailySmc, smc_already_used: smcAlreadyUsed, mode: analysisMode }, { status:200 })
 }
 
 export const maxDuration = 30

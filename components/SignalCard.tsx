@@ -139,13 +139,15 @@ interface Props {
   locale?:    string
   imageFile?: File | null   // image uploadée — si fournie, affiche le chart annoté
   plan?:      string
+  mode?:      'swing' | 'scalp'
 }
 
-export default function SignalCard({ signal, type = 'chart', locale = 'fr', imageFile, plan = 'free' }: Props) {
+export default function SignalCard({ signal, type = 'chart', locale = 'fr', imageFile, plan = 'free', mode = 'swing' }: Props) {
   const isChart  = type === 'chart'
   const cs       = isChart ? signal as ChartSignal : null
   const ns       = !isChart ? signal as NewsSignal : null
-
+  const isScalp  = mode === 'scalp'
+  const rrMin    = isScalp ? 1.0 : 1.5  // seuil R/R acceptable selon le mode
   const dir      = signal.direction
   const dirColor = dir === 'LONG' ? '#00FFB2' : dir === 'SHORT' ? '#FF3A5C' : '#C9A84C'
   const dirBg    = dir === 'LONG' ? 'rgba(0,255,178,0.08)' : dir === 'SHORT' ? 'rgba(255,58,92,0.08)' : 'rgba(201,168,76,0.08)'
@@ -182,6 +184,14 @@ export default function SignalCard({ signal, type = 'chart', locale = 'fr', imag
 
           {/* Direction + Order type */}
           <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6 }}>
+            {/* Badge SCALP */}
+            {isScalp && (
+              <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'#FF6B35',
+                background:'rgba(255,107,53,0.1)', border:'1px solid rgba(255,107,53,0.35)',
+                padding:'3px 10px', borderRadius:4 }}>
+                ⚡ SCALP
+              </div>
+            )}
             <div style={{ fontFamily:HUD, fontSize:13, fontWeight:900, color:dirColor,
               background:dirBg, border:`1px solid ${dirColor}30`,
               padding:'5px 14px', borderRadius:6 }}>
@@ -256,8 +266,8 @@ export default function SignalCard({ signal, type = 'chart', locale = 'fr', imag
           <div style={{ background:'rgba(201,168,76,0.06)', border:'1px solid rgba(201,168,76,0.2)', borderRadius:8, padding:'10px', textAlign:'center' }}>
             <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'rgba(201,168,76,0.6)', marginBottom:4 }}>RATIO R/R</div>
             <div style={{ fontFamily:HUD, fontSize:16, fontWeight:900, color:'#C9A84C' }}>{rr(signal.rr_ratio)}</div>
-            <div style={{ fontFamily:BODY, fontSize:9, color: (signal.rr_ratio ?? 0) >= 2 ? '#00FFB2' : (signal.rr_ratio ?? 0) >= 1.5 ? '#C9A84C' : '#FF3A5C', marginTop:2 }}>
-              {(signal.rr_ratio ?? 0) >= 2 ? '✅ Excellent' : (signal.rr_ratio ?? 0) >= 1.5 ? '⚠️ Acceptable' : '❌ Faible'}
+            <div style={{ fontFamily:BODY, fontSize:9, color: (signal.rr_ratio ?? 0) >= 2 ? '#00FFB2' : (signal.rr_ratio ?? 0) >= rrMin ? '#C9A84C' : '#FF3A5C', marginTop:2 }}>
+              {(signal.rr_ratio ?? 0) >= 2 ? '✅ Excellent' : (signal.rr_ratio ?? 0) >= rrMin ? '⚠️ Acceptable' : '❌ Faible'}
             </div>
           </div>
         </div>
