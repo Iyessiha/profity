@@ -183,6 +183,9 @@ export default function LandingPage() {
 
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: '1.5rem' }}>
             <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '16px 32px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, boxShadow: '0 0 40px rgba(0,255,178,0.35)', animation: 'glowPulse 2.5s ease-in-out infinite' }}>COMMENCER GRATUITEMENT →</a>
+            <a href="/install" style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#00D4FF', border: '1px solid rgba(0,212,255,0.25)', padding: '12px 20px', borderRadius: 4, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              📲 INSTALLER L'APP
+            </a>
             <a href="#how" style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: 'var(--tx0)', background: 'transparent', border: '1px solid rgba(0,255,178,0.25)', padding: '16px 32px', borderRadius: 4, textDecoration: 'none' }}>VOIR COMMENT</a>
           </div>
           <p style={{ fontSize: 13, color: 'rgba(232,244,248,0.35)', fontWeight: 300, marginBottom: '3rem' }}>✓ Sans carte bancaire &nbsp;·&nbsp; ✓ 10 crédits offerts &nbsp;·&nbsp; ✓ Annulable à tout moment</p>
@@ -668,7 +671,8 @@ export default function LandingPage() {
 
         {/* Liens principaux */}
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-          {[['#features','FONCTIONS'],['#pricing','TARIFS'],['#avis','AVIS'],['#partenaires','PARTENAIRES']].map(([h,l]) => (
+          {[['#features','FONCTIONS'],['#pricing','TARIFS'],['#avis','AVIS'],['#partenaires','PARTENAIRES'],
+            ['/install','📲 INSTALLER L\'APP']].map(([h,l]) => (
             <a key={l} href={h} className="foot-link">{l}</a>
           ))}
         </div>

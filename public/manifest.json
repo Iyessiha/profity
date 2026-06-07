@@ -1,34 +1,28 @@
 {
-  "name": "ProfityX — Signaux Trading IA",
+  "name": "ProfityX — AI Trading Signal",
   "short_name": "ProfityX",
-  "description": "Analysez vos charts et annonces macro avec l'intelligence artificielle",
+  "description": "Analysez vos charts avec l'IA. Signaux SMC, Risk Management, Classement traders.",
   "start_url": "/dashboard",
-  "scope": "/",
   "display": "standalone",
   "background_color": "#020408",
   "theme_color": "#00FFB2",
   "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "categories": ["finance", "utilities"],
+  "categories": ["finance", "productivity"],
   "lang": "fr",
-  "dir": "ltr"
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Analyser un chart",
+      "url": "/analysis",
+      "description": "Lancer une analyse IA"
+    },
+    {
+      "name": "Calculateur",
+      "url": "/calculator",
+      "description": "Calculateur de position"
+    }
+  ]
 }
