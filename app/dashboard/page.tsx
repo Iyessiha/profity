@@ -13,6 +13,7 @@ import WatchlistFeed from '@/components/dashboard/WatchlistFeed'
 import MarketClocks from '@/components/dashboard/MarketClocks'
 import ReferralCard from '@/components/dashboard/ReferralCard'
 import Onboarding from '@/components/Onboarding'
+import StreakToast from '@/components/StreakToast'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -24,6 +25,7 @@ export default function DashboardPage() {
   const [plan,    setPlan]    = useState('free')
   const [locale,  setLocale]  = useState('fr')
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [streakReward, setStreakReward] = useState<{ streak:number; reward:number; milestone:number } | null>(null)
 
   useEffect(() => {
     ;(async () => {
@@ -36,9 +38,17 @@ export default function DashboardPage() {
         setProfile(p)
         setPlan(p.user_plan as string || 'free')
         setLocale(p.locale as string || 'fr')
-        // Afficher l'onboarding au premier login
         if (!p.onboarding_done) setShowOnboarding(true)
       }
+
+      // Mettre à jour le streak + vérifier les récompenses
+      try {
+        const sr = await fetch('/api/streak', { method:'POST', headers:{ Authorization:`Bearer ${session.access_token}` } })
+        const sj = await sr.json()
+        if (sj.success && sj.updated && sj.milestone > 0 && sj.reward > 0) {
+          setStreakReward({ streak: sj.streak, reward: sj.reward, milestone: sj.milestone })
+        }
+      } catch {}
     })()
   }, [])
 
@@ -70,6 +80,16 @@ export default function DashboardPage() {
           name={(profile?.full_name as string)?.split(' ')[0] || 'Trader'}
           credits={10}
           onDone={() => setShowOnboarding(false)}
+        />
+      )}
+
+      {/* Toast récompense streak */}
+      {streakReward && (
+        <StreakToast
+          streak={streakReward.streak}
+          reward={streakReward.reward}
+          milestone={streakReward.milestone}
+          onClose={() => setStreakReward(null)}
         />
       )}
       <Sidebar tab="chart" setTab={() => {}} plan={plan} locale={locale} />
