@@ -4,7 +4,7 @@
 import posthog from 'posthog-js'
 
 const KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY || ''
-const HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com'
+const HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com'
 
 export function initAnalytics() {
   if (typeof window === 'undefined' || !KEY) return
