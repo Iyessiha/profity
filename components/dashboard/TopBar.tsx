@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTheme } from '@/lib/theme'
 import { useMenu } from '@/lib/menu-context'
 import { supabasePublic } from '@/lib/supabase'
@@ -122,13 +122,22 @@ export function QuotaBar({ token, plan, locale }: CreditBarProps) {
   const HUD = "'Orbitron', monospace"
   const BODY = "'Rajdhani', sans-serif"
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     if (!token) return
     fetch('/api/credits', { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(j => { if (j.success) { setBalance(j.balance); setTotal(j.earned) } })
       .catch(() => {})
   }, [token])
+
+  useEffect(() => {
+    refresh()
+    // Écouter les mises à jour de crédits depuis l'analyse
+    window.addEventListener('creditUpdate', refresh)
+    // Polling léger toutes les 60s
+    const id = setInterval(refresh, 60_000)
+    return () => { window.removeEventListener('creditUpdate', refresh); clearInterval(id) }
+  }, [refresh])
 
   if (balance === null) return null
 

@@ -16,6 +16,7 @@ import AlertsPanel from '@/components/dashboard/AlertsPanel'
 import TradingJournal from '@/components/dashboard/TradingJournal'
 import Leaderboard from '@/components/dashboard/Leaderboard'
 import { SkeletonDashboard } from '@/components/Skeleton'
+import { useRealtimeSync } from '@/lib/useRealtime'
 import Onboarding from '@/components/Onboarding'
 import StreakToast from '@/components/StreakToast'
 
@@ -31,6 +32,17 @@ export default function DashboardPage() {
   const [locale,  setLocale]  = useState('fr')
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [streakReward, setStreakReward] = useState<{ streak:number; reward:number; milestone:number } | null>(null)
+
+  // Sync temps réel : crédits + profil
+  useRealtimeSync({
+    userId: user?.id ?? '',
+    onProfileChange: (p) => setProfile(prev => prev ? { ...prev, ...p } : p),
+    onActivityChange: () => {
+      // Recharger le profil si analyses_used change
+      if (user) supabasePublic.from('profiles').select('*').eq('id', user.id).single()
+        .then(({ data }) => { if (data) setProfile(data) })
+    },
+  })
 
   useEffect(() => {
     ;(async () => {
