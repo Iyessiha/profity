@@ -151,7 +151,7 @@ export default function DashboardPage() {
             {[
               { icon: 'ti-chart-candle', label: locale === 'fr' ? 'ANALYSES' : 'ANALYSES', value: aLeft, color: 'var(--ac)',  sub: locale==='fr'?'restantes':'left' },
               { icon: 'ti-news',          label: 'SIGNAUX NEWS',                               value: nLeft,  color: 'var(--ac)', sub: locale==='fr'?'disponibles':'available' },
-              { icon: 'ti-crown',         label: locale === 'fr' ? 'VOTRE PLAN' : 'YOUR PLAN', value: plan.toUpperCase(), color: pc, sub: '' },
+              { icon: 'ti-crown',         label: locale === 'fr' ? 'VOTRE PLAN' : 'YOUR PLAN', value: (plan ?? 'free').toUpperCase(), color: pc, sub: '' },
               { icon: 'ti-bell',          label: locale === 'fr' ? 'ALERTES' : 'ALERTS',        value: profile?.notifications_push ? 'ON' : 'OFF', color: profile?.notifications_push ? 'var(--ok)' : 'var(--tx3)', sub: '' },
             ].map(c => (
               <div key={c.label} style={{ background: 'var(--bg1)', border: '1px solid var(--bd)', borderRadius: 8, padding: '0.875rem 1rem', position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
