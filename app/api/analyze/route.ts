@@ -45,11 +45,33 @@ export async function POST(req: NextRequest) {
     }, { status:429 })
   }
 
-  // ── Tier selon le plan ────────────────────────────────────
+  // ── Tier selon le plan + SMC gratuit quotidien ───────────
   const { data:prof } = await anon.from('profiles').select('user_plan,is_admin,locale').eq('id', user.id).single()
   const plan   = prof?.user_plan ?? 'free'
   const locale = (prof?.locale as string) ?? 'fr'
-  const tier   = prof?.is_admin || plan==='pro' || plan==='elite' ? 'advanced' : 'basic'
+
+  let tier: 'basic' | 'advanced' = 'basic'
+  let freeDailySmc = false
+  let smcAlreadyUsed = false
+
+  if (prof?.is_admin || plan === 'pro' || plan === 'elite') {
+    tier = 'advanced'
+  } else {
+    // Free : vérifier et consommer le SMC gratuit du jour
+    const admin2 = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+    const { data: smcResult } = await admin2.rpc('check_free_smc', { p_user_id: user.id })
+    const smc = smcResult as { has_smc: boolean; is_free_daily: boolean; already_used: boolean }
+    if (smc?.has_smc) {
+      tier = 'advanced'
+      freeDailySmc = true
+    } else {
+      smcAlreadyUsed = true
+    }
+  }
 
   // ── Lire l'image ──────────────────────────────────────────
   let imageBase64: string, mimeType: string
@@ -136,7 +158,7 @@ export async function POST(req: NextRequest) {
       action_url:'/pricing', action_label:'Voir les packs' })
   }
 
-  return NextResponse.json<ApiResponse<ChartSignal>>({ success:true, data:signal }, { status:200 })
+  return NextResponse.json({ success:true, data:signal, free_daily_smc: freeDailySmc, smc_already_used: smcAlreadyUsed }, { status:200 })
 }
 
 export const maxDuration = 30

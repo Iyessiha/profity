@@ -30,6 +30,7 @@ export default function AnalysisPage() {
   const [token, setToken]         = useState('')
   const [balance, setBalance]     = useState<number|undefined>(undefined)
   const [showOnboarding, setOnboarding] = useState(false)
+  const [freeSMCUsed, setFreeSMCUsed]  = useState(false)
 
   const fileRef  = useRef<HTMLInputElement>(null)
   const [preview, setPreview]   = useState<string|null>(null)
@@ -88,6 +89,8 @@ export default function AnalysisPage() {
       else if (!json.success) setError(json.error || 'Erreur analyse')
       else {
         setSignal(json.data)
+        // Si SMC gratuit du jour vient d'être utilisé
+        if (json.free_daily_smc) setFreeSMCUsed(true)
         // Notifier CreditBalance de se rafraîchir
         window.dispatchEvent(new Event('creditUpdate'))
         // Mettre à jour le solde local
@@ -120,19 +123,22 @@ export default function AnalysisPage() {
             </div>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
               {isPremium ? (
-                /* SMC actif — Pro/Elite */
+                /* SMC toujours actif — Pro/Elite */
                 <div style={{ display:'flex', alignItems:'center', gap:6, background:'color-mix(in srgb, var(--ac) 8%, transparent)', border:'1px solid var(--bd2)', borderRadius:6, padding:'6px 12px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--ac)' }}>
                   <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3H12l-2.5 1.8 1 3L8 8.5l-2.5 1.3 1-3L4 5h2.5z" fill="var(--ac)"/></svg>
                   SMC ACTIVÉ
                 </div>
+              ) : freeSMCUsed ? (
+                /* SMC gratuit vient d'être utilisé aujourd'hui */
+                <div style={{ display:'flex', alignItems:'center', gap:6, background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:6, padding:'6px 12px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'rgba(0,255,178,0.7)' }}>
+                  ✓ SMC GRATUIT UTILISÉ
+                  <span style={{ fontFamily:HUD, fontSize:6, color:'var(--tx3)', marginLeft:4 }}>Revient demain</span>
+                </div>
               ) : (
-                /* SMC verrouillé — Free */
-                <a href="/pricing" style={{ display:'flex', alignItems:'center', gap:6, background:'rgba(201,168,76,0.08)', border:'1px solid rgba(201,168,76,0.25)', borderRadius:6, padding:'6px 12px', textDecoration:'none', cursor:'pointer', transition:'all .2s' }}
-                  title="Passer Pro pour activer l'analyse SMC">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#C9A84C" strokeWidth="1.8"/><path d="M8 11V7a4 4 0 1 1 8 0v4" stroke="#C9A84C" strokeWidth="1.8" strokeLinecap="round"/></svg>
-                  <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#C9A84C' }}>SMC</span>
-                  <span style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'rgba(201,168,76,0.6)', background:'rgba(201,168,76,0.1)', borderRadius:2, padding:'1px 5px' }}>PRO</span>
-                </a>
+                /* SMC gratuit disponible aujourd'hui */
+                <div style={{ display:'flex', alignItems:'center', gap:6, background:'rgba(0,255,178,0.08)', border:'1px solid rgba(0,255,178,0.25)', borderRadius:6, padding:'6px 12px', fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#00FFB2' }}>
+                  🎁 1 ANALYSE SMC OFFERTE AUJOURD'HUI
+                </div>
               )}
               <button onClick={() => setOnboarding(true)} style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx2)', background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:4, padding:'6px 12px', cursor:'pointer' }}>
                 <i className="ti ti-settings" style={{ marginRight:4, fontSize:12 }} />PRÉFÉRENCES
@@ -179,11 +185,15 @@ export default function AnalysisPage() {
                 <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'4px 10px', borderRadius:3, border:'1px solid var(--bd2)', color:'var(--ac)', background:'color-mix(in srgb, var(--ac) 8%, transparent)', display:'flex', alignItems:'center', gap:5 }}>
                   {plan === 'elite' ? '💎 ELITE · SMC' : '⭐ PRO · SMC'}
                 </div>
+              ) : !freeSMCUsed ? (
+                <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'4px 10px', borderRadius:3, border:'1px solid rgba(0,255,178,0.25)', color:'#00FFB2', background:'rgba(0,255,178,0.06)', display:'flex', alignItems:'center', gap:5 }}>
+                  🎁 FREE · SMC OFFERT
+                </div>
               ) : (
                 <a href="/pricing" style={{ display:'flex', alignItems:'center', gap:6, fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'4px 10px', borderRadius:3, border:'1px solid rgba(201,168,76,0.3)', color:'rgba(201,168,76,0.8)', background:'rgba(201,168,76,0.06)', textDecoration:'none' }}>
                   <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#C9A84C" strokeWidth="2"/><path d="M8 11V7a4 4 0 1 1 8 0v4" stroke="#C9A84C" strokeWidth="2" strokeLinecap="round"/></svg>
                   FREE · BASIQUE
-                  <span style={{ color:'rgba(201,168,76,0.5)', marginLeft:2 }}>→ SMC</span>
+                  <span style={{ color:'rgba(201,168,76,0.5)', marginLeft:2 }}>→ PRO</span>
                 </a>
               )}
             </div>
@@ -249,7 +259,7 @@ export default function AnalysisPage() {
               </>
             ) : (
               <div>
-                <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" creditBalance={balance} plan={plan} />
+                <SignalCard signal={signal as Parameters<typeof SignalCard>[0]['signal']} type="chart" creditBalance={balance} plan={freeSMCUsed || isPremium ? (isPremium ? plan : 'pro') : plan} />
                 <button onClick={()=>{setPreview(null);setSignal(null)}} style={{ marginTop:'1rem', background:'transparent', border:'1px solid var(--bd1)', color:'var(--ac)', fontFamily:HUD, fontSize:9, letterSpacing:2, padding:'10px 24px', borderRadius:4, cursor:'pointer', width:'100%' }}>+ NOUVELLE ANALYSE</button>
               </div>
             )}
