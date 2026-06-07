@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyWebhookSignature } from '@/lib/geniuspay'
+import { sendEmail } from '@/lib/email'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -53,6 +54,17 @@ async function activatePlan(userId: string, planKey: string, ref: string) {
   })
 
   console.log(`[Webhook] Plan ${planKey} activé, ${credits} crédits ajoutés — user ${userId}`)
+
+  // Email confirmation plan activé
+  const { data: prof } = await supabaseAdmin.from('profiles').select('email, full_name').eq('id', userId).single()
+  if (prof?.email) {
+    await sendEmail({
+      template: 'plan_activated',
+      to: prof.email,
+      name: prof.full_name as string ?? 'Trader',
+      data: { plan: planKey, credits: String(credits) },
+    })
+  }
 }
 
 // ── Créditer un achat de pack ─────────────────────────────

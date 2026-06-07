@@ -5,6 +5,7 @@
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendEmail } from '@/lib/email'
 
 const admin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -72,6 +73,18 @@ export async function POST(req: NextRequest) {
 
   const result = data as { success: boolean; error?: string; credits_referred?: number }
   if (!result?.success) return NextResponse.json({ success: false, error: result?.error ?? 'Erreur' }, { status: 400 })
+
+  // Email au parrain
+  const db2 = admin()
+  const { data: referrer } = await db2
+    .from('profiles').select('email, full_name').eq('public_id', code).single()
+  if (referrer?.email) {
+    await sendEmail({
+      template: 'referral',
+      to: referrer.email,
+      name: referrer.full_name as string ?? 'Trader',
+    })
+  }
 
   return NextResponse.json({ success: true, credits_bonus: result.credits_referred })
 }
