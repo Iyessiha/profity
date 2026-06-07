@@ -211,6 +211,8 @@ export default function PricingPage() {
     } catch { showToast('Erreur réseau — réessayez', false) }
     setLoadingPack(null)
   }
+
+  return (
     <div style={{ minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY }}>
       {/* Toast */}
       {toast && (
