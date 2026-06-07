@@ -1,6 +1,7 @@
 'use client'
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
+import { createClient } from '@supabase/supabase-js'
 import { supabasePublic } from '@/lib/supabase'
 import CalendarWidget from '@/components/CalendarWidget'
 import Sidebar from '@/components/dashboard/Sidebar'
@@ -201,6 +202,18 @@ function EventModal({ ev, isPremium, onClose }: { ev:ScheduledEvent; isPremium:b
   const sig = EVENT_SIGNALS[ev.code] ?? EVENT_SIGNALS.DEFAULT
   const coaching = COACHING[ev.code] ?? COACHING.DEFAULT
   const cd = useCountdown(ev.event_date)
+  const [autoSignal, setAutoSignal] = useState<Record<string,unknown>|null>(null)
+
+  // Charger le signal auto-généré si disponible
+  useEffect(() => {
+    if (!ev.id) return
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
+    )
+    supabase.from('auto_signals').select('*').eq('event_id', ev.id).order('generated_at', { ascending:false }).limit(1).single()
+      .then(({ data }) => { if (data) setAutoSignal(data) })
+  }, [ev.id])
 
   return (
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.78)', zIndex:500, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }} onClick={onClose}>
@@ -243,7 +256,50 @@ function EventModal({ ev, isPremium, onClose }: { ev:ScheduledEvent; isPremium:b
             <p style={{ fontFamily:BODY, fontSize:14, color:'var(--tx1)', lineHeight:1.7, margin:0 }}>{sig.intro}</p>
           </div>
 
-          {/* Signaux */}
+          {/* 🤖 Signal IA auto-généré — si disponible */}
+          {autoSignal && (
+            <div style={{ background:'linear-gradient(135deg,rgba(0,255,178,0.06),rgba(0,212,255,0.04))', border:'1px solid rgba(0,255,178,0.2)', borderRadius:10, padding:'1rem', marginBottom:'1.25rem', position:'relative', overflow:'hidden' }}>
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,#00FFB2,#00D4FF,transparent)' }} />
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <span style={{ fontSize:18 }}>🤖</span>
+                  <div>
+                    <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'#00FFB2' }}>SIGNAL IA PRÉ-ANNONCE</div>
+                    <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>Généré automatiquement 30 min avant</div>
+                  </div>
+                </div>
+                <div style={{ fontFamily:HUD, fontSize:10, fontWeight:900, color: autoSignal.direction === 'LONG' ? '#00FFB2' : autoSignal.direction === 'SHORT' ? '#FF3A5C' : '#C9A84C' }}>
+                  {String(autoSignal.direction)}
+                </div>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:10 }}>
+                {[
+                  { l:'ENTRÉE',  v:autoSignal.entry,     c:'#00FFB2' },
+                  { l:'STOP',    v:autoSignal.stop_loss,  c:'#FF3A5C' },
+                  { l:'TP1',     v:autoSignal.tp1,        c:'#00D4FF' },
+                ].map(x => (
+                  <div key={x.l} style={{ background:'rgba(0,0,0,0.2)', borderRadius:6, padding:'8px', textAlign:'center' }}>
+                    <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)', marginBottom:3 }}>{x.l}</div>
+                    <div style={{ fontFamily:HUD, fontSize:13, fontWeight:700, color:x.c }}>
+                      {Number(x.v) > 1000 ? Number(x.v).toLocaleString('fr-FR',{maximumFractionDigits:2}) : Number(x.v).toFixed(4)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {autoSignal.interpretation && (
+                <p style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)', lineHeight:1.6, margin:0 }}>
+                  {String(autoSignal.interpretation)}
+                </p>
+              )}
+              <div style={{ marginTop:8, display:'flex', alignItems:'center', gap:6 }}>
+                <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)' }}>PAIRE :</span>
+                <span style={{ fontFamily:HUD, fontSize:9, color:'#00D4FF' }}>{String(autoSignal.pair_cible)}</span>
+                <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)', marginLeft:'auto' }}>CONFIANCE : {String(autoSignal.confidence)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Scénarios manuels */}
           <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx3)', marginBottom:10 }}>SCÉNARIOS DE TRADING</div>
           <div style={{ display:'flex', gap:10, marginBottom:'1.25rem', flexWrap:'wrap' }}>
             <SignalBox sig={sig.better} label="✅ SI MEILLEUR QUE PRÉVU" />

@@ -5,6 +5,10 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/pre-event-signals",
+      "schedule": "*/30 * * * *"
+    },
+    {
       "path": "/api/cron/monthly-refill",
       "schedule": "0 0 1 * *"
     }
