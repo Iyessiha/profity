@@ -4,7 +4,7 @@
 // et bouton "Analyser" pour générer un signal IA
 // ============================================================
 'use client'
-import { useState }                       from 'react'
+import { useState, useEffect, useRef }         from 'react'
 import { useCalendar, formatCountdown, formatEventTime,
          type ImpactFilter, type CountryFilter,
          type EnrichedEvent }             from '@/lib/useCalendar'
@@ -246,26 +246,98 @@ export default function CalendarWidget({ locale = 'fr' }: Props) {
   const [country, setCountry] = useState<CountryFilter>('all')
   const [analyzingId, setAnalyzingId] = useState<string | null>(null)
   const [focusMode, setFocusMode] = useState(false)  // TOUT par défaut
+  const [tick, setTick]       = useState(0)           // ticker local pour countdown
+  const notifiedRef            = useRef<Set<string>>(new Set())
 
   const { events, loading, error, lastFetch, nextPoll, refetch } = useCalendar({ impact, country })
   const { analyze, signal, loading: sigLoading, error: sigError, reset } = useNewsSignal()
 
+  // ── Ticker local toutes les 30s pour mettre à jour les countdowns ──
+  useEffect(() => {
+    const iv = setInterval(() => setTick(t => t + 1), 30_000)
+    return () => clearInterval(iv)
+  }, [])
+
+  // ── Recalculer minutes_until en temps réel depuis la date réelle ──
+  const liveEvents: EnrichedEvent[] = events.map(e => {
+    const diffMs   = new Date(e.date).getTime() - Date.now()
+    const diffMin  = Math.round(diffMs / 60_000)
+    const newStatus: EnrichedEvent['status'] =
+      e.actual != null ? 'published'
+      : diffMin < -5   ? 'overdue'
+      : diffMin < 15   ? 'imminent'
+      : 'upcoming'
+    return { ...e, minutes_until: diffMin, status: newStatus }
+  })
+
+  // ── Notification son quand un événement devient imminent ────────────
+  useEffect(() => {
+    liveEvents.forEach(e => {
+      const id = `${e.title}-${e.date}`
+      if (e.status === 'imminent' && !notifiedRef.current.has(id)) {
+        notifiedRef.current.add(id)
+        // Son d'alerte
+        try {
+          if (typeof window !== 'undefined') {
+            import('@/lib/notif-sound').then(({ playUrgent, isSoundEnabled }) => {
+              if (isSoundEnabled()) playUrgent()
+            })
+          }
+        } catch {}
+        // Notification browser si autorisée
+        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+          new Notification(`⚠️ ANNONCE IMMINENTE — ${e.country}`, {
+            body: `${e.title} dans ${Math.abs(e.minutes_until)} min${e.forecast ? ` | Prévu: ${e.forecast}` : ''}`,
+            icon: '/favicon.ico',
+            tag:  id,
+          })
+        }
+      }
+    })
+  }, [tick, liveEvents.map(e => e.status).join(',')])
+
+  // ── Demander permission notifications au 1er chargement ────────────
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission()
+    }
+  }, [])
+
   // Mode focus : priorise les annonces imminentes / récentes
   const displayEvents = (() => {
-    if (!focusMode) return events
+    if (!focusMode) return liveEvents
     const rank = (e: EnrichedEvent) => {
       if (e.status === 'imminent') return 0
-      if (e.status === 'published' && e.minutes_until > -120) return 1  // publié < 2h
-      if (e.status === 'upcoming' && e.minutes_until < 7 * 24 * 60) return 2  // semaine
+      if (e.status === 'published' && e.minutes_until > -120) return 1
+      if (e.status === 'upcoming' && e.minutes_until < 7 * 24 * 60) return 2
       if (e.status === 'published') return 4
       return 3
     }
-    return [...events]
+    return [...liveEvents]
       .map(e => ({ e, r: rank(e) }))
       .filter(x => x.r <= 2)
       .sort((a, b) => a.r - b.r || Math.abs(a.e.minutes_until) - Math.abs(b.e.minutes_until))
       .map(x => x.e)
   })()
+
+  // ── Grouper par section : PASSÉ / EN COURS (imminent) / À VENIR ────
+  const grouped: { label: string; color: string; icon: string; events: EnrichedEvent[] }[] = [
+    {
+      label: locale === 'fr' ? 'EN CE MOMENT' : 'RIGHT NOW',
+      color: '#C9A84C', icon: '🔴',
+      events: displayEvents.filter(e => e.status === 'imminent'),
+    },
+    {
+      label: locale === 'fr' ? 'À VENIR' : 'UPCOMING',
+      color: '#00D4FF', icon: '⏰',
+      events: displayEvents.filter(e => e.status === 'upcoming' || e.status === 'overdue'),
+    },
+    {
+      label: locale === 'fr' ? 'PUBLIÉ' : 'RELEASED',
+      color: '#00FFB2', icon: '✅',
+      events: displayEvents.filter(e => e.status === 'published'),
+    },
+  ].filter(g => g.events.length > 0)
 
   const handleAnalyze = async (event: EnrichedEvent) => {
     const id = `${event.title}-${event.date}`
@@ -434,18 +506,48 @@ export default function CalendarWidget({ locale = 'fr' }: Props) {
           </div>
         )}
 
-        {!loading && displayEvents.map(event => {
-          const id = `${event.title}-${event.date}`
-          return (
-            <EventRow
-              key={id}
-              event={event}
-              locale={locale}
-              onAnalyze={handleAnalyze}
-              isAnalyzing={analyzingId === id && sigLoading}
-            />
-          )
-        })}
+        {!loading && displayEvents.length === 0 && (
+          <div style={{ padding: '2rem', textAlign: 'center', color: 'rgba(232,244,248,0.25)', fontFamily: HUD_FONT, fontSize: 10, letterSpacing: 2 }}>
+            {focusMode
+              ? (locale === 'fr' ? 'Aucune annonce en cours ou à venir.' : 'No current or upcoming events.')
+              : lbl(locale, 'noEvents')}
+          </div>
+        )}
+
+        {!loading && grouped.map(group => (
+          <div key={group.label}>
+            {/* En-tête de section */}
+            <div style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 16px 4px',
+              background:'rgba(255,255,255,0.02)', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+              <span style={{ fontSize:12 }}>{group.icon}</span>
+              <span style={{ fontFamily:HUD_FONT, fontSize:7, letterSpacing:2, color:group.color }}>
+                {group.label}
+              </span>
+              <span style={{ fontFamily:HUD_FONT, fontSize:7, color:'rgba(232,244,248,0.25)',
+                background:'rgba(255,255,255,0.05)', borderRadius:3, padding:'1px 6px' }}>
+                {group.events.length}
+              </span>
+              {group.label.includes('EN CE MOMENT') || group.label.includes('RIGHT NOW') ? (
+                <span style={{ width:6, height:6, borderRadius:'50%', background:'#FF3A5C',
+                  boxShadow:'0 0 6px #FF3A5C', marginLeft:4,
+                  animation:'pulse 1s ease infinite' }} />
+              ) : null}
+            </div>
+            {/* Événements du groupe */}
+            {group.events.map(event => {
+              const id = `${event.title}-${event.date}`
+              return (
+                <EventRow
+                  key={id}
+                  event={event}
+                  locale={locale}
+                  onAnalyze={handleAnalyze}
+                  isAnalyzing={analyzingId === id && sigLoading}
+                />
+              )
+            })}
+          </div>
+        ))}
       </div>
 
       {/* Signal généré */}
