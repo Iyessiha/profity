@@ -412,6 +412,230 @@ export default function LandingPage() {
       </section>
 
       <section id="features" style={{ position: 'relative', zIndex: 1, padding: '5rem 2rem', maxWidth: 1200, margin: '0 auto' }}>
+
+      {/* ── SECTION MULTI-DEVICE ── */}
+      <section style={{ position:'relative', zIndex:1, padding:'5rem 2rem', maxWidth:1200, margin:'0 auto', textAlign:'center' }}>
+        <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>
+          PLATEFORME WEB PROGRESSIVE
+        </div>
+        <h2 style={{ fontFamily:HUD, fontSize:'clamp(24px,3.5vw,42px)', fontWeight:900, color:'#E8F4F8', marginBottom:12, lineHeight:1.1 }}>
+          DISPONIBLE SUR TOUS<br/>
+          <span style={{ color:'#00FFB2' }}>VOS APPAREILS</span>
+        </h2>
+        <p style={{ fontFamily:BODY, fontSize:'clamp(14px,1.5vw,17px)', color:'rgba(232,244,248,0.45)', maxWidth:520, margin:'0 auto 4rem' }}>
+          Accédez à vos signaux IA depuis n'importe où — ordinateur, smartphone ou tablette. Aucun téléchargement requis.
+        </p>
+
+        {/* Grille des 3 devices */}
+        <div style={{ display:'flex', gap:'2rem', alignItems:'flex-end', justifyContent:'center', flexWrap:'wrap' }}>
+
+          {/* ── SMARTPHONE ── */}
+          <div style={{ flex:'0 0 auto', display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
+            {/* Frame iPhone */}
+            <div style={{
+              width:180, background:'#0A0F1A', borderRadius:30,
+              border:'6px solid #1A2233', boxShadow:'0 0 0 1px rgba(0,255,178,0.1), 0 20px 60px rgba(0,0,0,0.6)',
+              position:'relative', overflow:'hidden',
+            }}>
+              {/* Notch */}
+              <div style={{ background:'#0A0F1A', height:20, display:'flex', alignItems:'center', justifyContent:'center', paddingTop:4 }}>
+                <div style={{ width:60, height:10, background:'#060B14', borderRadius:10 }} />
+              </div>
+              {/* Écran */}
+              <div style={{ background:'#020408', padding:'10px 8px 14px', minHeight:320 }}>
+                {/* TopBar mini */}
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+                  <span style={{ fontFamily:HUD, fontSize:5, color:'#00FFB2', letterSpacing:1 }}>PROFITYX</span>
+                  <span style={{ fontFamily:HUD, fontSize:5, color:'rgba(0,255,178,0.4)' }}>PRO</span>
+                </div>
+                {/* Signal Card mini */}
+                <div style={{ background:'#0B1117', border:'1px solid rgba(0,255,178,0.15)', borderRadius:8, padding:'8px 8px', marginBottom:6 }}>
+                  <div style={{ fontFamily:HUD, fontSize:9, color:'#00FFB2', fontWeight:900, letterSpacing:1 }}>BOOM 1000</div>
+                  <div style={{ fontFamily:HUD, fontSize:6, color:'rgba(232,244,248,0.4)', marginBottom:6 }}>H1 · SELL LIMIT</div>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:4 }}>
+                    <div style={{ background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.15)', borderRadius:4, padding:'4px 5px', textAlign:'center' }}>
+                      <div style={{ fontFamily:HUD, fontSize:5, color:'rgba(0,255,178,0.5)', marginBottom:2 }}>ENTRÉE</div>
+                      <div style={{ fontFamily:HUD, fontSize:9, color:'#00FFB2', fontWeight:700 }}>111 160</div>
+                    </div>
+                    <div style={{ background:'rgba(255,58,92,0.06)', border:'1px solid rgba(255,58,92,0.15)', borderRadius:4, padding:'4px 5px', textAlign:'center' }}>
+                      <div style={{ fontFamily:HUD, fontSize:5, color:'rgba(255,58,92,0.5)', marginBottom:2 }}>STOP</div>
+                      <div style={{ fontFamily:HUD, fontSize:9, color:'#FF3A5C', fontWeight:700 }}>111 560</div>
+                    </div>
+                  </div>
+                  <div style={{ display:'flex', gap:3, marginTop:4 }}>
+                    {['110 760','110 360','109 960'].map((tp,i) => (
+                      <div key={tp} style={{ flex:1, background:'rgba(0,255,178,0.04)', border:'1px solid rgba(0,255,178,0.08)', borderRadius:3, padding:'3px 0', textAlign:'center' }}>
+                        <div style={{ fontFamily:HUD, fontSize:4, color:'rgba(0,255,178,0.4)' }}>TP{i+1}</div>
+                        <div style={{ fontFamily:HUD, fontSize:6, color:'rgba(0,255,178,0.7)' }}>{tp}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Confidence */}
+                <div style={{ display:'flex', alignItems:'center', gap:4, padding:'4px 6px', background:'rgba(0,255,178,0.04)', border:'1px solid rgba(0,255,178,0.1)', borderRadius:4 }}>
+                  <span style={{ fontSize:8 }}>●●●</span>
+                  <span style={{ fontFamily:HUD, fontSize:5, color:'#00FFB2', letterSpacing:1 }}>CONFIANCE ÉLEVÉE</span>
+                </div>
+                {/* Nav bar */}
+                <div style={{ display:'flex', justifyContent:'space-around', marginTop:14, paddingTop:8, borderTop:'1px solid rgba(255,255,255,0.06)' }}>
+                  {['⊞','📊','📰','📋'].map((ic,i) => (
+                    <div key={i} style={{ fontSize:12, opacity: i===1?1:0.3 }} />
+                  ))}
+                </div>
+              </div>
+              {/* Home indicator */}
+              <div style={{ height:16, background:'#020408', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <div style={{ width:50, height:3, background:'rgba(255,255,255,0.2)', borderRadius:3 }} />
+              </div>
+            </div>
+            <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(232,244,248,0.4)' }}>SMARTPHONE</div>
+          </div>
+
+          {/* ── PC / LAPTOP ── */}
+          <div style={{ flex:'0 0 auto', display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
+            {/* Écran */}
+            <div style={{
+              width:480, background:'#0A0F1A', borderRadius:'12px 12px 0 0',
+              border:'6px solid #1A2233', borderBottom:'none',
+              boxShadow:'0 0 0 1px rgba(0,255,178,0.12), 0 -4px 40px rgba(0,255,178,0.06)',
+              overflow:'hidden',
+            }}>
+              {/* Barre chrome */}
+              <div style={{ background:'#06090F', height:22, display:'flex', alignItems:'center', padding:'0 10px', gap:5 }}>
+                {['#FF5F57','#FFBD2E','#28CA41'].map(c => (
+                  <div key={c} style={{ width:7, height:7, borderRadius:'50%', background:c }} />
+                ))}
+                <div style={{ flex:1, background:'#0A0F1A', borderRadius:3, height:12, margin:'0 10px', display:'flex', alignItems:'center', paddingLeft:6 }}>
+                  <span style={{ fontFamily:HUD, fontSize:5, color:'rgba(0,255,178,0.4)', letterSpacing:1 }}>profity-x.com/dashboard</span>
+                </div>
+              </div>
+              {/* Interface dashboard */}
+              <div style={{ display:'flex', minHeight:240 }}>
+                {/* Sidebar mini */}
+                <div style={{ width:80, background:'#06090F', borderRight:'1px solid rgba(255,255,255,0.05)', padding:'8px 0', flexShrink:0 }}>
+                  <div style={{ fontFamily:HUD, fontSize:7, color:'#00FFB2', letterSpacing:1, padding:'6px 8px', fontWeight:900 }}>PX</div>
+                  {[
+                    { icon:'⊞', label:'BOARD', active:true },
+                    { icon:'📊', label:'ANALYSE', active:false },
+                    { icon:'📰', label:'MACRO', active:false },
+                    { icon:'📋', label:'HISTORY', active:false },
+                  ].map(item => (
+                    <div key={item.label} style={{
+                      padding:'6px 8px', marginBottom:2,
+                      background: item.active ? 'rgba(0,255,178,0.08)' : 'transparent',
+                      borderLeft: item.active ? '2px solid #00FFB2' : '2px solid transparent',
+                    }}>
+                      <div style={{ fontFamily:HUD, fontSize:5, color: item.active ? '#00FFB2' : 'rgba(232,244,248,0.25)', letterSpacing:1 }}>{item.label}</div>
+                    </div>
+                  ))}
+                </div>
+                {/* Contenu principal */}
+                <div style={{ flex:1, padding:'8px', background:'#020408' }}>
+                  {/* Stats row */}
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:4, marginBottom:6 }}>
+                    {[
+                      { l:'ANALYSES', v:'87', c:'var(--ac)' },
+                      { l:'SIGNAUX', v:'∞', c:'#00D4FF' },
+                      { l:'PLAN', v:'PRO', c:'#00FFB2' },
+                      { l:'CRÉDITS', v:'593', c:'#C9A84C' },
+                    ].map(s => (
+                      <div key={s.l} style={{ background:'#0B1117', border:'1px solid rgba(255,255,255,0.06)', borderRadius:5, padding:'5px 6px' }}>
+                        <div style={{ fontFamily:HUD, fontSize:4, color:'rgba(232,244,248,0.3)', letterSpacing:1 }}>{s.l}</div>
+                        <div style={{ fontFamily:HUD, fontSize:11, fontWeight:900, color:s.c }}>{s.v}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Accès rapide */}
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:4, marginBottom:6 }}>
+                    {[
+                      { title:'ANALYSE CHART', color:'#00FFB2' },
+                      { title:'MACRO NEWS', color:'#00D4FF' },
+                      { title:'HISTORIQUE', color:'#C9A84C' },
+                    ].map(m => (
+                      <div key={m.title} style={{ background:'#0B1117', border:`1px solid ${m.color}15`, borderRadius:5, padding:'6px' }}>
+                        <div style={{ fontFamily:HUD, fontSize:5, color:m.color, letterSpacing:0.5, marginBottom:3 }}>{m.title}</div>
+                        <div style={{ fontFamily:HUD, fontSize:7, color:m.color, letterSpacing:1 }}>ACCÉDER →</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Chart area */}
+                  <div style={{ background:'#06090F', border:'1px solid rgba(255,255,255,0.05)', borderRadius:5, height:60, display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', position:'relative' }}>
+                    <svg viewBox="0 0 200 50" style={{ width:'100%', height:'100%', opacity:0.7 }}>
+                      <polyline points="0,45 20,38 40,42 60,30 80,35 100,20 120,28 140,15 160,22 180,10 200,15" fill="none" stroke="#00FFB2" strokeWidth="1.5" />
+                      <polyline points="0,45 20,38 40,42 60,30 80,35 100,20 120,28 140,15 160,22 180,10 200,15 200,50 0,50" fill="rgba(0,255,178,0.05)" />
+                    </svg>
+                    <div style={{ position:'absolute', right:6, top:4, fontFamily:HUD, fontSize:5, color:'#00FFB2', letterSpacing:1 }}>+12.4%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Base laptop */}
+            <div style={{ width:530, height:10, background:'linear-gradient(180deg,#1A2233,#0D1420)', borderRadius:'0 0 4px 4px', boxShadow:'0 4px 20px rgba(0,0,0,0.5)' }} />
+            <div style={{ width:200, height:4, background:'#0D1420', borderRadius:'0 0 8px 8px' }} />
+            <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(232,244,248,0.4)', marginTop:4 }}>ORDINATEUR</div>
+          </div>
+
+          {/* ── TABLETTE ── */}
+          <div style={{ flex:'0 0 auto', display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
+            <div style={{
+              width:210, background:'#0A0F1A', borderRadius:16,
+              border:'6px solid #1A2233',
+              boxShadow:'0 0 0 1px rgba(0,212,255,0.1), 0 20px 60px rgba(0,0,0,0.6)',
+              overflow:'hidden',
+            }}>
+              {/* Barre status */}
+              <div style={{ background:'#06090F', height:14, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 10px' }}>
+                <span style={{ fontFamily:HUD, fontSize:4, color:'rgba(232,244,248,0.3)' }}>09:35</span>
+                <span style={{ fontFamily:HUD, fontSize:4, color:'rgba(232,244,248,0.3)' }}>●●●</span>
+              </div>
+              {/* Calendrier macro */}
+              <div style={{ background:'#020408', padding:'8px' }}>
+                <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'#00FFB2', marginBottom:8 }}>CALENDRIER ÉCONOMIQUE</div>
+                {[
+                  { time:'59h', event:'Core CPI m/m', country:'USD', impact:'HIGH', action:'ANTICIPER' },
+                  { time:'48h', event:'BOC Rate', country:'CAD', impact:'HIGH', action:'ANTICIPER' },
+                  { time:'70h', event:'Main Refin.', country:'EUR', impact:'HIGH', action:'ANTICIPER' },
+                ].map((ev, i) => (
+                  <div key={i} style={{ display:'flex', alignItems:'center', gap:5, padding:'5px 6px', background:'#0B1117', border:'1px solid rgba(255,255,255,0.05)', borderRadius:5, marginBottom:4 }}>
+                    <div style={{ width:5, height:5, borderRadius:'50%', background:'#FF3A5C', flexShrink:0 }} />
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ fontFamily:HUD, fontSize:5, color:'#E8F4F8', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{ev.event}</div>
+                      <div style={{ fontFamily:HUD, fontSize:4, color:'#00D4FF' }}>{ev.country} · {ev.time}</div>
+                    </div>
+                    <div style={{ fontFamily:HUD, fontSize:5, color:'#C9A84C', background:'rgba(201,168,76,0.1)', border:'1px solid rgba(201,168,76,0.25)', borderRadius:3, padding:'2px 4px', flexShrink:0 }}>
+                      {ev.action}
+                    </div>
+                  </div>
+                ))}
+                {/* Section à venir */}
+                <div style={{ fontFamily:HUD, fontSize:5, color:'rgba(0,212,255,0.6)', letterSpacing:1, marginTop:8, marginBottom:4 }}>⏰ À VENIR · 3</div>
+                <div style={{ background:'rgba(0,255,178,0.04)', border:'1px solid rgba(0,255,178,0.1)', borderRadius:5, padding:'6px', textAlign:'center' }}>
+                  <div style={{ fontFamily:HUD, fontSize:6, color:'#00FFB2' }}>SIGNAL IA DISPONIBLE</div>
+                  <div style={{ fontFamily:BODY, fontSize:9, color:'rgba(232,244,248,0.4)', marginTop:2 }}>Anticiper avant publication</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(232,244,248,0.4)' }}>TABLETTE</div>
+          </div>
+
+        </div>
+
+        {/* Badges sous les devices */}
+        <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginTop:'3rem' }}>
+          {[
+            '✓ Aucun téléchargement requis',
+            '✓ Accès depuis le navigateur',
+            '✓ Synchronisation temps réel',
+            '✓ Installation PWA optionnelle',
+          ].map(badge => (
+            <span key={badge} style={{
+              fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.45)',
+              background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)',
+              borderRadius:100, padding:'6px 16px',
+            }}>{badge}</span>
+          ))}
+        </div>
+      </section>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 4, color: '#00D4FF', marginBottom: 12 }}>FONCTIONNALITÉS</div>
           <h2 style={{ fontFamily: HUD, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 900, letterSpacing: 1 }}>TOUT POUR <span style={{ color: '#00FFB2' }}>RÉUSSIR</span></h2>
