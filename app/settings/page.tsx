@@ -35,7 +35,7 @@ interface Profile {
   reset_at:             string
 }
 
-type SettingsTab = 'profile' | 'notifications' | 'subscription' | 'security'
+type SettingsTab = 'profile' | 'notifications' | 'subscription' | 'security' | 'invoices'
 
 // ─── Constantes ────────────────────────────────────────────
 const LOCALES   = [{ v:'fr',label:'🇫🇷 Français'}, {v:'en',label:'🇬🇧 English'}, {v:'ar',label:'🇲🇦 العربية'}, {v:'pt',label:'🇧🇷 Português'}]
@@ -66,6 +66,12 @@ export default function SettingsPage() {
   const [saving,   setSaving]   = useState(false)
   const [saved,    setSaved]    = useState(false)
   const [error,    setError]    = useState<string | null>(null)
+  const [invoices, setInvoices] = useState<Array<{
+    id: string; invoice_number: string; plan: string; description: string
+    amount_xof: number; amount_usd: number; payment_method: string
+    status: string; token: string; created_at: string
+  }>>([])
+  const [invoicesLoading, setInvoicesLoading] = useState(false)
   const [token,    setToken]    = useState<string>('')
   const [avatarUploading, setAvatarUploading] = useState(false)
   const [avatarErr, setAvatarErr] = useState<string | null>(null)
@@ -249,21 +255,22 @@ export default function SettingsPage() {
   // ── i18n settings ────────────────────────────────────────
   const T = {
     fr: { settings:'PARAMÈTRES', save:'SAUVEGARDER', saved:'✓ SAUVEGARDÉ',
-          profile:'PROFIL', notifications:'ALERTES', subscription:'ABONNEMENT', security:'SÉCURITÉ' },
+          profile:'PROFIL', notifications:'ALERTES', subscription:'ABONNEMENT', security:'SÉCURITÉ', invoices:'FACTURES' },
     en: { settings:'SETTINGS',   save:'SAVE',         saved:'✓ SAVED',
-          profile:'PROFILE', notifications:'ALERTS',  subscription:'SUBSCRIPTION', security:'SECURITY' },
+          profile:'PROFILE', notifications:'ALERTS',  subscription:'SUBSCRIPTION', security:'SECURITY', invoices:'INVOICES' },
     ar: { settings:'الإعدادات',  save:'حفظ',          saved:'✓ تم الحفظ',
-          profile:'الملف',    notifications:'التنبيهات', subscription:'الاشتراك', security:'الأمان' },
+          profile:'الملف',    notifications:'التنبيهات', subscription:'الاشتراك', security:'الأمان', invoices:'الفواتير' },
     pt: { settings:'CONFIGURAÇÕES', save:'SALVAR',   saved:'✓ SALVO',
-          profile:'PERFIL',  notifications:'ALERTAS', subscription:'ASSINATURA', security:'SEGURANÇA' },
+          profile:'PERFIL',  notifications:'ALERTAS', subscription:'ASSINATURA', security:'SEGURANÇA', invoices:'FATURAS' },
   } as Record<string, Record<string,string>>
   const t = T[locale] ?? T['en']
 
   const TABS: { key: SettingsTab; icon: string; fr: string }[] = [
-    { key:'profile',       icon:'ti-user',       fr: t.profile       },
-    { key:'notifications', icon:'ti-bell',       fr: t.notifications },
-    { key:'subscription',  icon:'ti-credit-card',fr: t.subscription  },
-    { key:'security',      icon:'ti-lock',       fr: t.security      },
+    { key:'profile',       icon:'ti-user',        fr: t.profile       },
+    { key:'notifications', icon:'ti-bell',        fr: t.notifications },
+    { key:'subscription',  icon:'ti-credit-card', fr: t.subscription  },
+    { key:'invoices',      icon:'ti-receipt',     fr: t.invoices      },
+    { key:'security',      icon:'ti-lock',        fr: t.security      },
   ]
 
   return (
@@ -723,6 +730,12 @@ export default function SettingsPage() {
             </div>
           )}
 
+          {/* ── FACTURES ─────────────────────────────────── */}
+          {tab === 'invoices' && (
+            <InvoicesTab token={token} invoices={invoices} setInvoices={setInvoices}
+              loading={invoicesLoading} setLoading={setInvoicesLoading} />
+          )}
+
           {/* Erreur globale */}
           {error && (
             <div style={{
@@ -735,5 +748,108 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────
+// FACTURES
+// ─────────────────────────────────────────────────────────
+function InvoicesTab({ token, invoices, setInvoices, loading, setLoading }: {
+  token: string
+  invoices: Array<{ id:string; invoice_number:string; plan:string; description:string; amount_xof:number; amount_usd:number; payment_method:string; status:string; token:string; created_at:string }>
+  setInvoices: (v: typeof invoices) => void
+  loading: boolean
+  setLoading: (v: boolean) => void
+}) {
+  const HUD  = "'Orbitron', monospace"
+  const BODY = "'Rajdhani', sans-serif"
+
+  useEffect(() => {
+    if (!token || invoices.length > 0) return
+    setLoading(true)
+    fetch('/api/invoices', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => { setInvoices(d.invoices ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [token])
+
+  const planColor = (plan: string) => plan === 'pro' ? '#00FFB2' : plan === 'elite' ? '#C9A84C' : '#888'
+  const fmt       = (n: number) => n.toLocaleString('fr-FR')
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem' }}>
+        <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'var(--ac)', marginBottom:6 }}>
+          🧾 MES FACTURES
+        </div>
+        <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>
+          Toutes vos factures ProfityX. Cliquez pour télécharger en PDF.
+        </div>
+      </div>
+
+      {loading && (
+        <div style={{ textAlign:'center', padding:'2rem', fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)' }}>
+          CHARGEMENT...
+        </div>
+      )}
+
+      {!loading && invoices.length === 0 && (
+        <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'2rem', textAlign:'center' }}>
+          <div style={{ fontSize:32, marginBottom:12 }}>🧾</div>
+          <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx3)', marginBottom:8 }}>AUCUNE FACTURE</div>
+          <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>
+            Vos factures apparaîtront ici après votre premier abonnement.
+          </div>
+          <a href="/pricing" style={{ display:'inline-block', marginTop:16, fontFamily:HUD, fontSize:9, letterSpacing:2,
+            color:'#020408', background:'var(--ac)', padding:'10px 22px', borderRadius:4, textDecoration:'none' }}>
+            VOIR LES PLANS →
+          </a>
+        </div>
+      )}
+
+      {!loading && invoices.map(inv => (
+        <a key={inv.id} href={`/invoice/${inv.token}`} target="_blank" rel="noopener"
+          style={{ textDecoration:'none', display:'block',
+            background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10,
+            padding:'1rem 1.25rem', transition:'border-color .2s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(0,255,178,0.3)')}
+          onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--bd)')}
+        >
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+              <div style={{ width:40, height:40, borderRadius:8, background:'rgba(0,255,178,0.06)',
+                border:'1px solid var(--bd)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 }}>
+                🧾
+              </div>
+              <div>
+                <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:1, color:'var(--tx0)', marginBottom:3 }}>
+                  {inv.invoice_number}
+                </div>
+                <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', marginBottom:2 }}>{inv.description}</div>
+                <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>
+                  {new Date(inv.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' })}
+                  {' · '}{inv.payment_method}
+                </div>
+              </div>
+            </div>
+            <div style={{ display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
+              <div style={{ textAlign:'right' }}>
+                <div style={{ fontFamily:HUD, fontSize:14, fontWeight:900, color:planColor(inv.plan) }}>
+                  {fmt(inv.amount_xof)} FCFA
+                </div>
+                <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>${inv.amount_usd}</div>
+              </div>
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
+                <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1,
+                  background:'rgba(0,255,178,0.08)', border:'1px solid rgba(0,255,178,0.2)',
+                  color:'var(--ac)', borderRadius:20, padding:'3px 10px' }}>✓ PAYÉE</span>
+                <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)' }}>⬇ PDF</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
   )
 }
