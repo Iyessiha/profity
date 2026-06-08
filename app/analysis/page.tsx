@@ -8,6 +8,7 @@ import QuotaBar from '@/components/dashboard/QuotaBar'
 import SignalCard from '@/components/SignalCard'
 import ChartAnnotation from '@/components/ChartAnnotation'
 import OnboardingModal from '@/components/OnboardingModal'
+import { gtagAnalysis, gtagLead } from '@/lib/gtag'
 import { pixelAnalysis, pixelSignalReceived } from '@/lib/pixel'
 import PopupManager, { usePopups, type PopupPayload } from '@/components/PopupManager'
 import { playAnalysisStart, playAnalysisComplete, isSoundEnabled } from '@/lib/notif-sound'
@@ -129,6 +130,7 @@ export default function AnalysisPage() {
     // Son de démarrage analyse
     if (isSoundEnabled()) playAnalysisStart()
     pixelAnalysis(analysisMode)
+    gtagAnalysis()
     try {
       const res = await fetch('/api/analyze', {
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${activeToken}`},

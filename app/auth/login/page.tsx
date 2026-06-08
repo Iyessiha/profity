@@ -1,4 +1,5 @@
 'use client'
+import { gtagLead } from '@/lib/gtag'
 import { pixelLead } from '@/lib/pixel'
 export const dynamic = 'force-dynamic'
 
