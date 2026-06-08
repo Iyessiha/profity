@@ -50,20 +50,31 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
       justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50,
       transition: 'background .3s, border-color .3s', gap: 8,
     }}>
-      {/* Gauche : hamburger (mobile) + horloge */}
+      {/* Gauche : hamburger + logo + horloge */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-        {/* Hamburger — DANS le header, PAS fixed */}
+        {/* Hamburger */}
         <button
           className="hamburger-btn"
           onClick={toggle}
           aria-label="Menu"
           style={{
-            position: 'static',       /* ← clé : dans le flux normal */
+            position: 'static',
             flexShrink: 0,
           }}
         >
           <i className="ti ti-menu-2" style={{ fontSize: 18 }} aria-hidden="true" />
         </button>
+
+        {/* Logo — visible desktop uniquement */}
+        <a href="/dashboard" className="topbar-hide" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0 }}>
+          <img src="/logo.png" alt="ProfityX" style={{ height: 28, width: 28, objectFit: 'contain' }} />
+          <span style={{ fontFamily: HUD, fontSize: 12, letterSpacing: 2, color: 'var(--ac)', lineHeight: 1 }}>
+            PROFIT<span style={{ color: 'var(--ac2)' }}>YX</span>
+          </span>
+        </a>
+
+        {/* Séparateur */}
+        <div className="topbar-hide" style={{ width: 1, height: 16, background: 'var(--bd1)', flexShrink: 0 }} />
 
         {/* Horloge */}
         <div className="topbar-clock" style={{ fontFamily: HUD, color: 'var(--ac)', letterSpacing: 2, flexShrink: 0 }}>{time}</div>

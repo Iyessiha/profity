@@ -354,8 +354,11 @@ export default function AdminDashboard() {
             style={{ position: 'static', background: 'rgba(255,58,92,0.1)', borderColor: 'rgba(255,58,92,0.3)', color: '#FF3A5C', flexShrink: 0 }}>
             <i className="ti ti-menu-2" style={{ fontSize: 18 }} aria-hidden="true" />
           </button>
-          <span style={{ fontFamily: HUD, fontSize: 16, letterSpacing: 3, color: '#FF3A5C' }}>
-            PROFIT<span style={{ color: '#00D4FF' }}>YX</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src="/logo.png" alt="ProfityX" style={{ height: 28, width: 28, objectFit: 'contain' }} />
+            <span style={{ fontFamily: HUD, fontSize: 14, letterSpacing: 2, color: '#FF3A5C' }}>
+              PROFIT<span style={{ color: '#00D4FF' }}>YX</span>
+            </span>
           </span>
           <div className="topbar-hide" style={{
             background: 'rgba(255,58,92,0.1)', border: '1px solid rgba(255,58,92,0.3)',

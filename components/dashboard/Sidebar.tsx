@@ -100,11 +100,14 @@ export default function Sidebar({ plan, locale }: Props) {
       >
         {/* Header du drawer : logo + bouton fermer */}
         <div className="sidebar-logo" style={{ padding: '1.1rem 1rem', borderBottom: '1px solid var(--bd)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <a href="/dashboard" onClick={close} style={{ textDecoration: 'none' }}>
-            <div style={{ fontFamily: HUD, fontSize: 16, letterSpacing: 3, color: 'var(--ac)', lineHeight: 1 }}>
-              PROFIT<span style={{ color: 'var(--ac2)' }}>YX</span>
+          <a href="/dashboard" onClick={close} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <img src="/logo.png" alt="ProfityX" style={{ height: 36, width: 36, objectFit: 'contain' }} />
+            <div>
+              <div style={{ fontFamily: HUD, fontSize: 14, letterSpacing: 2, color: 'var(--ac)', lineHeight: 1 }}>
+                PROFIT<span style={{ color: 'var(--ac2)' }}>YX</span>
+              </div>
+              <div style={{ fontFamily: BODY, fontSize: 9, color: 'var(--tx3)', letterSpacing: 2, marginTop: 2 }}>AI TRADING</div>
             </div>
-            <div style={{ fontFamily: BODY, fontSize: 9, color: 'var(--tx3)', letterSpacing: 2, marginTop: 2 }}>AI TRADING</div>
           </a>
           {/* Fermer — visible seulement quand le drawer est ouvert (mobile) */}
           <button
