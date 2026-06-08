@@ -236,9 +236,9 @@ export default function DashboardPage() {
           <a href="/support">Assistance</a>
         </footer>
       </div>{/* fin app-main */}
-    </div>
 
       {/* Popups stratégiques */}
-      <PopupManager popup={popup} onClose={closePopup} locale={locale} plan={plan} />
+      <PopupManager popup={activePopup} onClose={closePopup} locale={locale} plan={plan} />
+    </div>
   )
 }
