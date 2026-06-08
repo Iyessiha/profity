@@ -91,11 +91,22 @@ export default function AnalysisPage() {
   const analyze = async () => {
     if (!preview || !token) return
     setAnalyzing(true); setError(null)
+
+    // Rafraîchir le token juste avant l'appel (expire après 1h)
+    let activeToken = token
+    try {
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session?.access_token) {
+        activeToken = session.access_token
+        setToken(session.access_token)
+      }
+    } catch {}
+
     // Son de démarrage analyse
     if (isSoundEnabled()) playAnalysisStart()
     try {
       const res = await fetch('/api/analyze', {
-        method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
+        method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${activeToken}`},
         body: JSON.stringify({ image: preview.split(',')[1], mediaType: preview.split(';')[0].split(':')[1], locale, mode: analysisMode }),
       })
       const json = await res.json()
