@@ -1,4 +1,5 @@
 'use client'
+import { pixelLead } from '@/lib/pixel'
 export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'

@@ -8,6 +8,7 @@ import QuotaBar from '@/components/dashboard/QuotaBar'
 import SignalCard from '@/components/SignalCard'
 import ChartAnnotation from '@/components/ChartAnnotation'
 import OnboardingModal from '@/components/OnboardingModal'
+import { pixelAnalysis, pixelSignalReceived } from '@/lib/pixel'
 import { playAnalysisStart, playAnalysisComplete, isSoundEnabled } from '@/lib/notif-sound'
 import { RandomAd } from '@/components/AdSlot'
 import Confetti from '@/components/Confetti'
@@ -122,6 +123,7 @@ export default function AnalysisPage() {
 
     // Son de démarrage analyse
     if (isSoundEnabled()) playAnalysisStart()
+    pixelAnalysis(analysisMode)
     try {
       const res = await fetch('/api/analyze', {
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${activeToken}`},
@@ -134,6 +136,7 @@ export default function AnalysisPage() {
         setSignal(json.data)
         // Son de résultat reçu
         if (isSoundEnabled()) playAnalysisComplete()
+        pixelSignalReceived((json.data as Record<string,unknown>)?.direction as string ?? '', (json.data as Record<string,unknown>)?.pair as string ?? '')
         // Capturer l'ID si SMC gratuit pour la notation
         if (json.free_daily_smc) {
           setFreeSMCUsed(true)

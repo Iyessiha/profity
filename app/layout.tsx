@@ -28,11 +28,17 @@ export const metadata: Metadata = {
 const ANTI_FLASH = `(function(){try{var t=localStorage.getItem('pxTheme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`
 const REGISTER_SW = `if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}`
 
+// ── Facebook Pixel 971512922538139 ────────────────────────
+const FB_PIXEL = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','971512922538139');fbq('track','PageView');`
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" data-theme="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: ANTI_FLASH }} />
+        {/* Facebook Pixel */}
+        <script dangerouslySetInnerHTML={{ __html: FB_PIXEL }} />
+        <noscript dangerouslySetInnerHTML={{ __html: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=971512922538139&ev=PageView&noscript=1"/>` }} />
         {/* Google AdSense */}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7885889662324153" crossOrigin="anonymous" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.17.0/dist/tabler-icons.min.css" />
