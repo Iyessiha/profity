@@ -866,30 +866,6 @@ export default function AdminDashboard() {
               </div>
 
             </div>
-              <div>
-                <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: 'rgba(232,244,248,0.3)', marginBottom: 16 }}>
-                  APERÇU NOTIFICATION
-                </div>
-                <div style={{
-                  background: '#1A1A2E', border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 12, padding: '1rem', maxWidth: 320,
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, background: '#FF3A5C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: HUD, fontSize: 10, color: '#fff' }}>PX</div>
-                    <div>
-                      <div style={{ fontFamily: HUD, fontSize: 10, color: '#E8F4F8', letterSpacing: 1 }}>ProfityX</div>
-                      <div style={{ fontFamily: BODY, fontSize: 11, color: 'rgba(232,244,248,0.4)' }}>Maintenant</div>
-                    </div>
-                  </div>
-                  <div style={{ fontFamily: HUD, fontSize: 12, color: '#E8F4F8', marginBottom: 4 }}>
-                    {bcTitle || 'Titre de la notification'}
-                  </div>
-                  <div style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(232,244,248,0.6)', lineHeight: 1.5 }}>
-                    {bcBody || 'Le contenu de votre message apparaîtra ici...'}
-                  </div>
-                </div>
-              </div>
-            </div>
           )}
 
           {/* ══ LOGS ══════════════════════════════════════ */}
