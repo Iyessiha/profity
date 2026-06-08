@@ -100,7 +100,7 @@ export default function DashboardPage() {
 
   // ── Popups stratégiques ────────────────────────────────────
   const { popup: activePopup, close: closePopup } = usePopups({
-    plan, credits: balance, analysisCount: aUsed, locale,
+    plan, credits: (profile?.analyses_left as number) ?? 10, analysisCount: aUsed, locale,
   })
 
   const MODULES = [
