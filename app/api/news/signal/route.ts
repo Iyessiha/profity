@@ -87,6 +87,44 @@ export async function POST(req: NextRequest) {
   }
 
   // ----------------------------------------------------------
+  // 3b. Prix spot live (Frankfurter API)
+  // ----------------------------------------------------------
+  const spotPrices = await (async () => {
+    try {
+      const res = await fetch(
+        'https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY,CAD,AUD,CHF,NZD',
+        { signal: AbortSignal.timeout(3000) }
+      )
+      if (!res.ok) return ''
+      const d = await res.json()
+      const r = d.rates ?? {}
+      const f4 = (n: number) => n.toFixed(4)
+      const lines: string[] = []
+      if (r.EUR) lines.push(`EUR/USD=${f4(1/r.EUR)}`)
+      if (r.GBP) lines.push(`GBP/USD=${f4(1/r.GBP)}`)
+      if (r.JPY) lines.push(`USD/JPY=${r.JPY.toFixed(2)}`)
+      if (r.CAD) lines.push(`USD/CAD=${f4(r.CAD)}`)
+      if (r.AUD) lines.push(`AUD/USD=${f4(1/r.AUD)}`)
+      if (r.CHF) lines.push(`USD/CHF=${f4(r.CHF)}`)
+      if (r.NZD) lines.push(`NZD/USD=${f4(1/r.NZD)}`)
+      // Or du spot
+      try {
+        const g = await fetch('https://api.metals.live/v1/spot/gold', { signal: AbortSignal.timeout(2000) })
+        if (g.ok) {
+          const gd = await g.json()
+          const gp = gd?.price ?? gd?.gold
+          if (gp) lines.push(`XAU/USD=${Number(gp).toFixed(2)}`)
+        }
+      } catch {}
+      return lines.join(' | ')
+    } catch { return '' }
+  })()
+
+  const spotNote = spotPrices
+    ? `\nPrix spot ACTUELS (live) : ${spotPrices}\n⚠️ Utilise OBLIGATOIREMENT ces prix pour entry/SL/TP.`
+    : ''
+
+  // ----------------------------------------------------------
   // 4. Construire le message utilisateur
   // ----------------------------------------------------------
   const userMessages: Record<string, string> = {
@@ -98,7 +136,7 @@ Résultat   : ${actual}
 Prévision  : ${forecast ?? 'N/A'}
 Précédent  : ${previous ?? 'N/A'}
 
-Interprète cette annonce et génère le signal JSON.`,
+Interprète cette annonce et génère le signal JSON.${spotNote}`,
 
     en: `Economic release:
 Event    : ${event_title}
@@ -108,7 +146,7 @@ Actual   : ${actual}
 Forecast : ${forecast ?? 'N/A'}
 Previous : ${previous ?? 'N/A'}
 
-Interpret this release and generate the JSON signal.`,
+Interpret this release and generate the JSON signal.${spotNote}`,
 
     ar: `بيانات اقتصادية:
 الحدث     : ${event_title}
