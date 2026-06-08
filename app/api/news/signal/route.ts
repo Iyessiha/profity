@@ -90,39 +90,80 @@ export async function POST(req: NextRequest) {
   // 3b. Prix spot live (Frankfurter API)
   // ----------------------------------------------------------
   const spotPrices = await (async () => {
+    const lines: string[] = []
+
+    // 1. FOREX — Frankfurter (ECB, gratuit, sans clé)
     try {
       const res = await fetch(
-        'https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY,CAD,AUD,CHF,NZD',
+        'https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY,CAD,AUD,CHF,NZD,SEK,NOK,DKK,MXN,SGD,HKD,TRY,ZAR',
+        { signal: AbortSignal.timeout(4000) }
+      )
+      if (res.ok) {
+        const d = await res.json()
+        const r = d.rates ?? {}
+        const f4 = (n: number) => n.toFixed(4)
+        const f2 = (n: number) => n.toFixed(2)
+        if (r.EUR) lines.push(`EUR/USD=${f4(1/r.EUR)}`)
+        if (r.GBP) lines.push(`GBP/USD=${f4(1/r.GBP)}`)
+        if (r.JPY) lines.push(`USD/JPY=${f2(r.JPY)}`)
+        if (r.CAD) lines.push(`USD/CAD=${f4(r.CAD)}`)
+        if (r.AUD) lines.push(`AUD/USD=${f4(1/r.AUD)}`)
+        if (r.CHF) lines.push(`USD/CHF=${f4(r.CHF)}`)
+        if (r.NZD) lines.push(`NZD/USD=${f4(1/r.NZD)}`)
+        if (r.SEK) lines.push(`USD/SEK=${f4(r.SEK)}`)
+        if (r.NOK) lines.push(`USD/NOK=${f4(r.NOK)}`)
+        if (r.MXN) lines.push(`USD/MXN=${f2(r.MXN)}`)
+        if (r.SGD) lines.push(`USD/SGD=${f4(r.SGD)}`)
+        if (r.TRY) lines.push(`USD/TRY=${f4(r.TRY)}`)
+        if (r.ZAR) lines.push(`USD/ZAR=${f2(r.ZAR)}`)
+      }
+    } catch {}
+
+    // 2. MÉTAUX — Gold Price API (gratuit, sans clé)
+    try {
+      const gRes = await fetch(
+        'https://api.frankfurter.app/latest?from=XAU&to=USD',
         { signal: AbortSignal.timeout(3000) }
       )
-      if (!res.ok) return ''
-      const d = await res.json()
-      const r = d.rates ?? {}
-      const f4 = (n: number) => n.toFixed(4)
-      const lines: string[] = []
-      if (r.EUR) lines.push(`EUR/USD=${f4(1/r.EUR)}`)
-      if (r.GBP) lines.push(`GBP/USD=${f4(1/r.GBP)}`)
-      if (r.JPY) lines.push(`USD/JPY=${r.JPY.toFixed(2)}`)
-      if (r.CAD) lines.push(`USD/CAD=${f4(r.CAD)}`)
-      if (r.AUD) lines.push(`AUD/USD=${f4(1/r.AUD)}`)
-      if (r.CHF) lines.push(`USD/CHF=${f4(r.CHF)}`)
-      if (r.NZD) lines.push(`NZD/USD=${f4(1/r.NZD)}`)
-      // Or du spot
+      if (gRes.ok) {
+        const gd = await gRes.json()
+        const goldUSD = gd?.rates?.USD
+        if (goldUSD) lines.push(`XAU/USD=${Number(goldUSD).toFixed(2)}`)
+      }
+    } catch {
+      // Fallback : essayer metals.live
       try {
-        const g = await fetch('https://api.metals.live/v1/spot/gold', { signal: AbortSignal.timeout(2000) })
-        if (g.ok) {
-          const gd = await g.json()
-          const gp = gd?.price ?? gd?.gold
-          if (gp) lines.push(`XAU/USD=${Number(gp).toFixed(2)}`)
+        const g2 = await fetch('https://api.metals.live/v1/spot', { signal: AbortSignal.timeout(2000) })
+        if (g2.ok) {
+          const md = await g2.json()
+          if (md?.gold)   lines.push(`XAU/USD=${Number(md.gold).toFixed(2)}`)
+          if (md?.silver) lines.push(`XAG/USD=${Number(md.silver).toFixed(2)}`)
         }
       } catch {}
-      return lines.join(' | ')
-    } catch { return '' }
+    }
+
+    // 3. CRYPTO — CoinGecko (gratuit, sans clé, 60 req/min)
+    try {
+      const cgRes = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,binancecoin,solana,ripple&vs_currencies=usd&precision=2',
+        { signal: AbortSignal.timeout(4000) }
+      )
+      if (cgRes.ok) {
+        const cg = await cgRes.json()
+        if (cg?.bitcoin?.usd)     lines.push(`BTC/USD=${Number(cg.bitcoin.usd).toFixed(2)}`)
+        if (cg?.ethereum?.usd)    lines.push(`ETH/USD=${Number(cg.ethereum.usd).toFixed(2)}`)
+        if (cg?.binancecoin?.usd) lines.push(`BNB/USD=${Number(cg.binancecoin.usd).toFixed(2)}`)
+        if (cg?.solana?.usd)      lines.push(`SOL/USD=${Number(cg.solana.usd).toFixed(2)}`)
+        if (cg?.ripple?.usd)      lines.push(`XRP/USD=${Number(cg.ripple.usd).toFixed(4)}`)
+      }
+    } catch {}
+
+    return lines.join(' | ')
   })()
 
   const spotNote = spotPrices
-    ? `\nPrix spot ACTUELS (live) : ${spotPrices}\n⚠️ Utilise OBLIGATOIREMENT ces prix pour entry/SL/TP.`
-    : ''
+    ? `\nPrix spot ACTUELS (live, ${new Date().toUTCString()}) :\n${spotPrices}\n⚠️ OBLIGATOIRE : utilise ces prix réels pour entry/SL/TP. Toute valeur doit être cohérente avec ces niveaux actuels.\nNOTE : indices synthétiques (BOOM, CRASH, JUMP, VOL, STEP) non listés → lis le prix directement sur le chart.`
+    : `\nATTENTION : prix live indisponibles. Génère des niveaux approximatifs basés sur ta connaissance récente du marché, et précise dans la conclusion que l'utilisateur doit vérifier les prix actuels.`
 
   // ----------------------------------------------------------
   // 4. Construire le message utilisateur
