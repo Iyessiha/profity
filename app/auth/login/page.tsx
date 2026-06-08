@@ -87,35 +87,53 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
-    const { data: signUpData, error: e } = await supabasePublic.auth.signUp({
-      email, password,
-      options: { data: { full_name: name || email.split('@')[0], ref_code: refCode || localStorage.getItem('px_ref') || '' } },
+    // Route signup avec auto-confirm + welcome email + séquence marketing
+    const res  = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email, password,
+        name: name || email.split('@')[0],
+        ref_code: refCode || localStorage.getItem('px_ref') || '',
+      }),
+    })
+    const data = await res.json()
+
+    if (!res.ok || !data.success) {
+      setError(data.error ?? 'Erreur inscription')
+      setLoading(false)
+      return
+    }
+
+    // Connexion automatique avec le token retourné
+    const { error: sessErr } = await supabasePublic.auth.setSession({
+      access_token:  data.access_token,
+      refresh_token: data.refresh_token,
     })
 
-    if (e) {
-      setError(e.message.includes('already registered') ? 'Cet email est déjà utilisé.' : e.message)
-    } else {
-      // Appliquer le code parrain si présent
-      const ref = refCode || localStorage.getItem('px_ref')
-      if (ref && signUpData?.user) {
-        try {
-          const session = await supabasePublic.auth.getSession()
-          const token = session.data.session?.access_token
-          if (token) {
-            await fetch('/api/referral', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-              body: JSON.stringify({ code: ref }),
-            })
-          }
-        } catch {} finally {
-          localStorage.removeItem('px_ref')
-        }
-      }
-      setSuccess(`Compte créé !${ref ? ' +10 crédits bonus parrainage offerts.' : ''} Vérifiez votre email.`)
+    if (sessErr) {
+      setError('Compte créé — connectez-vous manuellement.')
       setMode('login')
+      setLoading(false)
+      return
     }
+
+    // Appliquer le parrain si présent
+    const ref = refCode || localStorage.getItem('px_ref')
+    if (ref) {
+      try {
+        await fetch('/api/referral', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.access_token}` },
+          body: JSON.stringify({ code: ref }),
+        })
+      } catch {} finally { localStorage.removeItem('px_ref') }
+    }
+
+    // Redirection directe vers le dashboard ✅
+    window.location.replace('/dashboard')
     setLoading(false)
+  }
   }
 
   const handleGoogle = async () => {
