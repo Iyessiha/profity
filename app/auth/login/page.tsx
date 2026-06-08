@@ -134,7 +134,6 @@ export default function LoginPage() {
     window.location.replace('/dashboard')
     setLoading(false)
   }
-  }
 
   const handleGoogle = async () => {
     await supabasePublic.auth.signInWithOAuth({
