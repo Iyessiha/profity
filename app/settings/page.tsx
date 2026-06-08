@@ -246,11 +246,24 @@ export default function SettingsPage() {
     borderRadius:8, padding:'1.5rem', marginBottom:'1rem',
   }
 
+  // ── i18n settings ────────────────────────────────────────
+  const T = {
+    fr: { settings:'PARAMÈTRES', save:'SAUVEGARDER', saved:'✓ SAUVEGARDÉ',
+          profile:'PROFIL', notifications:'ALERTES', subscription:'ABONNEMENT', security:'SÉCURITÉ' },
+    en: { settings:'SETTINGS',   save:'SAVE',         saved:'✓ SAVED',
+          profile:'PROFILE', notifications:'ALERTS',  subscription:'SUBSCRIPTION', security:'SECURITY' },
+    ar: { settings:'الإعدادات',  save:'حفظ',          saved:'✓ تم الحفظ',
+          profile:'الملف',    notifications:'التنبيهات', subscription:'الاشتراك', security:'الأمان' },
+    pt: { settings:'CONFIGURAÇÕES', save:'SALVAR',   saved:'✓ SALVO',
+          profile:'PERFIL',  notifications:'ALERTAS', subscription:'ASSINATURA', security:'SEGURANÇA' },
+  } as Record<string, Record<string,string>>
+  const t = T[locale] ?? T['en']
+
   const TABS: { key: SettingsTab; icon: string; fr: string }[] = [
-    { key:'profile',       icon:'ti-user',      fr:'PROFIL'        },
-    { key:'notifications', icon:'ti-bell',      fr:'ALERTES'       },
-    { key:'subscription',  icon:'ti-credit-card',fr:'ABONNEMENT'   },
-    { key:'security',      icon:'ti-lock',      fr:'SÉCURITÉ'      },
+    { key:'profile',       icon:'ti-user',       fr: t.profile       },
+    { key:'notifications', icon:'ti-bell',       fr: t.notifications },
+    { key:'subscription',  icon:'ti-credit-card',fr: t.subscription  },
+    { key:'security',      icon:'ti-lock',       fr: t.security      },
   ]
 
   return (
@@ -273,7 +286,7 @@ export default function SettingsPage() {
           </a>
           <span style={{ color:'rgba(0,255,178,0.15)', flexShrink:0 }}>·</span>
           <span style={{ fontFamily:HUD, fontSize:12, letterSpacing:2, color:'#00FFB2', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-            PARAMÈTRES
+            { t.settings }
           </span>
         </div>
 
@@ -286,7 +299,7 @@ export default function SettingsPage() {
             padding:'8px 16px', borderRadius:4, cursor:'pointer',
             opacity: saving ? 0.6 : 1, transition:'all .3s', flexShrink:0,
           }}>
-          {saving ? '...' : saved ? '✓ SAUVEGARDÉ' : 'SAUVEGARDER'}
+          {saving ? '...' : saved ? t.saved : t.save}
         </button>
       </div>
 

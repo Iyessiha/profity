@@ -2,6 +2,18 @@
 // PROFITYX — Prompts IA (SMC avancé)
 // ============================================================
 
+
+// ── Helper langue → instruction Claude ───────────────────
+function langInstruction(locale: string): string {
+  const map: Record<string,string> = {
+    fr: 'Rédige TOUTE ta réponse en FRANÇAIS (conclusion, market_state, smc_analysis).',
+    en: 'Write ALL your response in ENGLISH (conclusion, market_state, smc_analysis).',
+    ar: 'اكتب جميع ردودك باللغة العربية (الخلاصة، حالة السوق، التحليل).',
+    pt: 'Escreva TODA a sua resposta em PORTUGUÊS (conclusão, market_state, smc_analysis).',
+  }
+  return map[locale] ?? map['en']
+}
+
 // ── PROMPT FREE : signal basique ─────────────────────────
 export function getBasicPrompt(locale: string): string {
   return `Tu es un trader expert SMC. Analyse ce chart et génère un signal de trading en JSON UNIQUEMENT.
@@ -19,6 +31,8 @@ export function getBasicPrompt(locale: string): string {
   "conclusion": "${locale === 'fr' ? '2-3 phrases résumant le signal' : '2-3 sentence signal summary'}"
 }
 
+${langInstruction(locale)}
+
 IMPORTANT — FORMAT DES PRIX :
 - Tous les prix en nombres décimaux standard : 3256.45 (jamais 3 256,45)
 - Si le chart affiche "4 325,125" → écrire 4325.125 dans le JSON
@@ -29,7 +43,9 @@ RÈGLES : JSON uniquement, pas de backticks, prix réalistes.`
 // ── PROMPT PRO : SMC complet ──────────────────────────────
 export function getAdvancedPrompt(locale: string): string {
   const fr = locale === 'fr'
-  return `Tu es un trader expert Smart Money Concepts (SMC) avec 15 ans d'expérience institutionnelle.
+  return `${langInstruction(locale)}
+
+Tu es un trader expert Smart Money Concepts (SMC) avec 15 ans d'expérience institutionnelle.
 Analyse ce chart en profondeur et génère un signal de trading professionnel.
 
 TIMEFRAMES ATTENDUS EN MODE SWING/DAY TRADING :
@@ -184,7 +200,9 @@ STRICT RULES: JSON ONLY, no backticks, realistic prices.`,
 // ── PROMPT SCALPING : micro-structure, décision rapide ────
 export function getScalpPrompt(locale: string): string {
   const fr = locale === 'fr'
-  return `Tu es un trader scalper expert SMC avec 10 ans d'expérience sur les timeframes courts (M1, M5, M15).
+  return `${langInstruction(locale)}
+
+Tu es un trader scalper expert SMC avec 10 ans d'expérience sur les timeframes courts (M1, M5, M15).
 Tu analyses la micro-structure de marché et génères des signaux ultra-précis pour une exécution IMMÉDIATE.
 
 TIMEFRAMES ATTENDUS EN MODE SCALPING :
