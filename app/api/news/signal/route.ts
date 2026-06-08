@@ -79,9 +79,9 @@ export async function POST(req: NextRequest) {
   const { event_title, country, impact, actual, forecast, previous } = body
   const locale = body.locale ?? 'fr'
 
-  if (!event_title || !country || !actual) {
+  if (!event_title || !country) {
     return NextResponse.json<ApiResponse<null>>(
-      { success: false, error: 'Données manquantes : event_title, country, actual requis' },
+      { success: false, error: 'Données manquantes : event_title et country requis' },
       { status: 400 }
     )
   }

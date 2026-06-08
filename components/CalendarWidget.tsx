@@ -122,77 +122,66 @@ function EventRow({
         expanded ? 'rgba(0,255,178,0.04)' : event.status === 'imminent' ? 'rgba(201,168,76,0.04)' : 'transparent'
       )}
     >
-      {/* Dot impact */}
-      <div style={{
-        width: 7, height: 7, borderRadius: '50%',
-        background: ic.dot, flexShrink: 0,
-        boxShadow: event.impact === 'High' ? `0 0 6px ${ic.dot}` : 'none',
-      }} />
-
-      {/* Info principale */}
+      {/* Layout 2 lignes pour mobile */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          fontFamily: "'Orbitron', monospace",
-          fontSize: 11, letterSpacing: 1,
-          color: '#E8F4F8',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>
-          {event.title}
+
+        {/* Ligne 1 : dot + titre complet + chevron */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
+          <div style={{
+            width: 7, height: 7, borderRadius: '50%', marginTop: 4,
+            background: ic.dot, flexShrink: 0,
+            boxShadow: event.impact === 'High' ? `0 0 6px ${ic.dot}` : 'none',
+          }} />
+          <div style={{
+            flex: 1,
+            fontFamily: "'Rajdhani', sans-serif",
+            fontSize: 14, fontWeight: 600, letterSpacing: 0.3,
+            color: '#E8F4F8', lineHeight: 1.3,
+            wordBreak: 'break-word',
+          }}>
+            {event.title}
+          </div>
+          <i className={'ti ' + (expanded ? 'ti-chevron-up' : 'ti-chevron-down')}
+            style={{ fontSize: 13, color: 'rgba(232,244,248,0.3)', flexShrink: 0, marginTop: 2 }}
+            aria-hidden="true" />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 3 }}>
-          <span style={{
-            fontFamily: "'Orbitron', monospace", fontSize: 9,
-            color: '#00D4FF', letterSpacing: 1,
-          }}>{event.country}</span>
-          <span style={{ fontSize: 10, color: sc, fontFamily: "'Rajdhani', sans-serif" }}>
+
+        {/* Ligne 2 : pays + countdown + données + bouton */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: "'Orbitron', monospace", fontSize: 8, color: '#00D4FF', letterSpacing: 1,
+            background: 'rgba(0,212,255,0.08)', border: '1px solid rgba(0,212,255,0.2)',
+            borderRadius: 3, padding: '2px 6px' }}>{event.country}</span>
+          <span style={{ fontSize: 11, color: sc, fontFamily: "'Rajdhani', sans-serif", opacity: 0.7 }}>
             {event.status === 'published'
               ? formatEventTime(event.date, locale)
-              : formatCountdown(event.minutes_until, locale)
-            }
+              : formatCountdown(event.minutes_until, locale)}
           </span>
-        </div>
-      </div>
-
-      {/* Data colonnes */}
-      <div style={{ display: 'flex', gap: 16, flexShrink: 0 }}>
-        {[
-          { l: lbl(locale, 'actual'),   v: event.actual,   up: event.actual != null && event.forecast != null && parseFloat(event.actual!) > parseFloat(event.forecast!) },
-          { l: lbl(locale, 'forecast'), v: event.forecast, up: null },
-          { l: lbl(locale, 'previous'), v: event.previous, up: null },
-        ].map(({ l, v, up }) => (
-          <div key={l} style={{ textAlign: 'right', minWidth: 44 }}>
-            <div style={{ fontFamily: "'Orbitron', monospace", fontSize: 8, color: 'rgba(232,244,248,0.3)', letterSpacing: 1, marginBottom: 2 }}>
-              {l}
-            </div>
-            <div style={{
-              fontFamily: "'Orbitron', monospace", fontSize: 12, fontWeight: 700,
-              color: v == null ? 'rgba(232,244,248,0.2)'
-                : up === true  ? '#00E676'
-                : up === false ? '#FF3A5C'
-                : '#E8F4F8',
-            }}>
-              {v ?? '—'}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Bouton analyser */}
-      <button
-        onClick={(e) => { e.stopPropagation(); canAnalyze && onAnalyze(event) }}
-        disabled={!canAnalyze || isAnalyzing}
-        style={{
-          flexShrink: 0,
-          background: canAnalyze ? 'rgba(0,255,178,0.08)' : 'transparent',
-          border: `1px solid ${canAnalyze ? 'rgba(0,255,178,0.25)' : 'rgba(232,244,248,0.08)'}`,
-          color: canAnalyze ? '#00FFB2' : 'rgba(232,244,248,0.2)',
-          fontFamily: "'Orbitron', monospace",
-          fontSize: 8, letterSpacing: 2,
-          padding: '6px 12px', borderRadius: 3,
-          cursor: canAnalyze ? 'pointer' : 'default',
-          transition: 'all .2s',
-          whiteSpace: 'nowrap',
-        }}
+          {/* Données compactes */}
+          {[
+            { l: lbl(locale, 'actual'),   v: event.actual,   up: event.actual != null && event.forecast != null && parseFloat(event.actual!) > parseFloat(event.forecast!) },
+            { l: lbl(locale, 'forecast'), v: event.forecast, up: null },
+            { l: lbl(locale, 'previous'), v: event.previous, up: null },
+          ].filter(x => x.v != null).map(({ l, v, up }) => (
+            <span key={l} style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: 11,
+              color: up === true ? '#00E676' : up === false ? '#FF3A5C' : 'rgba(232,244,248,0.55)' }}>
+              <span style={{ color: 'rgba(232,244,248,0.3)', fontSize: 10 }}>{l}: </span>
+              {v}
+            </span>
+          ))}
+          {/* Bouton analyser */}
+          <button
+            onClick={(e) => { e.stopPropagation(); canAnalyze && onAnalyze(event) }}
+            disabled={!canAnalyze || isAnalyzing}
+            style={{ marginLeft: 'auto', flexShrink: 0,
+              background: isImminent ? 'transparent' : isAnticipation ? 'rgba(201,168,76,0.1)' : 'rgba(0,255,178,0.08)',
+              border: `1px solid ${isImminent ? 'rgba(232,244,248,0.08)' : isAnticipation ? 'rgba(201,168,76,0.3)' : 'rgba(0,255,178,0.25)'}`,
+              color: isImminent ? 'rgba(232,244,248,0.2)' : isAnticipation ? '#C9A84C' : '#00FFB2',
+              fontFamily: "'Orbitron', monospace",
+              fontSize: 7, letterSpacing: 1,
+              padding: '5px 10px', borderRadius: 3,
+              cursor: canAnalyze ? 'pointer' : 'default',
+              whiteSpace: 'nowrap',
+            }}
       >
         {isAnalyzing
           ? lbl(locale, 'analyzing')
@@ -204,7 +193,8 @@ function EventRow({
       </button>
 
       {/* Chevron */}
-      <i className={'ti ' + (expanded ? 'ti-chevron-up' : 'ti-chevron-down')} style={{ fontSize: 14, color: 'rgba(232,244,248,0.3)', flexShrink: 0 }} aria-hidden="true" />
+      </div>
+    </div>
     </div>
 
     {/* Panneau détail (au clic) */}
