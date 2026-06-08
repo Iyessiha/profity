@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
+  <rect width="120" height="40" rx="8" fill="#0DC5FF"/>
+  <text x="14" y="27" font-family="'Arial Rounded MT Bold',Arial" font-weight="900" font-size="22" fill="white" letter-spacing="-0.5">wave</text>
+  <path d="M88 22 Q91 16 94 22 Q97 28 100 22 Q103 16 106 22" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

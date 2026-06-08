@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 40">
+  <rect width="140" height="40" rx="8" fill="#0D1F2D"/>
+  <rect x="4" y="4" width="32" height="32" rx="6" fill="url(#gpg)"/>
+  <defs>
+    <linearGradient id="gpg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00FFB2"/>
+      <stop offset="1" stop-color="#00D4FF"/>
+    </linearGradient>
+  </defs>
+  <text x="22" y="26" font-family="'Arial Black',Arial" font-weight="900" font-size="18" fill="#0D1F2D" text-anchor="middle">G</text>
+  <text x="82" y="25" font-family="Arial" font-weight="700" font-size="14" fill="white" text-anchor="middle" letter-spacing="0.5">GeniusPay</text>
+</svg>

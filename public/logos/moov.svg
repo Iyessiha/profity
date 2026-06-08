@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40">
+  <rect width="120" height="40" rx="8" fill="#0055A5"/>
+  <text x="60" y="27" font-family="'Arial Rounded MT Bold',Arial" font-weight="900" font-size="20" fill="white" text-anchor="middle" letter-spacing="1">moov</text>
+  <path d="M8 20 Q12 14 16 20 Q20 26 24 20" stroke="#00C8FF" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>

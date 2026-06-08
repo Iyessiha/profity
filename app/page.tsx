@@ -775,73 +775,33 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Logos SVG moyens de paiement */}
+          {/* Logos — vrais logos officiels */}
           <div style={{ display:'flex', flexWrap:'wrap', gap:14, justifyContent:'center', alignItems:'center', marginBottom:'2rem' }}>
 
-            {/* Wave */}
-            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(0,199,255,0.2)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
-              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="20" fill="#0DC5FF"/>
-                <path d="M8 22c2-6 5-9 8-9s5 6 8 6 5-6 8-3" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-                <path d="M8 27c2-4 5-6 8-6s5 4 8 4 5-4 8-2" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-              </svg>
-              <span style={{ fontFamily:"'Orbitron',monospace", fontSize:12, fontWeight:900, color:'#0DC5FF', letterSpacing:1 }}>WAVE</span>
-            </div>
-
-            {/* Orange Money */}
-            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(255,130,0,0.25)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
-              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="20" fill="#FF8200"/>
-                <circle cx="20" cy="20" r="10" fill="none" stroke="#fff" strokeWidth="2.5"/>
-                <circle cx="20" cy="20" r="4" fill="#fff"/>
-              </svg>
-              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:13, fontWeight:700, color:'#FF8200', letterSpacing:0.5 }}>Orange Money</span>
-            </div>
-
-            {/* MTN Mobile Money */}
-            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(255,204,0,0.25)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
-              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-                <rect width="40" height="40" rx="8" fill="#FFCC00"/>
-                <text x="20" y="26" textAnchor="middle" fontFamily="Arial" fontWeight="900" fontSize="14" fill="#000">MTN</text>
-              </svg>
-              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:13, fontWeight:700, color:'#FFCC00' }}>MTN MoMo</span>
-            </div>
-
-            {/* Moov Money */}
-            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(0,120,215,0.25)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
-              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="20" fill="#0078D7"/>
-                <path d="M10 20l6-8 4 12 4-8 6 4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </svg>
-              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:13, fontWeight:700, color:'#0078D7' }}>Moov Money</span>
-            </div>
-
-            {/* Visa */}
-            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(26,115,232,0.25)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:6 }}>
-              <svg width="48" height="28" viewBox="0 0 75 24" fill="none">
-                <text x="0" y="20" fontFamily="Arial" fontWeight="900" fontSize="22" fill="#1A73E8" letterSpacing="-1">VISA</text>
-              </svg>
-            </div>
-
-            {/* Mastercard */}
-            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(235,0,27,0.2)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
-              <svg width="44" height="28" viewBox="0 0 44 28" fill="none">
-                <circle cx="16" cy="14" r="13" fill="#EB001B"/>
-                <circle cx="28" cy="14" r="13" fill="#F79E1B"/>
-                <path d="M22 5.5a13 13 0 0 1 0 17A13 13 0 0 1 22 5.5z" fill="#FF5F00"/>
-              </svg>
-              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:12, fontWeight:700, color:'rgba(232,244,248,0.6)' }}>Mastercard</span>
-            </div>
-
-            {/* GeniusPay */}
-            <div style={{ background:'rgba(13,20,32,0.8)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:10, padding:'10px 18px', display:'flex', alignItems:'center', gap:8 }}>
-              <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-                <rect width="40" height="40" rx="8" fill="url(#gpGrad)"/>
-                <defs><linearGradient id="gpGrad" x1="0" y1="0" x2="40" y2="40"><stop stopColor="#00FFB2"/><stop offset="1" stopColor="#00D4FF"/></linearGradient></defs>
-                <path d="M12 20h8M20 12v16M28 16c0-4-4-6-8-4" stroke="#020408" strokeWidth="2.5" strokeLinecap="round"/>
-              </svg>
-              <span style={{ fontFamily:"'Orbitron',monospace", fontSize:10, fontWeight:900, color:'#00FFB2', letterSpacing:0.5 }}>GeniusPay</span>
-            </div>
+            {[
+              { src:'/logos/wave.svg',         alt:'Wave',         border:'rgba(13,197,255,0.3)',  bg:'rgba(13,197,255,0.05)'  },
+              { src:'/logos/orange_money.svg', alt:'Orange Money', border:'rgba(255,102,0,0.3)',   bg:'rgba(255,102,0,0.05)'   },
+              { src:'/logos/mtn.svg',          alt:'MTN MoMo',     border:'rgba(255,204,0,0.3)',   bg:'rgba(255,204,0,0.05)'   },
+              { src:'/logos/moov.svg',         alt:'Moov Money',   border:'rgba(0,85,165,0.3)',    bg:'rgba(0,85,165,0.05)'    },
+              { src:'/logos/visa.svg',         alt:'Visa',         border:'rgba(26,31,113,0.2)',   bg:'rgba(255,255,255,0.95)' },
+              { src:'/logos/mastercard.svg',   alt:'Mastercard',   border:'rgba(235,0,27,0.2)',    bg:'rgba(255,255,255,0.95)' },
+              { src:'/logos/geniuspay.svg',    alt:'GeniusPay',    border:'rgba(0,255,178,0.25)',  bg:'rgba(0,255,178,0.03)'   },
+            ].map(({ src, alt, border, bg }) => (
+              <div key={alt} style={{
+                background: bg,
+                border: `1px solid ${border}`,
+                borderRadius: 10,
+                padding: '8px 14px',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                minWidth: 110, minHeight: 52,
+                transition: 'transform .2s, box-shadow .2s',
+              }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 16px ${border}` }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'none'; (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}
+              >
+                <img src={src} alt={alt} style={{ height:36, maxWidth:120, objectFit:'contain' }} />
+              </div>
+            ))}
 
           </div>
 
