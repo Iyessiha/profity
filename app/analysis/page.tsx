@@ -237,6 +237,110 @@ export default function AnalysisPage() {
 
             {!signal ? (
               <>
+                {/* ── Sélecteur mode + guide timeframes ─────────────────── */}
+                <div style={{ marginBottom:14 }}>
+                  {/* Tabs SWING / SCALP */}
+                  <div style={{ display:'flex', gap:6, marginBottom:10 }}>
+                    {([
+                      { key:'swing', label:'📈 SWING / DAY', desc:'SMC classique, R/R ≥ 1.5' },
+                      { key:'scalp', label:'⚡ SCALP',        desc:'Micro-structure, R/R ≥ 1.0' },
+                    ] as const).map(m => (
+                      <button key={m.key} onClick={() => setAnalysisMode(m.key)}
+                        style={{ flex:1, padding:'8px 10px', borderRadius:7, cursor:'pointer', transition:'all .2s',
+                          background: analysisMode===m.key
+                            ? m.key==='scalp' ? 'rgba(255,107,53,0.12)' : 'rgba(0,255,178,0.08)'
+                            : 'transparent',
+                          border: `1px solid ${analysisMode===m.key
+                            ? m.key==='scalp' ? 'rgba(255,107,53,0.4)' : 'rgba(0,255,178,0.3)'
+                            : 'rgba(255,255,255,0.08)'}` }}>
+                        <div style={{ fontFamily:"'Orbitron',monospace", fontSize:8, letterSpacing:1,
+                          color: analysisMode===m.key
+                            ? m.key==='scalp' ? '#FF6B35' : '#00FFB2'
+                            : 'rgba(232,244,248,0.4)',
+                          marginBottom:2 }}>{m.label}</div>
+                        <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:10,
+                          color:'rgba(232,244,248,0.3)' }}>{m.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Guide timeframes recommandés */}
+                  <div style={{ background: analysisMode==='scalp'
+                    ? 'rgba(255,107,53,0.04)' : 'rgba(0,255,178,0.03)',
+                    border: `1px solid ${analysisMode==='scalp'
+                      ? 'rgba(255,107,53,0.15)' : 'rgba(0,255,178,0.1)'}`,
+                    borderRadius:8, padding:'10px 12px' }}>
+                    <div style={{ fontFamily:"'Orbitron',monospace", fontSize:7, letterSpacing:2,
+                      color: analysisMode==='scalp' ? 'rgba(255,107,53,0.7)' : 'rgba(0,255,178,0.6)',
+                      marginBottom:8 }}>
+                      {analysisMode==='scalp' ? '⚡ TIMEFRAMES RECOMMANDÉS — SCALP' : '📈 TIMEFRAMES RECOMMANDÉS — SWING / DAY'}
+                    </div>
+                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                      {analysisMode==='scalp' ? (
+                        <>
+                          {[
+                            { tf:'M1',  role:'Exécution', desc:'Timing précis d\'entrée · réaction instantanée', primary:true },
+                            { tf:'M5',  role:'Signal',    desc:'Zone d\'entrée · Micro OB · FVG · BOS',          primary:true },
+                            { tf:'M15', role:'Contexte',  desc:'Structure court terme · tendance rapide',        primary:false },
+                            { tf:'M30', role:'HTF rapide',desc:'Biais directionnel · liquidité proche',          primary:false },
+                          ].map(({ tf, role, desc, primary }) => (
+                            <div key={tf} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                              <div style={{ fontFamily:"'Orbitron',monospace", fontSize:10, fontWeight:900,
+                                color: primary ? '#FF6B35' : 'rgba(255,107,53,0.45)',
+                                minWidth:36, background: primary ? 'rgba(255,107,53,0.12)' : 'rgba(255,107,53,0.04)',
+                                border:`1px solid ${primary?'rgba(255,107,53,0.3)':'rgba(255,107,53,0.1)'}`,
+                                borderRadius:4, padding:'2px 6px', textAlign:'center' }}>{tf}</div>
+                              <div>
+                                <span style={{ fontFamily:"'Orbitron',monospace", fontSize:7, letterSpacing:1,
+                                  color: primary ? 'rgba(255,107,53,0.8)' : 'rgba(232,244,248,0.3)' }}>
+                                  {role}{primary ? ' ★' : ''}
+                                </span>
+                                <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:11,
+                                  color:'rgba(232,244,248,0.35)', marginLeft:6 }}>{desc}</span>
+                              </div>
+                            </div>
+                          ))}
+                          <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:11,
+                            color:'rgba(255,107,53,0.5)', marginTop:2, paddingTop:6,
+                            borderTop:'1px solid rgba(255,107,53,0.1)' }}>
+                            💡 Uploadez de préférence un <strong style={{color:'#FF6B35'}}>M5 ou M1</strong> — l'IA identifie automatiquement les micro OB et FVG
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {[
+                            { tf:'H4',  role:'Structure',  desc:'Tendance dominante · OB majeurs · liquidité HTF', primary:true },
+                            { tf:'H1',  role:'Signal',     desc:'Entrée précise · OB/FVG · BOS/CHOCH',            primary:true },
+                            { tf:'D1',  role:'Contexte',   desc:'Zone premium/discount · biais hebdo',            primary:false },
+                            { tf:'M15', role:'Affinement', desc:'Timing d\'entrée après confirmation H1',         primary:false },
+                          ].map(({ tf, role, desc, primary }) => (
+                            <div key={tf} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                              <div style={{ fontFamily:"'Orbitron',monospace", fontSize:10, fontWeight:900,
+                                color: primary ? '#00FFB2' : 'rgba(0,255,178,0.35)',
+                                minWidth:36, background: primary ? 'rgba(0,255,178,0.08)' : 'rgba(0,255,178,0.02)',
+                                border:`1px solid ${primary?'rgba(0,255,178,0.25)':'rgba(0,255,178,0.08)'}`,
+                                borderRadius:4, padding:'2px 6px', textAlign:'center' }}>{tf}</div>
+                              <div>
+                                <span style={{ fontFamily:"'Orbitron',monospace", fontSize:7, letterSpacing:1,
+                                  color: primary ? 'rgba(0,255,178,0.8)' : 'rgba(232,244,248,0.3)' }}>
+                                  {role}{primary ? ' ★' : ''}
+                                </span>
+                                <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:11,
+                                  color:'rgba(232,244,248,0.35)', marginLeft:6 }}>{desc}</span>
+                              </div>
+                            </div>
+                          ))}
+                          <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:11,
+                            color:'rgba(0,255,178,0.45)', marginTop:2, paddingTop:6,
+                            borderTop:'1px solid rgba(0,255,178,0.08)' }}>
+                            💡 Uploadez de préférence un <strong style={{color:'#00FFB2'}}>H1 ou H4</strong> — l'IA lit automatiquement le TF visible sur le chart
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Zone dépôt */}
                 {!preview ? (
                   <div
@@ -255,31 +359,6 @@ export default function AnalysisPage() {
                   <div>
                     <img src={preview} alt="Chart" style={{ width:'100%', maxHeight:300, objectFit:'contain', borderRadius:8, background:'var(--bg2)', marginBottom:'1rem' }} />
                     {error && <div style={{ background:'rgba(255,58,92,0.08)', border:'1px solid rgba(255,58,92,0.25)', borderRadius:6, padding:'10px 14px', marginBottom:'1rem', fontFamily:BODY, fontSize:13, color:'var(--red)' }}>{error}</div>}
-
-                    {/* Sélecteur mode d'analyse */}
-                    <div style={{ display:'flex', gap:6, marginBottom:10 }}>
-                      {([
-                        { key:'swing', label:'📈 SWING / DAY', desc:'SMC classique, R/R ≥ 1.5' },
-                        { key:'scalp', label:'⚡ SCALP',        desc:'Micro-structure, R/R ≥ 1.0' },
-                      ] as const).map(m => (
-                        <button key={m.key} onClick={() => setAnalysisMode(m.key)}
-                          style={{ flex:1, padding:'8px 10px', borderRadius:7, cursor:'pointer', transition:'all .2s',
-                            background: analysisMode===m.key
-                              ? m.key==='scalp' ? 'rgba(255,107,53,0.12)' : 'rgba(0,255,178,0.08)'
-                              : 'transparent',
-                            border: `1px solid ${analysisMode===m.key
-                              ? m.key==='scalp' ? 'rgba(255,107,53,0.4)' : 'rgba(0,255,178,0.3)'
-                              : 'rgba(255,255,255,0.08)'}` }}>
-                          <div style={{ fontFamily:"'Orbitron',monospace", fontSize:8, letterSpacing:1,
-                            color: analysisMode===m.key
-                              ? m.key==='scalp' ? '#FF6B35' : '#00FFB2'
-                              : 'rgba(232,244,248,0.4)',
-                            marginBottom:2 }}>{m.label}</div>
-                          <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:10,
-                            color:'rgba(232,244,248,0.3)' }}>{m.desc}</div>
-                        </button>
-                      ))}
-                    </div>
 
                     <div style={{ display:'flex', gap:10 }}>
                       <button onClick={analyze} disabled={analyzing||(plan==='free'&&analysesLeft===0)}
