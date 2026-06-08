@@ -50,7 +50,7 @@ interface User {
   subscriptions:       { status: string; amount: number }[]
 }
 
-type AdminTab = 'overview' | 'users' | 'subscriptions' | 'treasury' | 'notifications' | 'export' | 'broadcast' | 'logs'
+type AdminTab = 'overview' | 'users' | 'subscriptions' | 'treasury' | 'signals' | 'invoices_admin' | 'credits_admin' | 'settings_admin' | 'notifications' | 'export' | 'broadcast' | 'logs'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -320,6 +320,10 @@ export default function AdminDashboard() {
     { key: 'users',         icon: 'ti-users',          label: 'UTILISATEURS' },
     { key: 'subscriptions', icon: 'ti-credit-card',    label: 'ABONNEMENTS'  },
     { key: 'treasury',      icon: 'ti-cash',           label: 'TRÉSORERIE'   },
+    { key: 'signals',       icon: 'ti-chart-bar',      label: 'SIGNAUX'      },
+    { key: 'invoices_admin',icon: 'ti-receipt',        label: 'FACTURES'     },
+    { key: 'credits_admin', icon: 'ti-coin',           label: 'CRÉDITS'      },
+    { key: 'settings_admin',icon: 'ti-settings',       label: 'PARAMÈTRES'   },
     { key: 'broadcast',     icon: 'ti-message-2',      label: 'MESSAGERIE'   },
     { key: 'export',        icon: 'ti-file-download',  label: 'EXPORT'       },
     { key: 'logs',          icon: 'ti-file-analytics', label: 'LOGS'         },
@@ -882,6 +886,11 @@ export default function AdminDashboard() {
           {/* ══ LOGS ══════════════════════════════════════ */}
           {/* ══ NOTIFICATIONS ═══════════════════════════ */}
 
+
+          {tab === 'signals'        && <SignalsPanel       token={token} showToast={showToast} />}
+          {tab === 'invoices_admin' && <InvoicesAdminPanel token={token} showToast={showToast} />}
+          {tab === 'credits_admin'  && <CreditsAdminPanel  token={token} showToast={showToast} />}
+          {tab === 'settings_admin' && <SettingsAdminPanel token={token} showToast={showToast} />}
 
           {/* ══ EXPORT ═══════════════════════════════════ */}
           {tab === 'export' && <ExportPanel token={token} />}
@@ -1864,6 +1873,357 @@ function EmailTestPanel({ token, showToast }: { token:string; showToast:(m:strin
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────
+// PANEL : SIGNAUX — noter WIN/LOSS pour le track record
+// ─────────────────────────────────────────────────────────
+function SignalsPanel({ token, showToast }: { token:string; showToast:(m:string,ok:boolean)=>void }) {
+  const HUD='\'Orbitron\',monospace', BODY='\'Rajdhani\',sans-serif'
+  const [signals, setSignals] = useState<Array<{id:string;pair:string;direction:string;entry:number;rr_ratio:number;trade_result:string|null;confidence:string;created_at:string;user_email:string}>>([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter]   = useState<'pending'|'all'>('pending')
+  const [rating,  setRating]  = useState<Record<string,string>>({})
+
+  const load = async () => {
+    setLoading(true)
+    const res  = await fetch(`/api/admin/signals?filter=${filter}`, { headers:{ Authorization:`Bearer ${token}` } })
+    const data = await res.json()
+    setSignals(data.signals ?? [])
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [filter])
+
+  const rate = async (id: string, result: string) => {
+    setRating(r => ({ ...r, [id]: 'loading' }))
+    const res = await fetch('/api/admin/signals/rate', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
+      body: JSON.stringify({ signal_id: id, result }),
+    })
+    const data = await res.json()
+    if (data.success) {
+      showToast(`✅ Signal noté ${result}`, true)
+      setSignals(s => s.filter(x => x.id !== id))
+    } else {
+      showToast(`❌ ${data.error}`, false)
+    }
+    setRating(r => { const n={...r}; delete n[id]; return n })
+  }
+
+  const dirColor = (d:string) => d?.includes('LONG') || d?.includes('BUY') ? '#00FFB2' : '#FF3A5C'
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10 }}>
+        <div style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'var(--ac)' }}>📊 NOTATION DES SIGNAUX</div>
+        <div style={{ display:'flex', gap:8 }}>
+          {(['pending','all'] as const).map(f => (
+            <button key={f} onClick={() => setFilter(f)} style={{
+              fontFamily:HUD, fontSize:8, letterSpacing:1, cursor:'pointer',
+              background: filter===f ? 'rgba(0,255,178,0.1)' : 'transparent',
+              border:`1px solid ${filter===f?'rgba(0,255,178,0.3)':'var(--bd)'}`,
+              color: filter===f ? 'var(--ac)' : 'var(--tx3)',
+              borderRadius:4, padding:'7px 14px',
+            }}>
+              {f === 'pending' ? '⏳ EN ATTENTE' : '📋 TOUS'}
+            </button>
+          ))}
+          <button onClick={load} style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, background:'var(--bg2)', border:'1px solid var(--bd)', color:'var(--ac)', borderRadius:4, padding:'7px 14px', cursor:'pointer' }}>↻</button>
+        </div>
+      </div>
+
+      {loading && <div style={{ textAlign:'center', padding:'2rem', fontFamily:HUD, fontSize:8, color:'var(--tx3)', letterSpacing:2 }}>CHARGEMENT...</div>}
+      {!loading && signals.length === 0 && (
+        <div style={{ textAlign:'center', padding:'3rem', background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10 }}>
+          <div style={{ fontSize:32, marginBottom:8 }}>✅</div>
+          <div style={{ fontFamily:HUD, fontSize:9, color:'var(--tx3)', letterSpacing:2 }}>
+            {filter === 'pending' ? 'TOUS LES SIGNAUX SONT NOTÉS' : 'AUCUN SIGNAL'}
+          </div>
+        </div>
+      )}
+
+      {!loading && signals.map(s => (
+        <div key={s.id} style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1rem' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+            <div style={{ display:'flex', gap:16, alignItems:'center', flexWrap:'wrap' }}>
+              <div>
+                <div style={{ fontFamily:HUD, fontSize:12, color:'var(--tx0)' }}>{s.pair}</div>
+                <div style={{ fontFamily:HUD, fontSize:9, color:dirColor(s.direction), marginTop:2 }}>{s.direction}</div>
+              </div>
+              <div>
+                <div style={{ fontFamily:'Rajdhani,sans-serif', fontSize:12, color:'var(--tx2)' }}>Entrée : <strong style={{color:'var(--tx0)'}}>{s.entry}</strong></div>
+                <div style={{ fontFamily:'Rajdhani,sans-serif', fontSize:11, color:'var(--tx3)' }}>R/R 1:{s.rr_ratio} · {s.confidence}</div>
+              </div>
+              <div style={{ fontFamily:'Rajdhani,sans-serif', fontSize:11, color:'var(--tx3)' }}>
+                {new Date(s.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
+                {s.user_email && <div style={{color:'var(--tx3)',fontSize:10}}>{s.user_email}</div>}
+              </div>
+              {s.trade_result && (
+                <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'3px 10px', borderRadius:20,
+                  background: s.trade_result==='WIN'?'rgba(0,255,178,0.1)':'rgba(255,58,92,0.1)',
+                  color: s.trade_result==='WIN'?'var(--ac)':'#FF3A5C',
+                  border:`1px solid ${s.trade_result==='WIN'?'rgba(0,255,178,0.3)':'rgba(255,58,92,0.3)'}`,
+                }}>{s.trade_result}</span>
+              )}
+            </div>
+            {!s.trade_result && (
+              <div style={{ display:'flex', gap:8 }}>
+                <button onClick={() => rate(s.id, 'WIN')} disabled={!!rating[s.id]} style={{
+                  fontFamily:HUD, fontSize:9, letterSpacing:1, cursor:'pointer', padding:'8px 18px', borderRadius:6,
+                  background:'rgba(0,255,178,0.1)', border:'1px solid rgba(0,255,178,0.3)', color:'var(--ac)',
+                }}>✅ WIN</button>
+                <button onClick={() => rate(s.id, 'LOSS')} disabled={!!rating[s.id]} style={{
+                  fontFamily:HUD, fontSize:9, letterSpacing:1, cursor:'pointer', padding:'8px 18px', borderRadius:6,
+                  background:'rgba(255,58,92,0.08)', border:'1px solid rgba(255,58,92,0.25)', color:'#FF3A5C',
+                }}>📉 LOSS</button>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────
+// PANEL : FACTURES ADMIN
+// ─────────────────────────────────────────────────────────
+function InvoicesAdminPanel({ token, showToast }: { token:string; showToast:(m:string,ok:boolean)=>void }) {
+  const HUD='\'Orbitron\',monospace', BODY='\'Rajdhani\',sans-serif'
+  const [invoices, setInvoices] = useState<Array<{id:string;invoice_number:string;client_name:string;client_email:string;plan:string;amount_xof:number;amount_usd:number;payment_method:string;status:string;token:string;created_at:string}>>([])
+  const [loading, setLoading] = useState(true)
+  const [resending, setResending] = useState<string>('')
+
+  useEffect(() => {
+    fetch('/api/admin/invoices', { headers:{ Authorization:`Bearer ${token}` } })
+      .then(r => r.json()).then(d => { setInvoices(d.invoices ?? []); setLoading(false) })
+  }, [])
+
+  const resend = async (inv: typeof invoices[0]) => {
+    setResending(inv.id)
+    const res = await fetch('/api/admin/invoices/resend', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
+      body: JSON.stringify({ invoice_id: inv.id }),
+    })
+    const data = await res.json()
+    showToast(data.success ? `✅ Facture renvoyée à ${inv.client_email}` : `❌ ${data.error}`, data.success)
+    setResending('')
+  }
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'var(--ac)' }}>🧾 TOUTES LES FACTURES</div>
+        <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>{invoices.length} facture(s)</div>
+      </div>
+
+      {loading && <div style={{ textAlign:'center', padding:'2rem', fontFamily:HUD, fontSize:8, color:'var(--tx3)', letterSpacing:2 }}>CHARGEMENT...</div>}
+
+      {!loading && invoices.length === 0 && (
+        <div style={{ textAlign:'center', padding:'3rem', background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10 }}>
+          <div style={{ fontSize:32, marginBottom:8 }}>🧾</div>
+          <div style={{ fontFamily:HUD, fontSize:9, color:'var(--tx3)', letterSpacing:2 }}>AUCUNE FACTURE</div>
+        </div>
+      )}
+
+      {!loading && invoices.map(inv => (
+        <div key={inv.id} style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1rem' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+            <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center' }}>
+              <div>
+                <div style={{ fontFamily:HUD, fontSize:10, color:'var(--ac)', letterSpacing:1 }}>{inv.invoice_number}</div>
+                <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)', marginTop:2 }}>{inv.client_name}</div>
+                <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>{inv.client_email}</div>
+              </div>
+              <div>
+                <div style={{ fontFamily:HUD, fontSize:14, fontWeight:900, color:'var(--ac)' }}>{inv.amount_xof.toLocaleString('fr-FR')} FCFA</div>
+                <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>${inv.amount_usd} · {inv.payment_method}</div>
+              </div>
+              <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>
+                {new Date(inv.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})}
+              </div>
+            </div>
+            <div style={{ display:'flex', gap:8 }}>
+              <a href={`/invoice/${inv.token}`} target="_blank" rel="noopener" style={{
+                fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'8px 14px', borderRadius:6,
+                background:'rgba(0,255,178,0.08)', border:'1px solid rgba(0,255,178,0.2)', color:'var(--ac)',
+                textDecoration:'none',
+              }}>⬇ PDF</a>
+              <button onClick={() => resend(inv)} disabled={resending===inv.id} style={{
+                fontFamily:HUD, fontSize:8, letterSpacing:1, cursor:'pointer', padding:'8px 14px', borderRadius:6,
+                background:'rgba(0,212,255,0.08)', border:'1px solid rgba(0,212,255,0.2)', color:'var(--ac2)',
+              }}>{resending===inv.id ? 'ENVOI...' : '📧 RENVOYER'}</button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────
+// PANEL : CRÉDITS MANUELS
+// ─────────────────────────────────────────────────────────
+function CreditsAdminPanel({ token, showToast }: { token:string; showToast:(m:string,ok:boolean)=>void }) {
+  const HUD='\'Orbitron\',monospace', BODY='\'Rajdhani\',sans-serif'
+  const [email,  setEmail]  = useState('')
+  const [amount, setAmount] = useState('')
+  const [reason, setReason] = useState('')
+  const [type,   setType]   = useState<'add'|'remove'>('add')
+  const [loading,setLoading]= useState(false)
+  const [history,setHistory]= useState<Array<{user_email:string;amount:number;type:string;description:string;created_at:string}>>([])
+
+  useEffect(() => {
+    fetch('/api/admin/credits/history', { headers:{ Authorization:`Bearer ${token}` } })
+      .then(r => r.json()).then(d => setHistory(d.history ?? []))
+  }, [])
+
+  const submit = async () => {
+    if (!email || !amount || !reason) { showToast('Tous les champs sont requis', false); return }
+    setLoading(true)
+    const res = await fetch('/api/admin/credits/adjust', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
+      body: JSON.stringify({ email, amount: type === 'add' ? Number(amount) : -Number(amount), reason }),
+    })
+    const data = await res.json()
+    if (data.success) {
+      showToast(`✅ ${type === 'add' ? '+' : '-'}${amount} crédits → ${email}`, true)
+      setEmail(''); setAmount(''); setReason('')
+      setHistory(h => [{ user_email:email, amount:type==='add'?Number(amount):-Number(amount), type:'admin_adjust', description:reason, created_at:new Date().toISOString() }, ...h])
+    } else { showToast(`❌ ${data.error}`, false) }
+    setLoading(false)
+  }
+
+  const inp = { background:'var(--bg1)', border:'1px solid var(--bd)', color:'var(--tx0)', fontFamily:BODY, fontSize:14, padding:'10px 12px', borderRadius:6, outline:'none', width:'100%' }
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+      <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.5rem' }}>
+        <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'var(--ac)', marginBottom:20 }}>🪙 AJUSTER LES CRÉDITS</div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:12 }}>
+          <div>
+            <label style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', display:'block', marginBottom:6 }}>EMAIL UTILISATEUR</label>
+            <input value={email} onChange={e => setEmail(e.target.value)} placeholder="trader@gmail.com" style={inp} />
+          </div>
+          <div>
+            <label style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', display:'block', marginBottom:6 }}>MONTANT</label>
+            <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="50" style={inp} />
+          </div>
+        </div>
+        <div style={{ marginBottom:12 }}>
+          <label style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', display:'block', marginBottom:6 }}>RAISON</label>
+          <input value={reason} onChange={e => setReason(e.target.value)} placeholder="Compensation, bonus, erreur..." style={inp} />
+        </div>
+        <div style={{ display:'flex', gap:8, marginBottom:16 }}>
+          {(['add','remove'] as const).map(t => (
+            <button key={t} onClick={() => setType(t)} style={{
+              fontFamily:HUD, fontSize:9, letterSpacing:1, cursor:'pointer', padding:'8px 20px', borderRadius:6,
+              background: type===t ? (t==='add'?'rgba(0,255,178,0.15)':'rgba(255,58,92,0.12)') : 'transparent',
+              border:`1px solid ${type===t?(t==='add'?'rgba(0,255,178,0.4)':'rgba(255,58,92,0.35)'):'var(--bd)'}`,
+              color: type===t ? (t==='add'?'var(--ac)':'#FF3A5C') : 'var(--tx3)',
+            }}>
+              {t === 'add' ? '➕ AJOUTER' : '➖ RETIRER'}
+            </button>
+          ))}
+        </div>
+        <button onClick={submit} disabled={loading} style={{
+          fontFamily:HUD, fontSize:10, letterSpacing:2, cursor:'pointer', padding:'12px 28px', borderRadius:6,
+          background: type==='add'?'var(--ac)':'rgba(255,58,92,0.8)',
+          border:'none', color:'#020408', fontWeight:700,
+          opacity: loading ? 0.6 : 1,
+        }}>{loading ? 'ENVOI...' : `APPLIQUER ${type==='add'?'+':'−'}${amount||'?'} CRÉDITS`}</button>
+      </div>
+
+      {/* Historique des ajustements admin */}
+      {history.length > 0 && (
+        <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1rem' }}>
+          <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:12 }}>HISTORIQUE RÉCENT</div>
+          {history.slice(0,10).map((h,i) => (
+            <div key={i} style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid var(--bd)', fontSize:13, fontFamily:BODY, color:'var(--tx2)' }}>
+              <span>{h.user_email}</span>
+              <span style={{ color: h.amount > 0 ? 'var(--ac)' : '#FF3A5C', fontFamily:HUD, fontSize:11 }}>
+                {h.amount > 0 ? '+' : ''}{h.amount}
+              </span>
+              <span style={{ color:'var(--tx3)', fontSize:11 }}>{h.description}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────
+// PANEL : PARAMÈTRES SYSTÈME
+// ─────────────────────────────────────────────────────────
+function SettingsAdminPanel({ token, showToast }: { token:string; showToast:(m:string,ok:boolean)=>void }) {
+  const HUD='\'Orbitron\',monospace', BODY='\'Rajdhani\',sans-serif'
+  const [budget, setBudget]   = useState('500')
+  const [spent,  setSpent]    = useState('0.80')
+  const [rate,   setRate]     = useState('620')
+  const [saving, setSaving]   = useState(false)
+
+  const save = async () => {
+    setSaving(true)
+    // Mettre à jour les constantes dans la treasury route via API
+    const res = await fetch('/api/admin/system-settings', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${token}` },
+      body: JSON.stringify({ anthropic_budget: Number(budget), anthropic_spent: Number(spent), xof_per_usd: Number(rate) }),
+    })
+    const data = await res.json()
+    showToast(data.success ? '✅ Paramètres sauvegardés' : `❌ ${data.error}`, data.success)
+    setSaving(false)
+  }
+
+  const inp = { background:'var(--bg1)', border:'1px solid var(--bd)', color:'var(--tx0)', fontFamily:BODY, fontSize:15, padding:'10px 12px', borderRadius:6, outline:'none', width:'100%' }
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.5rem' }}>
+        <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'var(--ac)', marginBottom:20 }}>⚙️ PARAMÈTRES SYSTÈME</div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:14, marginBottom:20 }}>
+          <div>
+            <label style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', display:'block', marginBottom:6 }}>BUDGET ANTHROPIC ($)</label>
+            <input type="number" value={budget} onChange={e => setBudget(e.target.value)} style={inp} />
+            <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginTop:4 }}>Limite mensuelle API Claude</div>
+          </div>
+          <div>
+            <label style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', display:'block', marginBottom:6 }}>DÉPENSÉ CE MOIS ($)</label>
+            <input type="number" step="0.01" value={spent} onChange={e => setSpent(e.target.value)} style={inp} />
+            <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginTop:4 }}>Depuis console.anthropic.com</div>
+          </div>
+          <div>
+            <label style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', display:'block', marginBottom:6 }}>TAUX XOF/USD</label>
+            <input type="number" value={rate} onChange={e => setRate(e.target.value)} style={inp} />
+            <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginTop:4 }}>1 USD = {rate} FCFA</div>
+          </div>
+        </div>
+        <button onClick={save} disabled={saving} style={{
+          fontFamily:HUD, fontSize:10, letterSpacing:2, cursor:'pointer', padding:'12px 28px', borderRadius:6,
+          background:'var(--ac)', border:'none', color:'#020408', fontWeight:700, opacity: saving ? 0.6 : 1,
+        }}>{saving ? 'SAUVEGARDE...' : '💾 SAUVEGARDER'}</button>
+      </div>
+
+      {/* Infos système */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+        {[
+          { l:'URL WEBHOOK', v:'profity-x.com/api/payment/webhook', c:'var(--ac)' },
+          { l:'EDGE FUNCTION', v:'send-email v7 — ACTIVE', c:'var(--ok)' },
+          { l:'DB SUPABASE', v:'crlfkiniwalhzvpxrqav — HEALTHY', c:'var(--ok)' },
+          { l:'CRON EMAIL', v:'0 8 * * * (8h UTC)', c:'var(--ac2)' },
+        ].map(item => (
+          <div key={item.l} style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:8, padding:'12px 14px' }}>
+            <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', marginBottom:5 }}>{item.l}</div>
+            <div style={{ fontFamily:BODY, fontSize:13, color:item.c }}>{item.v}</div>
+          </div>
+        ))}
       </div>
     </div>
   )
