@@ -1244,10 +1244,18 @@ function TreasuryPanel({ token }: { token: string }) {
   type TData = {
     users: { total:number; free:number; pro:number; elite:number; new_7d:number }
     revenue: { mrr_xof:number; arr_xof:number; active_subs:number; pack_sales:number }
-    anthropic: { cost_per_call_usd:number; cost_per_call_xof:number; total_calls:number; calls_this_month:number; calls_7d:number; total_cost_usd:number; total_cost_xof:number; month_cost_usd:number; month_cost_xof:number; refunds:number }
+    anthropic: {
+      budget_usd:number; spent_usd:number; budget_pct:number; budget_status:string; budget_remaining:number;
+      month_cost_usd:number; month_cost_xof:number; total_cost_usd:number; total_cost_xof:number;
+      calls_month:number; calls_7d:number; total_calls:number; refunds:number;
+      avg_cost_per_call:number; total_input_tokens:number; total_output_tokens:number;
+      cost_by_plan:Record<string,{calls:number;cost_usd:number;cost_xof:number}>;
+      daily_costs:Record<string,number>; data_source:string;
+    }
     credits: { total_issued:number; total_consumed:number; outstanding:number }
     margin: { net_profit_xof:number; percent:number }
-    per_plan: Record<string, { price_xof:number; api_cost_xof:number; margin_xof:number; margin_pct:number }>
+    per_plan: Record<string, { price:number; api_cost_xof:number; margin_xof:number; margin_pct:number }>
+    constants: { xof_per_usd:number; anthropic_budget:number }
   }
 
   const [data, setData]       = useState<TData|null>(null)
@@ -1288,7 +1296,7 @@ function TreasuryPanel({ token }: { token: string }) {
 
   if (!data) return <div style={{ color:'var(--red)', fontFamily:HUD, fontSize:10, padding:'2rem' }}>Erreur de chargement</div>
 
-  const { users, revenue, anthropic, credits, margin, per_plan } = data
+  const { users, revenue, anthropic, credits, margin, per_plan, constants } = data
 
   const payingUsers   = users.pro + users.elite
   const convRate      = users.total > 0 ? Math.round((payingUsers / users.total) * 100) : 0
@@ -1445,7 +1453,7 @@ function TreasuryPanel({ token }: { token: string }) {
                 <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
                   <div style={{ display:'flex', justifyContent:'space-between' }}>
                     <span style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>Prix</span>
-                    <span style={{ fontFamily:HUD, fontSize:10, color:'var(--tx0)' }}>{p.price_xof > 0 ? `${fmt(p.price_xof)} FCFA` : 'Gratuit'}</span>
+                    <span style={{ fontFamily:HUD, fontSize:10, color:'var(--tx0)' }}>{p.price > 0 ? `${fmt(p.price)} FCFA` : 'Gratuit'}</span>
                   </div>
                   <div style={{ display:'flex', justifyContent:'space-between' }}>
                     <span style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>Coût API max</span>
