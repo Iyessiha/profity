@@ -849,6 +849,14 @@ export default function AdminDashboard() {
                   <span style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginLeft:4 }}>— Envoi via noreply@profity-x.com</span>
                 </div>
                 <div style={{ padding:'16px', display:'flex', flexDirection:'column', gap:12 }}>
+                  {/* Emails manquants users payants */}
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px', background:'rgba(201,168,76,0.06)', border:'1px solid rgba(201,168,76,0.2)', borderRadius:8 }}>
+                    <div>
+                      <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'var(--ac3)', marginBottom:3 }}>🧾 EMAILS MANQUANTS — USERS PAYANTS</div>
+                      <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>Envoie plan activé + facture + conseils aux abonnés Pro/Elite</div>
+                    </div>
+                    <PendingEmailsButton token={token} showToast={showToast} />
+                  </div>
                   {/* Relance inactifs */}
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px', background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:8 }}>
                     <div>
@@ -1224,6 +1232,35 @@ function GeniusPayDiag({ token }: { token: string }) {
 // ─────────────────────────────────────────────────────────
 // TEST EMAIL BUTTON
 // ─────────────────────────────────────────────────────────
+function PendingEmailsButton({ token, showToast }: { token:string; showToast:(msg:string,ok:boolean)=>void }) {
+  const [state, setState] = useState<'idle'|'loading'|'ok'|'err'>('idle')
+  const HUD = "'Orbitron',monospace"
+  const run = async () => {
+    setState('loading')
+    try {
+      const res  = await fetch('/api/admin/send-pending-emails', { method:'POST', headers:{ Authorization:`Bearer ${token}` } })
+      const data = await res.json()
+      if (data.success) {
+        setState('ok')
+        const detail = data.results?.map((r: {email:string;emails_sent:string[]}) => `${r.email}: ${r.emails_sent.join(', ')}`).join(' | ')
+        showToast(`✅ ${data.processed} user(s) — ${detail}`, true)
+      } else { setState('err'); showToast(`❌ ${data.error}`, false) }
+    } catch { setState('err'); showToast('❌ Erreur réseau', false) }
+    setTimeout(() => setState('idle'), 8000)
+  }
+  return (
+    <button onClick={run} disabled={state==='loading'} style={{
+      fontFamily:HUD, fontSize:9, letterSpacing:1, cursor:'pointer', whiteSpace:'nowrap',
+      background: state==='ok'?'rgba(0,255,178,0.12)':state==='err'?'rgba(255,58,92,0.12)':'rgba(201,168,76,0.15)',
+      color: state==='ok'?'var(--ac)':state==='err'?'#FF3A5C':'var(--ac3)',
+      border:`1px solid ${state==='ok'?'rgba(0,255,178,0.3)':state==='err'?'rgba(255,58,92,0.3)':'rgba(201,168,76,0.3)'}`,
+      borderRadius:6, padding:'9px 18px',
+    }}>
+      {state==='loading'?'ENVOI...':state==='ok'?'✅ ENVOYÉ':state==='err'?'❌ ERR':'📧 ENVOYER'}
+    </button>
+  )
+}
+
 function ReactivateButton({ token, showToast }: { token:string; showToast:(msg:string,ok:boolean)=>void }) {
   const [state, setState] = useState<'idle'|'loading'|'ok'|'err'>('idle')
   const HUD = "'Orbitron',monospace"
