@@ -320,8 +320,7 @@ export default function AdminDashboard() {
     { key: 'users',         icon: 'ti-users',          label: 'UTILISATEURS' },
     { key: 'subscriptions', icon: 'ti-credit-card',    label: 'ABONNEMENTS'  },
     { key: 'treasury',      icon: 'ti-cash',           label: 'TRÉSORERIE'   },
-    { key: 'notifications', icon: 'ti-bell',            label: 'NOTIFS'       },
-    { key: 'broadcast',     icon: 'ti-speakerphone',   label: 'BROADCAST'    },
+    { key: 'broadcast',     icon: 'ti-message-2',      label: 'MESSAGERIE'   },
     { key: 'export',        icon: 'ti-file-download',  label: 'EXPORT'       },
     { key: 'logs',          icon: 'ti-file-analytics', label: 'LOGS'         },
   ]
@@ -796,79 +795,77 @@ export default function AdminDashboard() {
           {tab === 'treasury' && (
             <TreasuryPanel token={token} />
           )}
-          {/* ══ BROADCAST ════════════════════════════════ */}
+          {/* ══ MESSAGERIE ════════════════════════════════ */}
           {tab === 'broadcast' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-              {/* Test Email Brevo */}
-              <div style={{ gridColumn: '1 / -1', background: 'var(--bg2)', border: '1px solid rgba(0,255,178,0.15)', borderRadius: 10, padding: '1.25rem', marginBottom: 4 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-                  <div>
-                    <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'var(--ac)', marginBottom: 4 }}>🧪 TEST EMAIL BREVO</div>
-                    <div style={{ fontFamily: BODY, fontSize: 13, color: 'var(--tx2)' }}>
-                      Envoie un email de test (template reactivation) à ton adresse admin pour vérifier que Brevo fonctionne.
-                    </div>
-                  </div>
-                  <TestEmailButton token={token} />
+            <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+
+              {/* Section 1 — Notifications IN-APP */}
+              <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, overflow:'hidden' }}>
+                <div style={{ padding:'12px 16px', borderBottom:'1px solid var(--bd)', display:'flex', alignItems:'center', gap:8 }}>
+                  <i className="ti ti-bell" style={{ color:'var(--ac2)', fontSize:16 }} />
+                  <span style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--ac2)' }}>NOTIFICATIONS IN-APP</span>
+                  <span style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginLeft:4 }}>— S'affichent dans le dashboard des traders (clochette 🔔)</span>
                 </div>
-              </div>
-              <div>
-                <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: '#FF3A5C', marginBottom: 16 }}>
-                  ENVOYER UNE NOTIFICATION
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div>
-                    <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 6 }}>
-                      TITRE
-                    </label>
+                <div style={{ padding:'16px', display:'grid', gridTemplateColumns:'1fr auto', gap:16, alignItems:'start' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                     <input value={bcTitle} onChange={e => setBcTitle(e.target.value)}
-                      placeholder="ProfityX — Signal urgent"
-                      style={{ width: '100%', padding: '10px 12px', background: '#06090F', border: '1px solid rgba(255,58,92,0.15)', borderRadius: 4, color: '#E8F4F8', fontFamily: BODY, fontSize: 14, outline: 'none' }}
+                      placeholder="Titre (ex: NFP demain — préparez-vous)"
+                      style={{ width:'100%', padding:'10px 12px', background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:6, color:'var(--tx0)', fontFamily:BODY, fontSize:14, outline:'none' }}
                     />
-                  </div>
-                  <div>
-                    <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 6 }}>
-                      MESSAGE
-                    </label>
                     <textarea value={bcBody} onChange={e => setBcBody(e.target.value)}
-                      placeholder="Votre message aux traders..."
-                      rows={4}
-                      style={{ width: '100%', padding: '10px 12px', background: '#06090F', border: '1px solid rgba(255,58,92,0.15)', borderRadius: 4, color: '#E8F4F8', fontFamily: BODY, fontSize: 14, outline: 'none', resize: 'vertical' }}
+                      placeholder="Message court pour les traders..."
+                      rows={3}
+                      style={{ width:'100%', padding:'10px 12px', background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:6, color:'var(--tx0)', fontFamily:BODY, fontSize:14, outline:'none', resize:'vertical' }}
                     />
-                  </div>
-                  <div>
-                    <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 8 }}>
-                      DESTINATAIRES
-                    </label>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
+                      <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)' }}>PLANS :</span>
                       {['free','pro','elite'].map(p => (
-                        <button key={p}
-                          onClick={() => setBcPlans(prev => prev.includes(p) ? prev.filter(x=>x!==p) : [...prev, p])}
-                          style={{
-                            padding: '7px 14px', borderRadius: 3, cursor: 'pointer',
+                        <button key={p} onClick={() => setBcPlans(prev => prev.includes(p) ? prev.filter(x=>x!==p) : [...prev, p])}
+                          style={{ padding:'5px 12px', borderRadius:4, cursor:'pointer', fontFamily:HUD, fontSize:8, letterSpacing:1,
                             background: bcPlans.includes(p) ? `rgba(${p==='pro'?'0,255,178':p==='elite'?'201,168,76':'100,100,120'}, 0.12)` : 'transparent',
                             border: `1px solid ${bcPlans.includes(p) ? (PLAN_C[p]??'#888')+'60' : 'rgba(232,244,248,0.1)'}`,
-                            color: bcPlans.includes(p) ? PLAN_C[p]??'#888' : 'rgba(232,244,248,0.35)',
-                            fontFamily: HUD, fontSize: 9, letterSpacing: 1,
-                            transition: 'all .2s',
-                          }}>
-                          {p.toUpperCase()}
-                        </button>
+                            color: bcPlans.includes(p) ? PLAN_C[p]??'#888' : 'var(--tx3)',
+                          }}>{p.toUpperCase()}</button>
                       ))}
                     </div>
                   </div>
                   <button onClick={sendBroadcast} disabled={bcLoading || !bcTitle || !bcBody}
-                    style={{
-                      padding: '12px', background: '#FF3A5C', border: 'none',
-                      borderRadius: 4, color: '#fff', fontFamily: HUD, fontSize: 10,
-                      letterSpacing: 2, cursor: 'pointer', fontWeight: 700,
-                      opacity: (bcLoading || !bcTitle || !bcBody) ? 0.5 : 1,
-                    }}>
-                    {bcLoading ? 'ENVOI...' : `ENVOYER AUX PLANS: ${bcPlans.map(p=>p.toUpperCase()).join(' · ')}`}
+                    style={{ padding:'11px 20px', background:'var(--ac2)', border:'none', borderRadius:6,
+                      color:'#fff', fontFamily:HUD, fontSize:9, letterSpacing:1, cursor:'pointer',
+                      opacity:(bcLoading||!bcTitle||!bcBody)?0.5:1, whiteSpace:'nowrap' }}>
+                    {bcLoading ? 'ENVOI...' : '📣 ENVOYER'}
                   </button>
                 </div>
               </div>
 
-              {/* Aperçu */}
+              {/* Section 2 — Emails Brevo */}
+              <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, overflow:'hidden' }}>
+                <div style={{ padding:'12px 16px', borderBottom:'1px solid var(--bd)', display:'flex', alignItems:'center', gap:8 }}>
+                  <i className="ti ti-mail" style={{ color:'var(--ac)', fontSize:16 }} />
+                  <span style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--ac)' }}>EMAILS BREVO</span>
+                  <span style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginLeft:4 }}>— Envoi via noreply@profity-x.com</span>
+                </div>
+                <div style={{ padding:'16px', display:'flex', flexDirection:'column', gap:12 }}>
+                  {/* Relance inactifs */}
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px', background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:8 }}>
+                    <div>
+                      <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'var(--tx0)', marginBottom:3 }}>📨 RELANCER LES INACTIFS</div>
+                      <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>Users avec 0 analyse depuis +24h → email de réactivation</div>
+                    </div>
+                    <ReactivateButton token={token} showToast={showToast} />
+                  </div>
+                  {/* Test email */}
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px', background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:8 }}>
+                    <div>
+                      <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'var(--tx0)', marginBottom:3 }}>🧪 TESTER L'EMAIL</div>
+                      <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>Envoie un email test à ton adresse admin — vérifie Brevo</div>
+                    </div>
+                    <TestEmailButton token={token} />
+                  </div>
+                </div>
+              </div>
+
+            </div>
               <div>
                 <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: 'rgba(232,244,248,0.3)', marginBottom: 16 }}>
                   APERÇU NOTIFICATION
@@ -897,12 +894,7 @@ export default function AdminDashboard() {
 
           {/* ══ LOGS ══════════════════════════════════════ */}
           {/* ══ NOTIFICATIONS ═══════════════════════════ */}
-          {tab === 'notifications' && (
-            <>
-              <NotifSenderPanel token={token} showToast={showToast} />
-              <EmailTestPanel token={token} showToast={showToast} />
-            </>
-          )}
+
 
           {/* ══ EXPORT ═══════════════════════════════════ */}
           {tab === 'export' && <ExportPanel token={token} />}
@@ -1253,6 +1245,32 @@ function GeniusPayDiag({ token }: { token: string }) {
 // ─────────────────────────────────────────────────────────
 // TEST EMAIL BUTTON
 // ─────────────────────────────────────────────────────────
+function ReactivateButton({ token, showToast }: { token:string; showToast:(msg:string,ok:boolean)=>void }) {
+  const [state, setState] = useState<'idle'|'loading'|'ok'|'err'>('idle')
+  const HUD = "'Orbitron',monospace"
+  const run = async () => {
+    setState('loading')
+    try {
+      const res  = await fetch('/api/admin/reactivate', { method:'POST', headers:{ Authorization:`Bearer ${token}` } })
+      const data = await res.json()
+      if (data.sent > 0) { setState('ok'); showToast(`✅ ${data.sent} email(s) envoyé(s)`, true) }
+      else               { setState('ok'); showToast(`ℹ️ ${data.message ?? 'Aucun inactif'}`, true) }
+    } catch { setState('err'); showToast('❌ Erreur réseau', false) }
+    setTimeout(() => setState('idle'), 5000)
+  }
+  return (
+    <button onClick={run} disabled={state==='loading'} style={{
+      fontFamily:HUD, fontSize:9, letterSpacing:1, cursor:'pointer', whiteSpace:'nowrap',
+      background: state==='ok'?'rgba(0,255,178,0.12)':state==='err'?'rgba(255,58,92,0.12)':'var(--ac3)',
+      color: state==='ok'?'var(--ac)':state==='err'?'#FF3A5C':'#020408',
+      border: state!=='idle'?`1px solid ${state==='ok'?'rgba(0,255,178,0.3)':'rgba(255,58,92,0.3)'}` :'none',
+      borderRadius:6, padding:'9px 18px',
+    }}>
+      {state==='loading'?'ENVOI...':state==='ok'?'✅ FAIT':state==='err'?'❌ ERR':'📨 RELANCER'}
+    </button>
+  )
+}
+
 function TestEmailButton({ token }: { token: string }) {
   const [state, setState] = useState<'idle'|'loading'|'ok'|'err'>('idle')
   const [msg,   setMsg]   = useState('')
