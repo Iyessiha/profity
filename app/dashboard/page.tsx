@@ -98,6 +98,11 @@ export default function DashboardPage() {
   const aLeft  = plan === 'elite' ? '∞' : Math.max(0, lim.a - aUsed).toString()
   const nLeft  = (plan === 'pro' || plan === 'elite') ? '∞' : Math.max(0, lim.n - nUsed).toString()
 
+  // ── Popups stratégiques ────────────────────────────────────
+  const { popup: activePopup, close: closePopup } = usePopups({
+    plan, credits: balance, analysisCount: aUsed, locale,
+  })
+
   const MODULES = [
     { href: '/analysis', icon: 'ti-chart-candle', color: 'var(--ac)', title: locale === 'fr' ? 'ANALYSE CHART' : 'CHART ANALYSIS', desc: locale === 'fr' ? 'TradingView + analyse IA · Signaux SMC pour Pro/Elite' : 'TradingView + AI analysis · SMC signals for Pro/Elite', badge: plan === 'pro' || plan === 'elite' ? 'SMC' : null },
     { href: '/news',     icon: 'ti-news',          color: 'var(--ac2)', title: locale === 'fr' ? 'ANNONCES MACRO' : 'MACRO NEWS',   desc: locale === 'fr' ? 'NFP, CPI, FOMC · Coaching psychologique pour Pro/Elite' : 'NFP, CPI, FOMC · Psychological coaching for Pro/Elite', badge: plan === 'pro' || plan === 'elite' ? 'COACH' : null },
