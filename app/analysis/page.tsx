@@ -9,6 +9,7 @@ import SignalCard from '@/components/SignalCard'
 import ChartAnnotation from '@/components/ChartAnnotation'
 import OnboardingModal from '@/components/OnboardingModal'
 import { pixelAnalysis, pixelSignalReceived } from '@/lib/pixel'
+import PopupManager, { usePopups, type PopupPayload } from '@/components/PopupManager'
 import { playAnalysisStart, playAnalysisComplete, isSoundEnabled } from '@/lib/notif-sound'
 import { RandomAd } from '@/components/AdSlot'
 import Confetti from '@/components/Confetti'
@@ -67,6 +68,10 @@ export default function AnalysisPage() {
   const [quotaErr, setQuotaErr] = useState(false)
   const [showTV, setShowTV]     = useState(false)
   const [analysisMode, setAnalysisMode] = useState<'swing'|'scalp'>('swing')
+  const analysisCount = (profile?.analyses_used as number) ?? 0
+  const { popup: activePopup, close: closePopup, showPopup } = usePopups({
+    plan, credits: balance, analysisCount, locale,
+  })
   const [derivSymbol, setDerivSymbol]   = useState<string>('')   // actif Deriv sélectionné
   const tvRef = useRef<HTMLDivElement>(null)
 

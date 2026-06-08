@@ -14,6 +14,7 @@ import MarketClocks from '@/components/dashboard/MarketClocks'
 import ReferralCard from '@/components/dashboard/ReferralCard'
 import AlertsPanel from '@/components/dashboard/AlertsPanel'
 import TradingJournal from '@/components/dashboard/TradingJournal'
+import PopupManager, { usePopups } from '@/components/PopupManager'
 import lazyLoad from 'next/dynamic'
 import Leaderboard from '@/components/dashboard/Leaderboard'
 import { SkeletonDashboard } from '@/components/Skeleton'
@@ -231,5 +232,8 @@ export default function DashboardPage() {
         </footer>
       </div>{/* fin app-main */}
     </div>
+
+      {/* Popups stratégiques */}
+      <PopupManager popup={popup} onClose={closePopup} locale={locale} plan={plan} />
   )
 }
