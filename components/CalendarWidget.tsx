@@ -6,11 +6,24 @@
 'use client'
 import { useState }                       from 'react'
 import { useCalendar, formatCountdown, formatEventTime,
-         IMPACT_COLORS, STATUS_COLORS,
          type ImpactFilter, type CountryFilter,
          type EnrichedEvent }             from '@/lib/useCalendar'
 import { useNewsSignal }                  from '@/lib/hooks'
 import SignalCard                         from '@/components/SignalCard'
+
+// Constantes couleur définies localement (supprimées de useCalendar lors de la refonte)
+const IMPACT_COLORS: Record<string, { dot: string; bg: string }> = {
+  High:    { dot: '#FF3A5C', bg: 'rgba(255,58,92,0.08)'  },
+  Medium:  { dot: '#C9A84C', bg: 'rgba(201,168,76,0.08)' },
+  Low:     { dot: 'rgba(232,244,248,0.25)', bg: 'rgba(232,244,248,0.04)' },
+  Holiday: { dot: 'rgba(232,244,248,0.15)', bg: 'rgba(232,244,248,0.02)' },
+}
+const STATUS_COLORS: Record<string, string> = {
+  published: '#00FFB2',
+  imminent:  '#C9A84C',
+  overdue:   '#FF6B35',
+  upcoming:  'rgba(232,244,248,0.35)',
+}
 
 interface Props {
   locale?: string
