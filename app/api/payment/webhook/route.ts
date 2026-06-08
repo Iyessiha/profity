@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { verifyWebhookSignature, CREDIT_PACK_PRICES } from '@/lib/geniuspay'
+import { sendEmail }                              from '@/lib/email'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -103,6 +104,37 @@ export async function POST(req: NextRequest) {
         p_priority:    'high',
       })
 
+      // Email plan_activated via Brevo
+      const { data: prof } = await supabaseAdmin.from('profiles')
+        .select('email, full_name').eq('id', userId).single()
+      if (prof?.email) {
+        await sendEmail({
+          template: 'plan_activated',
+          to: prof.email,
+          name: prof.full_name ?? 'Trader',
+          data: { plan: planKey, credits: String(credits) },
+        }).catch(() => {})
+
+        // Générer la facture
+        const invoiceRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://profity-x.com'}/api/invoice/create`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id:        userId,
+            client_name:    prof.full_name ?? 'Trader',
+            client_email:   prof.email,
+            plan:           planKey,
+            amount_xof:     amount,
+            payment_method: (data.payment_method as string) ?? 'GeniusPay',
+            payment_ref:    ref,
+          }),
+        }).catch(() => null)
+        if (invoiceRes?.ok) {
+          const inv = await invoiceRes.json()
+          console.log(`[Webhook] 🧾 Facture ${inv.invoice_number} générée → ${prof.email}`)
+        }
+      }
+
       console.log(`[Webhook] ✅ Plan ${planKey} activé pour ${userId} — ${credits} crédits`)
       return NextResponse.json({ received: true, action: 'plan_activated', plan: planKey, credits })
     }
@@ -129,6 +161,33 @@ export async function POST(req: NextRequest) {
         p_action_label:'Analyser maintenant',
         p_priority:    'high',
       })
+
+      // Email confirmation pack crédits
+      const { data: profPack } = await supabaseAdmin.from('profiles')
+        .select('email, full_name').eq('id', userId).single()
+      if (profPack?.email) {
+        await sendEmail({
+          template: 'plan_activated',
+          to: profPack.email,
+          name: profPack.full_name ?? 'Trader',
+          data: { plan: pack.label, credits: String(pack.credits) },
+        }).catch(() => {})
+
+        // Générer la facture pack
+        await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://profity-x.com'}/api/invoice/create`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id:        userId,
+            client_name:    profPack.full_name ?? 'Trader',
+            client_email:   profPack.email,
+            plan:           'credits',
+            amount_xof:     pack.amount,
+            payment_method: (data.payment_method as string) ?? 'GeniusPay',
+            payment_ref:    ref,
+          }),
+        }).catch(() => {})
+      }
 
       console.log(`[Webhook] ✅ ${pack.credits} crédits pack ajoutés pour ${userId}`)
       return NextResponse.json({ received: true, action: 'credits_added', credits: pack.credits })
