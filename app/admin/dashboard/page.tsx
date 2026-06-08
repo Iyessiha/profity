@@ -1308,12 +1308,77 @@ function TreasuryPanel({ token }: { token: string }) {
         <div style={{ fontFamily:HUD, fontSize:13, color:'var(--ac3)', letterSpacing:2 }}>💰 TRÉSORERIE & COÛTS ANTHROPIC</div>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <span style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>
-            Mis à jour {lastRefresh.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}
+            {anthropic.data_source === 'real_tokens'
+              ? '✅ Données réelles (token tracking)'
+              : '⚠️ Estimation console ($0.80 saisi manuellement)'}
           </span>
           <button onClick={load} disabled={loading}
             style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, background:'var(--bg2)', border:'1px solid var(--bd)', color:'var(--ac)', borderRadius:4, padding:'6px 14px', cursor:'pointer' }}>
             ↻ ACTUALISER
           </button>
+        </div>
+      </div>
+
+      {/* ── GAUGE BUDGET ANTHROPIC ───────────────────────────── */}
+      <div style={{ background:'var(--bg2)', border:`1px solid ${anthropic.budget_status==='ok'?'var(--bd2)':anthropic.budget_status==='warning'?'rgba(255,153,0,0.35)':'rgba(220,38,38,0.4)'}`, borderRadius:12, padding:'1.5rem' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+          <div>
+            <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:6 }}>⚡ BUDGET ANTHROPIC API</div>
+            <div style={{ display:'flex', alignItems:'baseline', gap:12 }}>
+              <span style={{ fontFamily:HUD, fontSize:32, fontWeight:900, lineHeight:1,
+                color: anthropic.budget_status==='ok' ? 'var(--ok)' : anthropic.budget_status==='warning' ? 'var(--ora)' : 'var(--red)' }}>
+                ${anthropic.spent_usd.toFixed(2)}
+              </span>
+              <span style={{ fontFamily:HUD, fontSize:14, color:'var(--tx3)' }}>/ ${anthropic.budget_usd} $</span>
+            </div>
+            <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', marginTop:4 }}>
+              {fmt(Math.round(anthropic.spent_usd * (constants?.xof_per_usd ?? 620)))} FCFA dépensés ce mois
+            </div>
+          </div>
+          <div style={{ textAlign:'right' }}>
+            <div style={{ fontFamily:HUD, fontSize:22, fontWeight:900,
+              color: anthropic.budget_status==='ok' ? 'var(--ok)' : anthropic.budget_status==='warning' ? 'var(--ora)' : 'var(--red)' }}>
+              {anthropic.budget_pct.toFixed(1)}%
+            </div>
+            <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>utilisé</div>
+            <div style={{ fontFamily:HUD, fontSize:10, color:'var(--ok)', marginTop:4 }}>
+              ${anthropic.budget_remaining} restants
+            </div>
+          </div>
+        </div>
+        {/* Barre budget */}
+        <div style={{ height:10, background:'var(--bd)', borderRadius:5, overflow:'hidden' }}>
+          <div style={{
+            height:'100%',
+            width:`${anthropic.budget_pct}%`,
+            background: anthropic.budget_status==='ok'
+              ? 'linear-gradient(90deg,#00FFB2,#00D4FF)'
+              : anthropic.budget_status==='warning'
+              ? 'linear-gradient(90deg,#FF9900,#FFB74D)'
+              : 'linear-gradient(90deg,#FF4466,#FF6B6B)',
+            borderRadius:5, transition:'width 1s ease',
+          }} />
+        </div>
+        <div style={{ display:'flex', justifyContent:'space-between', marginTop:6 }}>
+          <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)' }}>$0</span>
+          <span style={{ fontFamily:HUD, fontSize:7, color: anthropic.budget_status==='warning'?'var(--ora)':'var(--tx3)' }}>⚠️ $250</span>
+          <span style={{ fontFamily:HUD, fontSize:7, color:'var(--red)' }}>🚨 $400</span>
+          <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)' }}>${anthropic.budget_usd}</span>
+        </div>
+        {/* Métriques détaillées tokens */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginTop:14 }}>
+          {[
+            { l:'COÛT/APPEL',   v:`$${(anthropic.avg_cost_per_call??0).toFixed(4)}`, s:'Coût réel moyen/analyse' },
+            { l:'APPELS/MOIS',  v:fmt(anthropic.calls_month),                         s:`${fmt(anthropic.calls_7d)} cette semaine` },
+            { l:'TOKENS INPUT', v:fmt(anthropic.total_input_tokens??0),               s:'Total cumulé' },
+            { l:'TOKENS OUTPUT',v:fmt(anthropic.total_output_tokens??0),              s:'Total cumulé' },
+          ].map(m => (
+            <div key={m.l} style={{ background:'rgba(255,255,255,0.03)', border:'1px solid var(--bd)', borderRadius:7, padding:'8px 10px', textAlign:'center' }}>
+              <div style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'var(--tx3)', marginBottom:4 }}>{m.l}</div>
+              <div style={{ fontFamily:HUD, fontSize:13, fontWeight:900, color:'var(--ora)' }}>{m.v}</div>
+              <div style={{ fontFamily:BODY, fontSize:9, color:'var(--tx3)', marginTop:2 }}>{m.s}</div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -1325,20 +1390,6 @@ function TreasuryPanel({ token }: { token: string }) {
           {card('ARR ESTIMÉ', `${fmt(revenue.arr_xof)} FCFA`, 'Revenu annuel projeté', 'var(--ac2)', 'ti-calendar-stats')}
           {card('ABONNEMENTS', String(revenue.active_subs), 'Comptes payants actifs', 'var(--ac3)', 'ti-crown')}
           {card('ARPU', arpu > 0 ? `${fmt(arpu)} FCFA` : '—', 'Revenu moyen/utilisateur', '#888', 'ti-user-dollar')}
-        </div>
-      </div>
-
-      {/* KPIs Anthropic */}
-      <div>
-        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
-          <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)' }}>⚡ COÛTS ANTHROPIC (0,01$/appel · 6,2 FCFA)</div>
-          <div style={{ height:1, flex:1, background:'var(--bd)' }} />
-        </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:10 }}>
-          {card('APPELS CE MOIS', fmt(anthropic.calls_this_month), `${fmt(anthropic.month_cost_xof)} FCFA de coût`, 'var(--ora)', 'ti-api')}
-          {card('COÛT CE MOIS', `${anthropic.month_cost_usd.toFixed(2)} $`, `${fmt(anthropic.month_cost_xof)} FCFA`, 'var(--ora)', 'ti-currency-dollar')}
-          {card('APPELS TOTAL', fmt(anthropic.total_calls), `${anthropic.total_cost_usd.toFixed(2)} $ au total`, 'var(--red)', 'ti-database')}
-          {card('REMBOURSEMENTS', String(anthropic.refunds), 'Crédits restitués (erreurs IA)', '#888', 'ti-refresh')}
         </div>
       </div>
 

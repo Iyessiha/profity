@@ -166,6 +166,26 @@ Analyze this chart. READ the visible timeframe (top-left corner or title), exact
     }
     const cd = await res.json()
     rawText  = cd.content?.[0]?.text ?? ''
+
+    // ── Tracker le coût réel Anthropic ────────────────────
+    try {
+      const usage = cd.usage as { input_tokens?: number; output_tokens?: number } | undefined
+      if (usage?.input_tokens != null) {
+        // Prix claude-sonnet-4-6 : $3/1M input · $15/1M output
+        const inputCost  = (usage.input_tokens  / 1_000_000) * 3
+        const outputCost = (usage.output_tokens ?? 0) / 1_000_000 * 15
+        const totalCost  = inputCost + outputCost
+        await admin.from('api_usage').insert({
+          user_id:       user.id,
+          model:         'claude-sonnet-4-6',
+          type:          'analysis',
+          input_tokens:  usage.input_tokens,
+          output_tokens: usage.output_tokens ?? 0,
+          cost_usd:      totalCost,
+          plan:          tier,
+        })
+      }
+    } catch { /* non-bloquant */ }
   } catch {
     await admin.rpc('add_credits', { p_user_id:user.id, p_amount:1, p_type:'refund', p_desc:'Remboursement — erreur réseau IA' })
     return NextResponse.json<ApiResponse<null>>({ success:false, error:'Connexion IA impossible', code:'AI_ERROR' }, { status:502 })
