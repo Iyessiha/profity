@@ -82,3 +82,28 @@ export function toggleSound(): boolean {
   localStorage.setItem('px_notif_sound', next ? 'on' : 'off')
   return next
 }
+
+// ── Sons dédiés à l'analyse de chart ─────────────────────
+
+/** Son de démarrage analyse — scan initié */
+export function playAnalysisStart() {
+  try {
+    const ac = getCtx()
+    // Bip montant rapide × 2 (type "scanner")
+    beep(300, 0.06, 0.18, 'sine', 0)
+    beep(500, 0.06, 0.18, 'sine', 0.08)
+    beep(700, 0.10, 0.15, 'sine', 0.16)
+  } catch {}
+}
+
+/** Son de résultat — signal reçu (fanfare courte) */
+export function playAnalysisComplete() {
+  try {
+    const ac = getCtx()
+    // Accord montant satisfaisant
+    beep(523, 0.10, 0.3, 'sine', 0)      // Do5
+    beep(659, 0.10, 0.3, 'sine', 0.12)   // Mi5
+    beep(784, 0.10, 0.3, 'sine', 0.24)   // Sol5
+    beep(1047, 0.20, 0.25, 'sine', 0.36) // Do6 — note finale tenue
+  } catch {}
+}

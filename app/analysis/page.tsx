@@ -8,6 +8,7 @@ import QuotaBar from '@/components/dashboard/QuotaBar'
 import SignalCard from '@/components/SignalCard'
 import ChartAnnotation from '@/components/ChartAnnotation'
 import OnboardingModal from '@/components/OnboardingModal'
+import { playAnalysisStart, playAnalysisComplete, isSoundEnabled } from '@/lib/notif-sound'
 import { RandomAd } from '@/components/AdSlot'
 import Confetti from '@/components/Confetti'
 
@@ -90,6 +91,8 @@ export default function AnalysisPage() {
   const analyze = async () => {
     if (!preview || !token) return
     setAnalyzing(true); setError(null)
+    // Son de démarrage analyse
+    if (isSoundEnabled()) playAnalysisStart()
     try {
       const res = await fetch('/api/analyze', {
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${token}`},
@@ -100,6 +103,8 @@ export default function AnalysisPage() {
       else if (!json.success) setError(json.error || 'Erreur analyse')
       else {
         setSignal(json.data)
+        // Son de résultat reçu
+        if (isSoundEnabled()) playAnalysisComplete()
         // Capturer l'ID si SMC gratuit pour la notation
         if (json.free_daily_smc) {
           setFreeSMCUsed(true)
