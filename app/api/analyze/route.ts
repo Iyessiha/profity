@@ -84,12 +84,14 @@ export async function POST(req: NextRequest) {
 
   // ── Mode (swing / scalp) ────────────────────────────────
   let analysisMode: 'swing' | 'scalp' = 'swing'
+  let derivSymbol: string | null = null
   // Peek le body pour lire le mode avant de lire l'image en FormData
   const contentTypeHdr = req.headers.get('content-type') ?? ''
   if (contentTypeHdr.includes('application/json')) {
     try {
       const bodyClone = await req.clone().json()
       if (bodyClone.mode === 'scalp') analysisMode = 'scalp'
+      if (bodyClone.derivSymbol) derivSymbol = String(bodyClone.derivSymbol)
     } catch {}
   }
 
@@ -139,8 +141,19 @@ export async function POST(req: NextRequest) {
           content:[
             { type:'image', source:{ type:'base64', media_type:mimeType, data:imageBase64 } },
             { type:'text',  text: locale==='fr'
-              ? `Analyse ce chart. LIS le timeframe (coin sup. gauche), la paire (titre), et les PRIX sur l'axe Y droit. Les prix du signal DOIVENT correspondre aux valeurs visibles. JSON uniquement.`
-              : `Analyze this chart. READ the timeframe (top-left corner), pair name (title), and PRICES from the Y-axis (right side). Signal prices MUST match visible values. JSON only.` },
+              ? `MODE : ${analysisMode === 'scalp'
+                  ? 'SCALP ⚡ — Timeframes courts attendus (M1/M5/M15/M30). Analyse la micro-structure.'
+                  : 'SWING/DAY 📈 — Timeframes moyens/longs attendus (H1/H4/D1). Analyse la structure principale.'
+                }
+${derivSymbol ? `
+ACTIF CONNU : ${derivSymbol} (synthétique Deriv). Utilise "${derivSymbol}" comme valeur du champ "pair" dans le JSON.` : ''}
+Analyse ce chart. LIS le timeframe visible (coin sup. gauche ou titre), la paire exacte, et les PRIX sur l'axe Y droit. Les prix du signal DOIVENT correspondre aux valeurs visibles sur le chart. JSON uniquement.`
+              : `MODE: ${analysisMode === 'scalp'
+                  ? 'SCALP ⚡ — Short timeframes expected (M1/M5/M15/M30). Analyze micro-structure.'
+                  : 'SWING/DAY 📈 — Medium/long timeframes expected (H1/H4/D1). Analyze main structure.'
+                }
+
+Analyze this chart. READ the visible timeframe (top-left corner or title), exact pair name, and PRICES from the Y-axis (right side). Signal prices MUST match visible values. JSON only.` },
           ],
         }],
       }),

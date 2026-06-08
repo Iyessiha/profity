@@ -49,6 +49,7 @@ export default function AnalysisPage() {
   const [quotaErr, setQuotaErr] = useState(false)
   const [showTV, setShowTV]     = useState(false)
   const [analysisMode, setAnalysisMode] = useState<'swing'|'scalp'>('swing')
+  const [derivSymbol, setDerivSymbol]   = useState<string>('')   // actif Deriv sélectionné
   const tvRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function AnalysisPage() {
     try {
       const res = await fetch('/api/analyze', {
         method:'POST', headers:{'Content-Type':'application/json', Authorization:`Bearer ${activeToken}`},
-        body: JSON.stringify({ image: preview.split(',')[1], mediaType: preview.split(';')[0].split(':')[1], locale, mode: analysisMode }),
+        body: JSON.stringify({ image: preview.split(',')[1], mediaType: preview.split(';')[0].split(':')[1], locale, mode: analysisMode, derivSymbol: derivSymbol || undefined }),
       })
       const json = await res.json()
       if (json.code === 'QUOTA_EXCEEDED') setQuotaErr(true)
@@ -278,6 +279,39 @@ export default function AnalysisPage() {
                           color:'rgba(232,244,248,0.3)' }}>{m.desc}</div>
                       </button>
                     ))}
+                  </div>
+
+                  {/* Sélecteur actif Deriv (optionnel) */}
+                  <div style={{ marginBottom:10 }}>
+                    <div style={{ fontFamily:"'Orbitron',monospace", fontSize:7, letterSpacing:2,
+                      color:'rgba(0,212,255,0.6)', marginBottom:6 }}>
+                      ⬡ ACTIF DERIV <span style={{ color:'rgba(232,244,248,0.3)', fontFamily:"'Rajdhani',sans-serif", fontSize:10, letterSpacing:0 }}>— optionnel, améliore la précision</span>
+                    </div>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+                      {[
+                        { sym:'', label:'— Auto-détection' },
+                        { sym:'BOOM1000',  label:'Boom 1000' },
+                        { sym:'BOOM500',   label:'Boom 500'  },
+                        { sym:'CRASH1000', label:'Crash 1000'},
+                        { sym:'CRASH500',  label:'Crash 500' },
+                        { sym:'R_50',      label:'Vol 50'    },
+                        { sym:'R_75',      label:'Vol 75'    },
+                        { sym:'R_100',     label:'Vol 100'   },
+                        { sym:'STPRNG',    label:'Step'      },
+                        { sym:'JD50',      label:'Jump 50'   },
+                        { sym:'JD100',     label:'Jump 100'  },
+                      ].map(({ sym, label }) => (
+                        <button key={sym} onClick={() => setDerivSymbol(sym)}
+                          style={{ padding:'5px 10px', borderRadius:4, cursor:'pointer',
+                            fontFamily:"'Orbitron',monospace", fontSize:7, letterSpacing:1,
+                            transition:'all .15s',
+                            background: derivSymbol===sym ? 'rgba(0,212,255,0.12)' : 'transparent',
+                            border:`1px solid ${derivSymbol===sym ? 'rgba(0,212,255,0.35)' : 'rgba(255,255,255,0.07)'}`,
+                            color: derivSymbol===sym ? '#00D4FF' : 'rgba(232,244,248,0.35)' }}>
+                          {label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Guide timeframes recommandés */}
