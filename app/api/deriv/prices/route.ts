@@ -10,23 +10,47 @@ const TIMEOUT_MS = 8000
 
 // Symboles supportés
 export const DERIV_SYMBOLS: Record<string, { name: string; category: string; flag: string }> = {
+  // ── Synthétiques Boom/Crash ───────────────────────────
   BOOM1000:  { name: 'Boom 1000',    category: 'Boom/Crash', flag: '📈' },
   BOOM500:   { name: 'Boom 500',     category: 'Boom/Crash', flag: '📈' },
   BOOM300N:  { name: 'Boom 300',     category: 'Boom/Crash', flag: '📈' },
   CRASH1000: { name: 'Crash 1000',   category: 'Boom/Crash', flag: '📉' },
   CRASH500:  { name: 'Crash 500',    category: 'Boom/Crash', flag: '📉' },
   CRASH300N: { name: 'Crash 300',    category: 'Boom/Crash', flag: '📉' },
+  // ── Synthétiques Volatility ──────────────────────────
   R_10:      { name: 'Volatility 10',  category: 'Volatility', flag: '〰️' },
   R_25:      { name: 'Volatility 25',  category: 'Volatility', flag: '〰️' },
   R_50:      { name: 'Volatility 50',  category: 'Volatility', flag: '〰️' },
   R_75:      { name: 'Volatility 75',  category: 'Volatility', flag: '〰️' },
   R_100:     { name: 'Volatility 100', category: 'Volatility', flag: '〰️' },
-  STPRNG:    { name: 'Step Index',     category: 'Step',       flag: '📊' },
-  JD10:      { name: 'Jump 10',        category: 'Jump',       flag: '⚡' },
-  JD25:      { name: 'Jump 25',        category: 'Jump',       flag: '⚡' },
-  JD50:      { name: 'Jump 50',        category: 'Jump',       flag: '⚡' },
-  JD75:      { name: 'Jump 75',        category: 'Jump',       flag: '⚡' },
-  JD100:     { name: 'Jump 100',       category: 'Jump',       flag: '⚡' },
+  // ── Synthétiques Step & Jump ─────────────────────────
+  STPRNG:    { name: 'Step Index',     category: 'Step/Jump',  flag: '📊' },
+  JD10:      { name: 'Jump 10',        category: 'Step/Jump',  flag: '⚡' },
+  JD25:      { name: 'Jump 25',        category: 'Step/Jump',  flag: '⚡' },
+  JD50:      { name: 'Jump 50',        category: 'Step/Jump',  flag: '⚡' },
+  JD75:      { name: 'Jump 75',        category: 'Step/Jump',  flag: '⚡' },
+  JD100:     { name: 'Jump 100',       category: 'Step/Jump',  flag: '⚡' },
+  // ── Forex ────────────────────────────────────────────
+  frxEURUSD: { name: 'EUR/USD',  category: 'Forex', flag: '🇪🇺' },
+  frxGBPUSD: { name: 'GBP/USD',  category: 'Forex', flag: '🇬🇧' },
+  frxUSDJPY: { name: 'USD/JPY',  category: 'Forex', flag: '🇯🇵' },
+  frxUSDCHF: { name: 'USD/CHF',  category: 'Forex', flag: '🇨🇭' },
+  frxAUDUSD: { name: 'AUD/USD',  category: 'Forex', flag: '🇦🇺' },
+  frxUSDCAD: { name: 'USD/CAD',  category: 'Forex', flag: '🇨🇦' },
+  frxEURGBP: { name: 'EUR/GBP',  category: 'Forex', flag: '🇪🇺' },
+  frxEURJPY: { name: 'EUR/JPY',  category: 'Forex', flag: '🇯🇵' },
+  frxGBPJPY: { name: 'GBP/JPY',  category: 'Forex', flag: '🇬🇧' },
+  frxXAUUSD: { name: 'XAU/USD',  category: 'Forex', flag: '🥇' },
+  // ── Matières premières ───────────────────────────────
+  frxXAGUSD: { name: 'Argent (XAG)', category: 'Commodités', flag: '🥈' },
+  frxBROUSD: { name: 'Brent (OIL)', category: 'Commodités', flag: '🛢️' },
+  // ── Crypto ───────────────────────────────────────────
+  cryBTCUSD:  { name: 'Bitcoin',   category: 'Crypto', flag: '₿'  },
+  cryETHUSD:  { name: 'Ethereum',  category: 'Crypto', flag: '⟠'  },
+  cryBNBUSD:  { name: 'BNB',       category: 'Crypto', flag: '🔶' },
+  cryXRPUSD:  { name: 'XRP',       category: 'Crypto', flag: '✕'  },
+  crySOLUSD:  { name: 'Solana',    category: 'Crypto', flag: '◎'  },
+  cryLTCUSD:  { name: 'Litecoin',  category: 'Crypto', flag: 'Ł'  },
 }
 
 function fetchDerivPrices(symbols: string[], token: string): Promise<Record<string, number | null>> {
