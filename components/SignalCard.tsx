@@ -409,6 +409,69 @@ export default function SignalCard({ signal, type = 'chart', locale = 'fr', imag
           ⚠️ Signal éducatif uniquement — gérez votre risque. Ne jamais risquer plus de 2% par trade.
         </div>
       </div>
+
+      {/* Actions — Partage WhatsApp + Track record */}
+      <div style={{ padding:'12px 16px', borderTop:'1px solid rgba(255,255,255,0.05)', display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
+        {/* Bouton WhatsApp */}
+        <button
+          onClick={() => {
+            const emoji = dir === 'LONG' ? '🟢' : dir === 'SHORT' ? '🔴' : '🟡'
+            const entry = cs?.entry ?? 0
+            const sl    = cs?.stop_loss ?? 0
+            const t1    = cs?.tp1 ?? 0
+            const t2    = cs?.tp2 ?? 0
+            const rr    = cs?.rr_ratio ?? 0
+            const msg   = `${emoji} *Signal ProfityX* — ${pair}\n` +
+              `📊 ${dir} | ${tf ?? ''}\n` +
+              `🎯 Entrée : ${entry}\n` +
+              `🛑 Stop : ${sl}\n` +
+              `✅ TP1 : ${t1}${t2 ? ` | TP2 : ${t2}` : ''}\n` +
+              (rr ? `📐 R/R : 1:${rr}\n` : '') +
+              `\n🤖 Généré par ProfityX — profity-x.com/results`
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
+          }}
+          style={{
+            display:'flex', alignItems:'center', gap:6,
+            background:'rgba(37,211,102,0.1)', border:'1px solid rgba(37,211,102,0.25)',
+            borderRadius:6, padding:'7px 14px', cursor:'pointer',
+            fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#25D366',
+          }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.554 4.122 1.527 5.857L0 24l6.335-1.509A11.934 11.934 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.007-1.372l-.36-.213-3.728.888.906-3.624-.233-.372A9.818 9.818 0 0 1 2.182 12c0-5.42 4.398-9.818 9.818-9.818s9.818 4.398 9.818 9.818-4.398 9.818-9.818 9.818z"/>
+          </svg>
+          PARTAGER
+        </button>
+
+        {/* Lien track record */}
+        <a href="/results" target="_blank" style={{
+          display:'flex', alignItems:'center', gap:5,
+          background:'transparent', border:'1px solid rgba(255,255,255,0.07)',
+          borderRadius:6, padding:'7px 12px',
+          fontFamily:HUD, fontSize:8, letterSpacing:1, color:'rgba(240,248,255,0.35)',
+          textDecoration:'none',
+        }}>
+          📊 TRACK RECORD
+        </a>
+
+        {/* Badge vérifié si WIN */}
+        {(cs as ChartSignal & { trade_result?: string })?.trade_result === 'WIN' && (
+          <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:5,
+            background:'rgba(0,255,178,0.08)', border:'1px solid rgba(0,255,178,0.25)',
+            borderRadius:6, padding:'5px 10px' }}>
+            <span style={{ fontSize:12 }}>✅</span>
+            <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#00FFB2' }}>VÉRIFIÉ WIN</span>
+          </div>
+        )}
+        {(cs as ChartSignal & { trade_result?: string })?.trade_result === 'LOSS' && (
+          <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:5,
+            background:'rgba(255,58,92,0.08)', border:'1px solid rgba(255,58,92,0.2)',
+            borderRadius:6, padding:'5px 10px' }}>
+            <span style={{ fontSize:12 }}>📉</span>
+            <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#FF3A5C' }}>VÉRIFIÉ LOSS</span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
