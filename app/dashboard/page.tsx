@@ -15,7 +15,6 @@ import ReferralCard from '@/components/dashboard/ReferralCard'
 import AlertsPanel from '@/components/dashboard/AlertsPanel'
 import TradingJournal from '@/components/dashboard/TradingJournal'
 import lazyLoad from 'next/dynamic'
-const DerivWidget = lazyLoad(() => import('@/components/dashboard/DerivWidget'), { ssr: false })
 import Leaderboard from '@/components/dashboard/Leaderboard'
 import { SkeletonDashboard } from '@/components/Skeleton'
 import { useRealtimeSync } from '@/lib/useRealtime'
@@ -171,24 +170,7 @@ export default function DashboardPage() {
           {/* Gamification */}
           {user && <GamificationBar userId={user.id} locale={locale} />}
 
-          {/* Horloges des marchés mondiaux */}
-          <MarketClocks locale={locale} />
-
-          {/* Prix live Deriv */}
-          <DerivWidget />
-
-          <div className="dash-two-col" style={{ display:'grid', gridTemplateColumns:'1fr', gap:0 }}>
-            {token && <ReferralCard token={token} />}
-            {token && <AlertsPanel token={token} plan={plan} />}
-          </div>
-
-          {/* Journal + Classement — côte à côte sur PC */}
-          <div className="dash-two-col" style={{ display:'grid', gridTemplateColumns:'1fr', gap:0 }}>
-            {token && <TradingJournal token={token} />}
-            <Leaderboard currentUserId={user?.id} />
-          </div>
-
-          {/* Modules */}
+          {/* Accès Rapide — en premier pour navigation immédiate */}
           <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'var(--tx2)', marginBottom: 10 }}>{locale === 'fr' ? 'ACCÈS RAPIDE' : 'QUICK ACCESS'}</div>
           <div className="dash-modules" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginBottom: '1.25rem' }}>
             {MODULES.map(m => (
@@ -213,6 +195,21 @@ export default function DashboardPage() {
                 </div>
               </a>
             ))}
+          </div>
+
+          {/* Horloges des marchés mondiaux */}
+          <MarketClocks locale={locale} />
+
+          {/* Parrainage + Alertes */}
+          <div className="dash-two-col" style={{ display:'grid', gridTemplateColumns:'1fr', gap:0 }}>
+            {token && <ReferralCard token={token} />}
+            {token && <AlertsPanel token={token} plan={plan} />}
+          </div>
+
+          {/* Journal + Classement */}
+          <div className="dash-two-col" style={{ display:'grid', gridTemplateColumns:'1fr', gap:0 }}>
+            {token && <TradingJournal token={token} />}
+            <Leaderboard currentUserId={user?.id} />
           </div>
 
           {/* Watchlist + Feed */}
