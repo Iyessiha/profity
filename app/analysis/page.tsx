@@ -91,7 +91,7 @@ export default function AnalysisPage() {
   // TradingView optionnel
   useEffect(() => {
     if (!showTV || !tvRef.current) return
-    tvRef.current.innerHTML = `<iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_px&symbol=BINANCE%3ABTCUSDT&interval=60&hidesidetoolbar=0&hidetoptoolbar=0&symboledit=1&saveimage=0&toolbarbg=020408&studies=%5B%5D&theme=dark&style=1&timezone=Etc%2FUTC&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=fr&utm_source=profity-x.com" style="width:100%;height:450px;border:none;" allowtransparency="true"></iframe>`
+    tvRef.current.innerHTML = `<iframe src="https://www.tradingview.com/widgetembed/?frameElementId=tv_px&symbol=BINANCE%3ABTCUSDT&interval=60&hidesidetoolbar=0&hidetoptoolbar=0&symboledit=1&saveimage=0&toolbarbg=020408&studies=%5B%5D&theme=dark&style=1&timezone=Etc%2FUTC&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=${locale}&utm_source=profity-x.com" style="width:100%;height:450px;border:none;" allowtransparency="true"></iframe>`
   }, [showTV])
 
   const [imageFile, setImageFile] = useState<File | null>(null)
