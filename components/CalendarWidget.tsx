@@ -242,25 +242,24 @@ export default function CalendarWidget({ locale = 'fr' }: Props) {
   const [impact,  setImpact]  = useState<ImpactFilter>('High')
   const [country, setCountry] = useState<CountryFilter>('all')
   const [analyzingId, setAnalyzingId] = useState<string | null>(null)
-  const [focusMode, setFocusMode] = useState(true)
+  const [focusMode, setFocusMode] = useState(false)  // TOUT par défaut
 
   const { events, loading, error, lastFetch, nextPoll, refetch } = useCalendar({ impact, country })
   const { analyze, signal, loading: sigLoading, error: sigError, reset } = useNewsSignal()
 
-  // Mode focus : priorise les annonces en cours / récentes / à venir aujourd'hui
+  // Mode focus : priorise les annonces imminentes / récentes
   const displayEvents = (() => {
     if (!focusMode) return events
     const rank = (e: EnrichedEvent) => {
       if (e.status === 'imminent') return 0
-      // publié dans les 2 dernières heures = "nouveau"
-      if (e.status === 'published' && e.minutes_until > -120) return 1
-      if (e.status === 'upcoming' && e.minutes_until < 24 * 60) return 2  // dans les 24h
+      if (e.status === 'published' && e.minutes_until > -120) return 1  // publié < 2h
+      if (e.status === 'upcoming' && e.minutes_until < 7 * 24 * 60) return 2  // semaine
       if (e.status === 'published') return 4
       return 3
     }
     return [...events]
       .map(e => ({ e, r: rank(e) }))
-      .filter(x => x.r <= 2)   // ne garder que imminent / nouveau / aujourd'hui
+      .filter(x => x.r <= 2)
       .sort((a, b) => a.r - b.r || Math.abs(a.e.minutes_until) - Math.abs(b.e.minutes_until))
       .map(x => x.e)
   })()
