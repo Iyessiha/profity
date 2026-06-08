@@ -34,6 +34,35 @@ export default function LandingPage() {
   const [stats, setStats] = useState({ analyses: 1240, users: 380, signals: 95 })
   const [time, setTime] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [exitPopup, setExitPopup]   = useState(false)
+  const [fomoVisible, setFomoVisible] = useState(false)
+  const [liveStats, setLiveStats] = useState({ analyses_24h: 26, total_users: 4800 })
+
+  useEffect(() => {
+    fetch('/api/stats').then(r => r.json()).then(d => {
+      if (d.analyses_24h != null) setLiveStats(d)
+    }).catch(() => {})
+  }, [])
+
+  // Exit intent — souris sort par le haut
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (sessionStorage.getItem('px_exit_landing')) return
+    const handler = (e: MouseEvent) => {
+      if (e.clientY < 8 && !sessionStorage.getItem('px_exit_landing')) {
+        sessionStorage.setItem('px_exit_landing', '1')
+        setExitPopup(true)
+      }
+    }
+    document.addEventListener('mouseleave', handler)
+    return () => document.removeEventListener('mouseleave', handler)
+  }, [])
+
+  // Bandeau FOMO — après 8s de lecture
+  useEffect(() => {
+    const t = setTimeout(() => setFomoVisible(true), 8000)
+    return () => clearTimeout(t)
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30)
@@ -137,7 +166,7 @@ export default function LandingPage() {
           <a href="#features" className="nav-link nav-hide">FONCTIONS</a>
           <a href="#pricing" className="nav-link nav-hide">TARIFS</a>
           <a href="#avis" className="nav-link nav-hide">AVIS</a>
-          <a href="/auth/login" className="nav-hide" style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '9px 20px', borderRadius: 4, textDecoration: 'none', fontWeight: 700 }}>SE CONNECTER</a>
+          <a href="/auth/login" className="nav-hide" style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '9px 20px', borderRadius: 4, textDecoration: 'none', fontWeight: 700 }}>ESSAYER GRATUIT</a>
           <ThemeToggleLanding />
           {/* Hamburger mobile */}
           <button className="hamburger-btn" onClick={() => setMenuOpen(v => !v)} aria-label="Menu"
@@ -157,7 +186,7 @@ export default function LandingPage() {
             {[['#how','COMMENT ÇA MARCHE'],['#features','FONCTIONS'],['#pricing','TARIFS'],['#avis','AVIS']].map(([href,label]) => (
               <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: 'rgba(232,244,248,0.7)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(0,255,178,0.05)' }}>{label}</a>
             ))}
-            <a href="/auth/login" onClick={() => setMenuOpen(false)} style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '12px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, textAlign: 'center', marginTop: 8 }}>SE CONNECTER</a>
+            <a href="/auth/login" onClick={() => setMenuOpen(false)} style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '12px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, textAlign: 'center', marginTop: 8 }}>ESSAYER GRATUIT</a>
           </div>
         )}
       </nav>
@@ -169,7 +198,7 @@ export default function LandingPage() {
         <div className="hero-text-col" style={{ flex: '1 1 500px', maxWidth: 600 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 100, padding: '6px 16px', marginBottom: '2rem' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00E676', animation: 'pulse 1.5s infinite' }} />
-            <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#00FFB2' }}>+4 800 TRADERS · MARCHÉS EN DIRECT · {time}</span>
+            <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#00FFB2' }}>{`+${liveStats.total_users.toLocaleString()} TRADERS · ${liveStats.analyses_24h} ANALYSES AUJOURD'HUI · ${time}`}</span>
           </div>
 
           <h1 style={{ fontFamily: HUD, fontSize: 'clamp(36px, 5.5vw, 72px)', fontWeight: 900, lineHeight: 1.04, letterSpacing: 1, marginBottom: '1.5rem' }}>
@@ -747,6 +776,73 @@ export default function LandingPage() {
           .hero-text-col { max-width:100% !important; }
         }
       `}</style>
+
+      {/* ── Exit Intent Popup landing ─────────────────────── */}
+      {exitPopup && (
+        <div onClick={() => setExitPopup(false)} style={{
+          position:'fixed', inset:0, zIndex:9999,
+          background:'rgba(2,4,8,0.88)', backdropFilter:'blur(8px)',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          padding:'1rem', animation:'fadeIn .2s ease',
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            width:'100%', maxWidth:420,
+            background:'#080F1A', border:'1px solid rgba(0,255,178,0.2)',
+            borderRadius:16, overflow:'hidden',
+            boxShadow:'0 0 60px rgba(0,255,178,0.12), 0 20px 40px rgba(0,0,0,0.6)',
+            animation:'slideUp .25s ease',
+          }}>
+            <div style={{ height:3, background:'linear-gradient(90deg,transparent,#00FFB2,transparent)' }} />
+            <div style={{ padding:'24px 24px 0', display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+              <div>
+                <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#00FFB2', marginBottom:6 }}>ATTENDS UNE SECONDE !</div>
+                <div style={{ fontFamily:HUD, fontSize:22, fontWeight:900, color:'#E8F4F8', lineHeight:1.2 }}>Tu repars sans signal ?</div>
+              </div>
+              <button onClick={() => setExitPopup(false)} style={{ background:'transparent', border:'1px solid rgba(255,255,255,0.08)', borderRadius:6, color:'rgba(232,244,248,0.35)', cursor:'pointer', width:28, height:28, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>✕</button>
+            </div>
+            <div style={{ padding:'16px 24px' }}>
+              <p style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:15, color:'rgba(232,244,248,0.55)', lineHeight:1.6, marginBottom:16 }}>
+                Uploade ton chart → reçois l'entrée, le Stop Loss et les Take Profit en <strong style={{ color:'#00FFB2' }}>10 secondes</strong>. Boom 1000, GainX, Forex, Gold — tout.
+              </p>
+              <div style={{ background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.12)', borderRadius:8, padding:'10px 14px', marginBottom:16, display:'flex', gap:16, justifyContent:'space-around' }}>
+                {[['🆓','Gratuit','pour commencer'],['⚡','10 sec','par analyse'],['📊','SMC','complet']].map(([i,n,l]) => (
+                  <div key={n} style={{ textAlign:'center' }}>
+                    <div style={{ fontSize:18, marginBottom:4 }}>{i}</div>
+                    <div style={{ fontFamily:HUD, fontSize:11, fontWeight:900, color:'#00FFB2' }}>{n}</div>
+                    <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:10, color:'rgba(232,244,248,0.35)' }}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ padding:'0 24px 24px', display:'flex', flexDirection:'column', gap:8 }}>
+              <a href="/auth/login" style={{ display:'block', textAlign:'center', padding:'14px', borderRadius:7, background:'#00FFB2', color:'#020408', fontFamily:HUD, fontSize:11, letterSpacing:2, fontWeight:700, textDecoration:'none' }}>
+                🚀 COMMENCER GRATUITEMENT →
+              </a>
+              <button onClick={() => setExitPopup(false)} style={{ width:'100%', padding:'10px', borderRadius:7, cursor:'pointer', background:'transparent', border:'1px solid rgba(255,255,255,0.07)', color:'rgba(232,244,248,0.3)', fontFamily:HUD, fontSize:9, letterSpacing:1 }}>
+                Non merci, je pars quand même
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Bandeau FOMO flottant (mobile) ───────────────────── */}
+      {fomoVisible && (
+        <div style={{
+          position:'fixed', bottom:80, left:'50%', transform:'translateX(-50%)',
+          zIndex:500, background:'rgba(6,9,15,0.95)', backdropFilter:'blur(12px)',
+          border:'1px solid rgba(0,255,178,0.2)', borderRadius:100,
+          padding:'10px 20px', display:'flex', alignItems:'center', gap:10,
+          whiteSpace:'nowrap', boxShadow:'0 4px 20px rgba(0,255,178,0.15)',
+          animation:'slideUp .4s ease',
+        }}>
+          <span style={{ width:7, height:7, borderRadius:'50%', background:'#00E676', flexShrink:0, animation:'pulse 1.5s infinite' }} />
+          <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'rgba(232,244,248,0.7)' }}>
+            🔥 <strong style={{ color:'#00FFB2' }}>{liveStats.analyses_24h}</strong> analyses générées aujourd'hui
+          </span>
+          <button onClick={() => setFomoVisible(false)} style={{ background:'transparent', border:'none', color:'rgba(232,244,248,0.3)', cursor:'pointer', fontSize:12, padding:0, marginLeft:4 }}>✕</button>
+        </div>
+      )}
     </div>
   )
 }

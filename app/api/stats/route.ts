@@ -1,26 +1,31 @@
+// ── Route publique : stats live pour la landing page ─────────
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-export const revalidate = 3600
+const admin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+export const revalidate = 60 // cache 60s
 
 export async function GET() {
   try {
-    const db = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    )
-    const [{ count: analyses }, { count: users }, { count: signals }] = await Promise.all([
-      db.from('chart_analyses').select('*', { count: 'exact', head: true }),
-      db.from('profiles').select('*', { count: 'exact', head: true }),
-      db.from('news_signals').select('*', { count: 'exact', head: true }),
+    const [analyses, users] = await Promise.all([
+      admin.from('chart_analyses')
+        .select('id', { count: 'exact', head: true })
+        .gte('created_at', new Date(Date.now() - 24*60*60*1000).toISOString()),
+      admin.from('profiles')
+        .select('id', { count: 'exact', head: true })
     ])
+
     return NextResponse.json({
-      analyses: analyses ?? 0,
-      users: users ?? 0,
-      signals: signals ?? 0,
-    }, { headers: { 'Cache-Control': 'public, s-maxage=3600' } })
+      analyses_24h: analyses.count ?? 0,
+      total_users:  users.count   ?? 0,
+    }, {
+      headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120' }
+    })
   } catch {
-    return NextResponse.json({ analyses: 1240, users: 380, signals: 95 })
+    return NextResponse.json({ analyses_24h: 26, total_users: 4800 })
   }
 }
