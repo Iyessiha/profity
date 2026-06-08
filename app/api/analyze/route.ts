@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
                   : 'SWING/DAY 📈 — Timeframes moyens/longs attendus (H1/H4/D1). Analyse la structure principale.'
                 }
 ${derivSymbol ? `
-ACTIF CONNU : ${derivSymbol} (synthétique Deriv). Utilise "${derivSymbol}" comme valeur du champ "pair" dans le JSON.` : ''}
+ACTIF CONNU : "${derivSymbol}" (Deriv). Écris EXACTEMENT "${derivSymbol}" dans le champ "pair" — pas de description entre parenthèses.` : ''}
 Analyse ce chart. LIS le timeframe visible (coin sup. gauche ou titre), la paire exacte, et les PRIX sur l'axe Y droit. Les prix du signal DOIVENT correspondre aux valeurs visibles sur le chart. JSON uniquement.`
               : `MODE: ${analysisMode === 'scalp'
                   ? 'SCALP ⚡ — Short timeframes expected (M1/M5/M15/M30). Analyze micro-structure.'

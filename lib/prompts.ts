@@ -19,6 +19,10 @@ export function getBasicPrompt(locale: string): string {
   "conclusion": "${locale === 'fr' ? '2-3 phrases résumant le signal' : '2-3 sentence signal summary'}"
 }
 
+IMPORTANT — FORMAT DES PRIX :
+- Tous les prix en nombres décimaux standard : 3256.45 (jamais 3 256,45)
+- Si le chart affiche "4 325,125" → écrire 4325.125 dans le JSON
+- pair : NOM COURT uniquement (ex: "GainX 600" pas "GainX 600 (Decreasing Index...)")
 RÈGLES : JSON uniquement, pas de backticks, prix réalistes.`
 }
 
@@ -89,6 +93,7 @@ RÈGLES STRICTES :
 - Si WAIT : entry/SL/TP peuvent être 0
 - order_block et fvg : null si non visible clairement
 - bos_level / choch_level : prix exact du niveau cassé
+- pair : NOM COURT (ex: "GainX 600" pas "GainX 600 (Decreasing Index...)"), utilise uniquement le nom avant la parenthèse
 - liquidity_high : niveau des equal highs / previous high (cible pour LONG)
 - liquidity_low  : niveau des equal lows / previous low (cible pour SHORT)`
 }
