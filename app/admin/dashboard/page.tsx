@@ -797,7 +797,20 @@ export default function AdminDashboard() {
             <TreasuryPanel token={token} />
           )}
           {/* ══ BROADCAST ════════════════════════════════ */}
-          {tab === 'broadcast' && (            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          {tab === 'broadcast' && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+              {/* Test Email Brevo */}
+              <div style={{ gridColumn: '1 / -1', background: 'var(--bg2)', border: '1px solid rgba(0,255,178,0.15)', borderRadius: 10, padding: '1.25rem', marginBottom: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                  <div>
+                    <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'var(--ac)', marginBottom: 4 }}>🧪 TEST EMAIL BREVO</div>
+                    <div style={{ fontFamily: BODY, fontSize: 13, color: 'var(--tx2)' }}>
+                      Envoie un email de test (template reactivation) à ton adresse admin pour vérifier que Brevo fonctionne.
+                    </div>
+                  </div>
+                  <TestEmailButton token={token} />
+                </div>
+              </div>
               <div>
                 <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: '#FF3A5C', marginBottom: 16 }}>
                   ENVOYER UNE NOTIFICATION
@@ -1237,6 +1250,39 @@ function GeniusPayDiag({ token }: { token: string }) {
 }
 
 // ─── Trésorerie complète avec coûts Anthropic ──────────────
+// ─────────────────────────────────────────────────────────
+// TEST EMAIL BUTTON
+// ─────────────────────────────────────────────────────────
+function TestEmailButton({ token }: { token: string }) {
+  const [state, setState] = useState<'idle'|'loading'|'ok'|'err'>('idle')
+  const [msg,   setMsg]   = useState('')
+  const HUD = "'Orbitron',monospace"
+  const test = async () => {
+    setState('loading')
+    try {
+      const res  = await fetch('/api/admin/test-email', { method:'POST', headers:{ Authorization:`Bearer ${token}` } })
+      const data = await res.json()
+      if (data.success) { setState('ok');  setMsg(`✅ Email envoyé à ${data.sent_to}`) }
+      else              { setState('err'); setMsg(`❌ ${data.error ?? 'Erreur'}`) }
+    } catch { setState('err'); setMsg('❌ Erreur réseau') }
+    setTimeout(() => setState('idle'), 6000)
+  }
+  return (
+    <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:6 }}>
+      <button onClick={test} disabled={state === 'loading'} style={{
+        fontFamily:HUD, fontSize:9, letterSpacing:1, cursor:'pointer',
+        background: state === 'ok' ? 'rgba(0,255,178,0.15)' : state === 'err' ? 'rgba(255,58,92,0.15)' : 'var(--ac)',
+        color: state === 'ok' ? 'var(--ac)' : state === 'err' ? '#FF3A5C' : '#020408',
+        border: state !== 'idle' ? `1px solid ${state==='ok'?'rgba(0,255,178,0.3)':'rgba(255,58,92,0.3)'}` : 'none',
+        borderRadius:6, padding:'10px 20px',
+      }}>
+        {state === 'loading' ? 'ENVOI...' : state === 'ok' ? '✅ ENVOYÉ' : state === 'err' ? '❌ ERREUR' : '📧 TESTER'}
+      </button>
+      {msg && <span style={{ fontFamily:HUD, fontSize:8, color: state === 'ok' ? 'var(--ac)' : '#FF3A5C' }}>{msg}</span>}
+    </div>
+  )
+}
+
 function TreasuryPanel({ token }: { token: string }) {
   const HUD  = "'Orbitron', monospace"
   const BODY = "'Rajdhani', sans-serif"
