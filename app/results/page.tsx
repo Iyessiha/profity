@@ -57,8 +57,7 @@ export default function ResultsPage() {
       {/* Header */}
       <header style={{ borderBottom:'1px solid rgba(0,255,178,0.08)', padding:'1rem 2rem', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, background:'rgba(2,4,8,0.92)', backdropFilter:'blur(12px)', zIndex:10 }}>
         <a href="/" style={{ textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{ fontFamily:HUD, fontSize:18, fontWeight:900, letterSpacing:3, color:'#00FFB2' }}>PROFIT<span style={{ color:'#00D4FF' }}>YX</span></div>
-          <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(240,248,255,0.35)' }}>AI TRADING</div>
+          <img src="/logo.png" alt="ProfityX" style={{ height:40, objectFit:'contain' }} />
         </a>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <div style={{ width:7, height:7, borderRadius:'50%', background:'#00E676', animation:'pulse 1.5s infinite' }} />

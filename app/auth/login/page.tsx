@@ -158,11 +158,14 @@ export default function LoginPage() {
       <div className="login-brand" style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ marginBottom: '3rem' }}>
           {/* Logo cliquable → landing page */}
-          <a href="/" style={{ textDecoration: 'none', display: 'inline-block' }}>
-            <div style={{ fontFamily: HUD, fontSize: 32, letterSpacing: 5, color: '#00FFB2', lineHeight: 1 }}>
-              PROFIT<span style={{ color: '#00D4FF' }}>YX</span>
+          <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 16 }}>
+            <img src="/logo.png" alt="ProfityX" style={{ height: 80, width: 80, objectFit: 'contain' }} />
+            <div>
+              <div style={{ fontFamily: HUD, fontSize: 28, letterSpacing: 4, color: '#00FFB2', lineHeight: 1 }}>
+                PROFIT<span style={{ color: '#00D4FF' }}>YX</span>
+              </div>
+              <div style={{ fontFamily: BODY, fontSize: 11, color: 'rgba(232,244,248,0.35)', letterSpacing: 3, marginTop: 5 }}>AI TRADING SIGNALS</div>
             </div>
-            <div style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(232,244,248,0.3)', letterSpacing: 4, marginTop: 6 }}>AI TRADING SIGNALS</div>
           </a>
         </div>
         <h1 style={{ fontFamily: HUD, fontSize: 'clamp(32px,4vw,56px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: 2, color: '#E8F4F8', marginBottom: '1.5rem' }}>

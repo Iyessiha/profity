@@ -1,28 +1,28 @@
 {
-  "name": "ProfityX — AI Trading Signal",
+  "name": "ProfityX — AI Trading Signals",
   "short_name": "ProfityX",
-  "description": "Analysez vos charts avec l'IA. Signaux SMC, Risk Management, Classement traders.",
+  "description": "Signaux de trading IA — Boom, Crash, Forex, Gold",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#020408",
   "theme_color": "#00FFB2",
-  "orientation": "portrait-primary",
-  "categories": ["finance", "productivity"],
-  "lang": "fr",
+  "orientation": "portrait",
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ],
-  "shortcuts": [
     {
-      "name": "Analyser un chart",
-      "url": "/analysis",
-      "description": "Lancer une analyse IA"
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "name": "Calculateur",
-      "url": "/calculator",
-      "description": "Calculateur de position"
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
+  ],
+  "categories": [
+    "finance",
+    "utilities"
   ]
 }
