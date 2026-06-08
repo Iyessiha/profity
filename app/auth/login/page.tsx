@@ -138,10 +138,13 @@ export default function LoginPage() {
       {/* Panneau gauche — Branding */}
       <div className="login-brand" style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ marginBottom: '3rem' }}>
-          <div style={{ fontFamily: HUD, fontSize: 32, letterSpacing: 5, color: '#00FFB2', lineHeight: 1 }}>
-            PROFIT<span style={{ color: '#00D4FF' }}>YX</span>
-          </div>
-          <div style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(232,244,248,0.3)', letterSpacing: 4, marginTop: 6 }}>AI TRADING SIGNALS</div>
+          {/* Logo cliquable → landing page */}
+          <a href="/" style={{ textDecoration: 'none', display: 'inline-block' }}>
+            <div style={{ fontFamily: HUD, fontSize: 32, letterSpacing: 5, color: '#00FFB2', lineHeight: 1 }}>
+              PROFIT<span style={{ color: '#00D4FF' }}>YX</span>
+            </div>
+            <div style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(232,244,248,0.3)', letterSpacing: 4, marginTop: 6 }}>AI TRADING SIGNALS</div>
+          </a>
         </div>
         <h1 style={{ fontFamily: HUD, fontSize: 'clamp(32px,4vw,56px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: 2, color: '#E8F4F8', marginBottom: '1.5rem' }}>
           TRADEZ<br /><span style={{ color: '#00FFB2' }}>PLUS</span><br />
@@ -165,6 +168,22 @@ export default function LoginPage() {
 
       {/* Panneau droit — Formulaire */}
       <div className="login-form" style={{ position: 'relative', zIndex: 1 }}>
+
+        {/* Retour landing — visible surtout sur mobile */}
+        <a href="/" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontFamily: HUD, fontSize: 8, letterSpacing: 2,
+          color: 'rgba(232,244,248,0.35)', textDecoration: 'none',
+          marginBottom: '1.5rem',
+          padding: '6px 10px', borderRadius: 4,
+          border: '1px solid rgba(255,255,255,0.06)',
+          transition: 'all .2s',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#00FFB2'; e.currentTarget.style.borderColor = 'rgba(0,255,178,0.25)' }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(232,244,248,0.35)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)' }}>
+          <i className="ti ti-arrow-left" style={{ fontSize: 12 }} />
+          RETOUR AU SITE
+        </a>
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 4, marginBottom: '2rem', background: '#0A0F1A', padding: 4, borderRadius: 6, border: '1px solid rgba(0,255,178,0.08)' }}>
