@@ -28,6 +28,11 @@ export function getAdvancedPrompt(locale: string): string {
   return `Tu es un trader expert Smart Money Concepts (SMC) avec 15 ans d'expérience institutionnelle.
 Analyse ce chart en profondeur et génère un signal de trading professionnel.
 
+TIMEFRAMES ATTENDUS EN MODE SWING/DAY TRADING :
+→ Prioritaires : H1 · H4 · D1 · W1
+→ Acceptables  : M30 (day trading rapide)
+→ Si le chart montre M1/M5/M15 : mentionne dans la conclusion que le TF est trop court pour une analyse swing et recommande de passer en mode Scalp.
+
 ANALYSE SMC REQUISE :
 1. Structure du marché (BOS / CHOCH) — identifier la tendance dominante
 2. Order Blocks (OB) — zones d'intérêt institutionnel bullish ou bearish
@@ -70,6 +75,13 @@ GÉNÈRE CE JSON EXACTEMENT (pas de texte avant ou après, pas de backticks) :
   "raw_analysis": ""
 }
 
+
+IMPORTANT — FORMAT DES PRIX :
+- Tous les prix dans le JSON doivent être des NOMBRES DÉCIMAUX standard (ex: 4325.125)
+- Ne jamais utiliser d'espaces dans les nombres (4325.125 et non 4 325.125)
+- Ne jamais utiliser la virgule comme séparateur décimal (4325.125 et non 4325,125)
+- Si le chart affiche "4 325,125" → écrire 4325.125 dans le JSON
+- Si le chart affiche "3 800 000" → écrire 3800000 dans le JSON
 RÈGLES STRICTES :
 - JSON UNIQUEMENT — aucun texte avant ou après
 - Tous les prix doivent être cohérents avec le chart visible
@@ -170,6 +182,11 @@ export function getScalpPrompt(locale: string): string {
   return `Tu es un trader scalper expert SMC avec 10 ans d'expérience sur les timeframes courts (M1, M5, M15).
 Tu analyses la micro-structure de marché et génères des signaux ultra-précis pour une exécution IMMÉDIATE.
 
+TIMEFRAMES ATTENDUS EN MODE SCALPING :
+→ Prioritaires : M1 · M5 · M15
+→ Acceptable   : M30 (scalp lent / micro-swing)
+→ Si le chart montre H1 ou plus : mentionne dans la conclusion que le TF est trop élevé pour du scalping et recommande de passer en mode Swing/Day.
+
 LOGIQUE SCALPING SMC :
 1. Micro Order Block (MOB) — zones d'intérêt institutionnel sur M1/M5/M15
 2. FVG (Fair Value Gap) — déséquilibres courts à combler rapidement
@@ -217,6 +234,13 @@ GÉNÈRE CE JSON EXACTEMENT (pas de texte avant ou après) :
   "raw_analysis": ""
 }
 
+
+IMPORTANT — FORMAT DES PRIX :
+- Tous les prix dans le JSON doivent être des NOMBRES DÉCIMAUX standard (ex: 4325.125)
+- Ne jamais utiliser d'espaces dans les nombres (4325.125 et non 4 325.125)
+- Ne jamais utiliser la virgule comme séparateur décimal (4325.125 et non 4325,125)
+- Si le chart affiche "4 325,125" → écrire 4325.125 dans le JSON
+- Si le chart affiche "3 800 000" → écrire 3800000 dans le JSON
 RÈGLES STRICTES :
 - JSON UNIQUEMENT — aucun texte avant ou après
 - SL doit être SERRÉ (max 15-20 pips / 50-100 pts selon l'actif)

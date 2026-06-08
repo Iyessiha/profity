@@ -10,10 +10,29 @@ export function parseClaudeJSON(raw: string): Record<string, unknown> | null {
   // Extraire le JSON s'il y a du texte autour
   const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
   if (jsonMatch) cleaned = jsonMatch[0]
+
+  // Normaliser les nombres en format français (ex: "4 325,125" → 4325.125)
+  // Remplacer les nombres du type: 4 325,125 | 4325,125 | 4 325.125 | 4 325 000
+  cleaned = cleaned.replace(
+    /:\s*([\d][\d\s]*[\d][,.][\d]+)/g,
+    (_m, num) => ': ' + num.replace(/\s/g, '').replace(',', '.')
+  )
+  // Nettoyer les espaces dans les entiers (ex: 4 325 000 → 4325000)
+  cleaned = cleaned.replace(
+    /:\s*([\d][\d\s]{2,}[\d])(?=[,\}\]]\s)/g,
+    (_m, num) => ': ' + num.replace(/\s/g, '')
+  )
+
   try {
     return JSON.parse(cleaned)
   } catch {
-    return null
+    // Tentative de récupération : remplacer toutes les virgules décimales restantes
+    try {
+      const retry = cleaned.replace(/(\d),(\d)/g, '$1.$2')
+      return JSON.parse(retry)
+    } catch {
+      return null
+    }
   }
 }
 
