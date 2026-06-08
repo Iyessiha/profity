@@ -8,10 +8,11 @@
   --bg1: #08111F;
   --bg2: #0D1A2E;
   --bg3: #142038;
-  --tx0: #E8F4F8;
-  --tx1: rgba(232,244,248,0.82);
-  --tx2: rgba(232,244,248,0.5);
-  --tx3: rgba(232,244,248,0.25);
+  /* Textes — contraste renforcé */
+  --tx0: #F0F8FF;                      /* blanc pur → maximum lisible */
+  --tx1: rgba(240,248,255,0.90);       /* 90% blanc */
+  --tx2: rgba(240,248,255,0.65);       /* 65% — secondaire lisible */
+  --tx3: rgba(240,248,255,0.45);       /* 45% — labels discrets mais lisibles */
   /* Accent unique vert cyan */
   --ac:  #00FFB2;
   --ac2: #00CCFF;
@@ -371,3 +372,122 @@ body {
 @keyframes fadeIn  { from { opacity:0 } to { opacity:1 } }
 @keyframes slideUp { from { transform:translateY(20px); opacity:0 } to { transform:translateY(0); opacity:1 } }
 @keyframes pulse   { 0%,100% { opacity:1 } 50% { opacity:0.5 } }
+
+/* ─────────────────────────────────────────────────────────────
+   LIGHT MODE — Overrides spécifiques manquants
+   ───────────────────────────────────────────────────────────── */
+
+/* #00FFB2 comme couleur de texte → vert foncé lisible */
+[data-theme="light"] [style*="color: #00FFB2"],
+[data-theme="light"] [style*="color:#00FFB2"],
+[data-theme="light"] [style*="color: rgb(0, 255, 178)"] {
+  color: #006B45 !important;
+}
+
+/* #00D4FF bleu accent → bleu foncé */
+[data-theme="light"] [style*="color: #00D4FF"],
+[data-theme="light"] [style*="color:#00D4FF"] {
+  color: #0055A0 !important;
+}
+
+/* #C9A84C or → brun doré foncé */
+[data-theme="light"] [style*="color: #C9A84C"],
+[data-theme="light"] [style*="color:#C9A84C"] {
+  color: #7A5A00 !important;
+}
+
+/* #00E676 vert succès → vert foncé */
+[data-theme="light"] [style*="color: #00E676"],
+[data-theme="light"] [style*="color:#00E676"] {
+  color: #1B7A3E !important;
+}
+
+/* Opacités vert #00FFB2 — fréquentes dans labels */
+[data-theme="light"] [style*="rgba(0,255,178,0.6)"],
+[data-theme="light"] [style*="rgba(0,255,178, 0.6)"],
+[data-theme="light"] [style*="rgba(0,255,178,0.7)"],
+[data-theme="light"] [style*="rgba(0,255,178,0.8)"],
+[data-theme="light"] [style*="rgba(0,255,178,0.9)"] {
+  color: #006B45 !important;
+}
+[data-theme="light"] [style*="rgba(0,255,178,0.4)"],
+[data-theme="light"] [style*="rgba(0,255,178, 0.4)"],
+[data-theme="light"] [style*="rgba(0,255,178,0.45)"],
+[data-theme="light"] [style*="rgba(0,255,178,0.5)"] {
+  color: #2E8B5A !important;
+}
+[data-theme="light"] [style*="rgba(0,255,178,0.3)"],
+[data-theme="light"] [style*="rgba(0,255,178, 0.3)"],
+[data-theme="light"] [style*="rgba(0,255,178,0.25)"],
+[data-theme="light"] [style*="rgba(0,255,178,0.2)"] {
+  color: #5AA87A !important;
+}
+
+/* Backgrounds verts translucides → plus visibles sur blanc */
+[data-theme="light"] [style*="background: rgba(0,255,178,0.04)"],
+[data-theme="light"] [style*="background:rgba(0,255,178,0.04)"],
+[data-theme="light"] [style*="background: rgba(0,255,178,0.05)"],
+[data-theme="light"] [style*="background:rgba(0,255,178,0.05)"],
+[data-theme="light"] [style*="background: rgba(0,255,178,0.06)"],
+[data-theme="light"] [style*="background:rgba(0,255,178,0.06)"] {
+  background: rgba(0,107,69,0.06) !important;
+}
+[data-theme="light"] [style*="background: rgba(0,255,178,0.08)"],
+[data-theme="light"] [style*="background:rgba(0,255,178,0.08)"],
+[data-theme="light"] [style*="background: rgba(0,255,178,0.1)"],
+[data-theme="light"] [style*="background:rgba(0,255,178,0.1)"],
+[data-theme="light"] [style*="background: rgba(0,255,178,0.12)"],
+[data-theme="light"] [style*="background:rgba(0,255,178,0.12)"] {
+  background: rgba(0,107,69,0.09) !important;
+}
+
+/* Bordures vertes translucides → visibles sur blanc */
+[data-theme="light"] [style*="border: 1px solid rgba(0,255,178,0.1)"],
+[data-theme="light"] [style*="border:1px solid rgba(0,255,178,0.1)"],
+[data-theme="light"] [style*="border: 1px solid rgba(0,255,178,0.15)"],
+[data-theme="light"] [style*="border:1px solid rgba(0,255,178,0.15)"] {
+  border-color: rgba(0,107,69,0.2) !important;
+}
+[data-theme="light"] [style*="border: 1px solid rgba(0,255,178,0.2)"],
+[data-theme="light"] [style*="border:1px solid rgba(0,255,178,0.2)"],
+[data-theme="light"] [style*="border: 1px solid rgba(0,255,178,0.25)"],
+[data-theme="light"] [style*="border:1px solid rgba(0,255,178,0.25)"],
+[data-theme="light"] [style*="border: 1px solid rgba(0,255,178,0.3)"],
+[data-theme="light"] [style*="border:1px solid rgba(0,255,178,0.3)"] {
+  border-color: rgba(0,107,69,0.3) !important;
+}
+
+/* Fonds sombres restants (#0A0F1A etc.) */
+[data-theme="light"] [style*="background: #0A0F1A"],
+[data-theme="light"] [style*="background:#0A0F1A"],
+[data-theme="light"] [style*="background: #0B1117"],
+[data-theme="light"] [style*="background:#0B1117"] {
+  background: #FFFFFF !important;
+}
+
+/* ── DARK MODE — Inline styles gris → plus blanc ───────────── */
+/* Les labels à très faible opacité dans les composants */
+[data-theme="dark"] [style*="rgba(232,244,248,0.25)"],
+[data-theme="dark"] [style*="rgba(232,244,248, 0.25)"] {
+  color: rgba(240,248,255,0.55) !important;
+}
+[data-theme="dark"] [style*="rgba(232,244,248,0.3)"],
+[data-theme="dark"] [style*="rgba(232,244,248, 0.3)"] {
+  color: rgba(240,248,255,0.60) !important;
+}
+[data-theme="dark"] [style*="rgba(232,244,248,0.35)"],
+[data-theme="dark"] [style*="rgba(232,244,248, 0.35)"] {
+  color: rgba(240,248,255,0.65) !important;
+}
+[data-theme="dark"] [style*="rgba(232,244,248,0.4)"],
+[data-theme="dark"] [style*="rgba(232,244,248, 0.4)"] {
+  color: rgba(240,248,255,0.70) !important;
+}
+[data-theme="dark"] [style*="rgba(232,244,248,0.5)"],
+[data-theme="dark"] [style*="rgba(232,244,248, 0.5)"] {
+  color: rgba(240,248,255,0.75) !important;
+}
+[data-theme="dark"] [style*="rgba(232,244,248,0.55)"],
+[data-theme="dark"] [style*="rgba(232,244,248, 0.55)"] {
+  color: rgba(240,248,255,0.80) !important;
+}
