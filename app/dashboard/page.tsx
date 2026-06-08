@@ -14,8 +14,8 @@ import MarketClocks from '@/components/dashboard/MarketClocks'
 import ReferralCard from '@/components/dashboard/ReferralCard'
 import AlertsPanel from '@/components/dashboard/AlertsPanel'
 import TradingJournal from '@/components/dashboard/TradingJournal'
-import dynamic from 'next/dynamic'
-const DerivWidget = dynamic(() => import('@/components/dashboard/DerivWidget'), { ssr: false })
+import lazyLoad from 'next/dynamic'
+const DerivWidget = lazyLoad(() => import('@/components/dashboard/DerivWidget'), { ssr: false })
 import Leaderboard from '@/components/dashboard/Leaderboard'
 import { SkeletonDashboard } from '@/components/Skeleton'
 import { useRealtimeSync } from '@/lib/useRealtime'
