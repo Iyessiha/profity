@@ -397,6 +397,16 @@ export default function LandingPage() {
             <a key={href} href={href} style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(240,248,255,0.3)', textDecoration: 'none' }}>{label}</a>
           ))}
         </div>
+                {/* Switcher de langue */}
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <span style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.3)' }}>🌐</span>
+          <a href="/" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, textDecoration:'none',
+            color:'#00FFB2', background:'rgba(0,255,178,0.1)', border:'1px solid rgba(0,255,178,0.3)',
+            padding:'5px 12px', borderRadius:4 }}>FR</a>
+          <a href="/en" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, textDecoration:'none',
+            color:'rgba(240,248,255,0.35)', border:'1px solid rgba(255,255,255,0.1)',
+            padding:'5px 12px', borderRadius:4 }}>EN</a>
+        </div>
         <div style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(240,248,255,0.2)' }}>© 2026 MonWe Infinity LLC</div>
       </footer>
 
