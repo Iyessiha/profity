@@ -5,7 +5,6 @@
 'use client'
 export const dynamic = 'force-dynamic'
 import { useState, useEffect, useCallback } from 'react'
-import { useTheme } from '@/lib/theme'
 import { useRouter }                         from 'next/navigation'
 import { supabasePublic }                    from '@/lib/supabase'
 import PaymentMethods                         from '@/components/dashboard/PaymentMethods'
@@ -338,8 +337,6 @@ export default function SettingsPage() {
           {/* ── PROFIL ───────────────────────────────────── */}
           {tab === 'profile' && (
             <div>
-              {/* Sélecteur de thème */}
-              <ThemeSelector />
               {/* Photo de profil */}
               <div style={cardStyle}>
                 <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#00D4FF', marginBottom:'1.25rem' }}>
@@ -754,42 +751,6 @@ export default function SettingsPage() {
   )
 }
 
-// ─────────────────────────────────────────────────────────
-// SÉLECTEUR DE THÈME
-// ─────────────────────────────────────────────────────────
-function ThemeSelector() {
-  const { theme, toggleTheme } = useTheme()
-  const HUD  = "'Orbitron',monospace"
-  const BODY = "'Rajdhani',sans-serif"
-
-  return (
-    <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem', marginBottom:16 }}>
-      <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'var(--ac)', marginBottom:14 }}>
-        🎨 APPARENCE
-      </div>
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-        {([
-          { key:'light', icon:'☀️', label:'MODE CLAIR',  sub:'Interface lumineuse', color:'#0EA5E9', bg:'rgba(14,165,233,0.08)', bd:'rgba(14,165,233,0.25)' },
-          { key:'dark',  icon:'🌙', label:'MODE SOMBRE', sub:'Interface nocturne',  color:'#C9A84C', bg:'rgba(201,168,76,0.08)', bd:'rgba(201,168,76,0.25)' },
-        ] as const).map(opt => (
-          <button key={opt.key} onClick={() => theme !== opt.key && toggleTheme()} style={{
-            border: `2px solid ${theme === opt.key ? opt.bd : 'var(--bd)'}`,
-            background: theme === opt.key ? opt.bg : 'transparent',
-            borderRadius:8, padding:'14px 12px', cursor:'pointer', textAlign:'left',
-            transition:'all .2s',
-          }}>
-            <div style={{ fontSize:22, marginBottom:8 }}>{opt.icon}</div>
-            <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color: theme === opt.key ? opt.color : 'var(--tx2)', marginBottom:4 }}>{opt.label}</div>
-            <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>{opt.sub}</div>
-            {theme === opt.key && (
-              <div style={{ marginTop:8, fontFamily:HUD, fontSize:7, color:opt.color, letterSpacing:1 }}>✓ ACTIF</div>
-            )}
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 
 // ─────────────────────────────────────────────────────────

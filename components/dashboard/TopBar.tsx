@@ -92,18 +92,7 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
         {/* Notifications */}
         {token && <NotificationBell token={token} />}
 
-        {/* Toggle thème — bien visible */}
-        <button onClick={toggleTheme} title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
-          style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 10px', borderRadius: 7,
-            border: `1px solid ${theme === 'dark' ? 'rgba(201,168,76,0.35)' : 'rgba(14,165,233,0.35)'}`,
-            background: theme === 'dark' ? 'rgba(201,168,76,0.08)' : 'rgba(14,165,233,0.08)',
-            cursor: 'pointer', flexShrink: 0, color: theme === 'dark' ? '#C9A84C' : '#0EA5E9',
-          }}>
-          <i className={'ti ' + (theme === 'dark' ? 'ti-sun' : 'ti-moon')} style={{ fontSize: 14 }} aria-hidden="true" />
-          <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1 }} className="topbar-hide">
-            {theme === 'dark' ? 'CLAIR' : 'SOMBRE'}
-          </span>
-        </button>
+
 
         {/* Avatar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
