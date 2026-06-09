@@ -309,7 +309,12 @@ export default function HistoryPanel({ locale, userId, token }: Props) {
         .eq('user_id', userId)
         .order('created_at',{ascending:false})
         .limit(50)
-      setData((rows??[]) as ChartRecord[])
+      setData(((rows??[]) as ChartRecord[]).map(r => ({
+        ...r,
+        trade_result: r.trade_result
+          ? (r.trade_result.toLowerCase() as TradeResult)
+          : null,
+      })))
     } else {
       const { data:rows } = await supabasePublic
         .from('news_signals')
