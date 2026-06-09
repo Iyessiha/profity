@@ -174,7 +174,7 @@ export async function GET(req: NextRequest) {
       // Source des données
       data_source: umList.length > 0 ? 'real_tokens' : 'console_estimate',
     },
-    credits:   { consumed: totalSpent, outstanding },
+    credits:   { total_issued: totalSpent + outstanding, total_consumed: totalSpent, outstanding },
     margin:    { net_profit_xof: netProfitXof, percent: marginPct },
     per_plan:  perPlan,
     constants: { xof_per_usd: XOF_PER_USD, anthropic_budget: ANTHROPIC_BUDGET },
