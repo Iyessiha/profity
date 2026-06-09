@@ -38,6 +38,15 @@ export default function LandingPage() {
   const [fomoVisible, setFomoVisible] = useState(false)
   const [liveStats, setLiveStats] = useState({ analyses_24h: 26, total_users: 4800 })
 
+  // ── Effets visuels hero ───────────────────────────────────
+  const [typed,       setTyped]       = useState('')
+  const [typePhase,   setTypePhase]   = useState(0)  // 0=ligne1, 1=pause, 2=ligne2
+  const [showCursor,  setShowCursor]  = useState(true)
+  const [countUsers,  setCountUsers]  = useState(0)
+  const [countAnalys, setCountAnalys] = useState(0)
+  const [countSig,    setCountSig]    = useState(0)
+  const [heroReady,   setHeroReady]   = useState(false)
+
   useEffect(() => {
     fetch('/api/stats').then(r => r.json()).then(d => {
       if (d.analyses_24h != null) setLiveStats(d)
@@ -192,18 +201,59 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
+      {/* ── Pluie de chiffres / symboles trading ── */}
+      <div aria-hidden="true" style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', overflow:'hidden' }}>
+        {[...Array(22)].map((_,i) => {
+          const chars = ['0.618','1.272','BOS','FVG','OB','TP','SL','H4','H1','▲','▼','×','%','+','-','1:2','1:3','R/R','SMC','WIN','ATH','ATL']
+          const char  = chars[i % chars.length]
+          const left  = (i * 4.5 + 1) % 100
+          const delay = (i * 0.41) % 6
+          const dur   = 8 + (i * 0.7) % 6
+          const size  = 9 + (i % 3) * 2
+          const opacity = 0.04 + (i % 4) * 0.015
+          return (
+            <div key={i} style={{
+              position:'absolute', left:`${left}%`, top:'-40px',
+              fontFamily:"'Orbitron',monospace", fontSize:size, color:'#00FFB2',
+              opacity, userSelect:'none', whiteSpace:'nowrap',
+              animation:`matrixFall ${dur}s linear ${delay}s infinite`,
+            }}>{char}</div>
+          )
+        })}
+      </div>
+
       <section className="hero-section" style={{ position: 'relative', zIndex: 1, minHeight: '100vh', display: 'flex', alignItems: 'center', padding: '6rem 2rem 4rem', maxWidth: 1200, margin: '0 auto' }}>
         
         {/* Colonne texte */}
         <div className="hero-text-col" style={{ flex: '1 1 500px', maxWidth: 600 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 100, padding: '6px 16px', marginBottom: '2rem' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00E676', animation: 'pulse 1.5s infinite' }} />
-            <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#00FFB2' }}>{`+${liveStats.total_users.toLocaleString()} TRADERS · ${liveStats.analyses_24h} ANALYSES AUJOURD'HUI · ${time}`}</span>
+          {/* Badge stats animé avec compteurs */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 100, padding: '6px 18px', marginBottom: '2rem', flexWrap: 'wrap' }}>
+            <span style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00E676', animation: 'pulse 1.5s infinite', flexShrink:0 }} />
+              <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#00FFB2' }}>
+                <span style={{ color:'#C9A84C', fontWeight:900 }}>+{countUsers.toLocaleString('fr-FR')}</span> TRADERS
+              </span>
+            </span>
+            <span style={{ width:1, height:12, background:'rgba(0,255,178,0.2)' }} />
+            <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: '#00D4FF' }}>
+              <span style={{ fontWeight:900 }}>{countAnalys}</span> ANALYSES/JOUR
+            </span>
+            <span style={{ width:1, height:12, background:'rgba(0,255,178,0.2)' }} />
+            <span style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'rgba(240,248,255,0.45)' }}>{time}</span>
           </div>
 
-          <h1 style={{ fontFamily: HUD, fontSize: 'clamp(36px, 5.5vw, 72px)', fontWeight: 900, lineHeight: 1.04, letterSpacing: 1, marginBottom: '1.5rem' }}>
-            TRADEZ PLUS<br /><span style={{ color: '#00FFB2', textShadow: '0 0 30px rgba(0,255,178,0.4)' }}>INTELLIGENT.</span><br />
-            <span style={{ color: '#FF3A5C' }}>L'IA ANALYSE,</span> VOUS GAGNEZ.
+          <h1 style={{ fontFamily: HUD, fontSize: 'clamp(36px, 5.5vw, 72px)', fontWeight: 900, lineHeight: 1.15, letterSpacing: 1, marginBottom: '1.5rem', minHeight: '3.5em' }}>
+            {typed.split('\n').map((line, i) => (
+              <span key={i} style={{ display:'block' }}>
+                {i === 0
+                  ? <span>{line.includes('INTELLIGENT') ? <>{line.replace('TRADEZ PLUS INTELLIGENT.','').trim()}<>TRADEZ PLUS </><span style={{ color: '#00FFB2', textShadow: '0 0 30px rgba(0,255,178,0.4)' }}>INTELLIGENT.</span></> : line}</span>
+                  : <span><span style={{ color: '#FF3A5C' }}>L'IA ANALYSE,</span>{line.replace("L'IA ANALYSE,","")}</span>
+                }
+              </span>
+            ))}
+            {!heroReady && (
+              <span style={{ display:'inline-block', width:3, height:'0.9em', background:'#00FFB2', marginLeft:2, verticalAlign:'middle', opacity: showCursor ? 1 : 0, transition:'opacity 0.1s' }} />
+            )}
           </h1>
 
           <p style={{ fontSize: 'clamp(15px,1.8vw,19px)', color: 'rgba(232,244,248,0.55)', lineHeight: 1.7, maxWidth: 520, marginBottom: '2.5rem', fontWeight: 300 }}>
@@ -953,6 +1003,12 @@ export default function LandingPage() {
         .partner-card:hover, .broker-card:hover { transform:translateY(-6px); box-shadow:0 10px 40px rgba(0,255,178,0.15); }
 
         /* Mockup hero responsive */
+        @keyframes matrixFall {
+          0%   { transform: translateY(-40px); opacity: 0; }
+          5%   { opacity: 1; }
+          90%  { opacity: 1; }
+          100% { transform: translateY(110vh); opacity: 0; }
+        }
         .hero-mockup { display:flex; }
         @media (max-width: 860px) {
           .hero-mockup { display:none !important; }
