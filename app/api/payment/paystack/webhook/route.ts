@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { sendEmail }                  from '@/lib/email'
-import crypto                         from 'crypto'
+import { createHmac }                 from 'node:crypto'
 
 const PLAN_CREDITS: Record<string, number> = { pro: 150, elite: 600 }
 
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   // Vérification signature Paystack HMAC-SHA512
   const secret    = process.env.PAYSTACK_SECRET_KEY ?? ''
   const signature = req.headers.get('x-paystack-signature') ?? ''
-  const hash      = crypto.createHmac('sha512', secret).update(rawBody).digest('hex')
+  const hash      = createHmac('sha512', secret).update(rawBody).digest('hex')
 
   if (secret && signature && hash !== signature) {
     console.error('[Paystack Webhook] ❌ Signature invalide')
