@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
 import { supabasePublic } from '@/lib/supabase'
+import { getLang, t, type Lang } from '@/lib/i18n'
 
 export default function LoginPage() {
   const [mode,     setMode]    = useState<'login' | 'signup'>('login')
@@ -15,8 +16,11 @@ export default function LoginPage() {
   const [error,    setError]   = useState<string | null>(null)
   const [success,  setSuccess] = useState<string | null>(null)
   const [refCode,  setRefCode] = useState('')
+  const [lang,     setLang]    = useState<Lang>('fr')
 
   useEffect(() => {
+    // Lire la langue préférée depuis localStorage
+    setLang(getLang())
     // Capturer le code parrain depuis l'URL et le stocker
     const params = new URLSearchParams(window.location.search)
     const ref = params.get('ref')
@@ -47,7 +51,7 @@ export default function LoginPage() {
   }
 
   const handleLogin = async () => {
-    if (!email || !password) { setError('Email et mot de passe requis'); return }
+    if (!email || !password) { setError(lang === 'en' ? 'Email and password required' : 'Email et mot de passe requis'); return }
     setLoading(true)
     setError(null)
 
@@ -55,7 +59,7 @@ export default function LoginPage() {
 
     if (e) {
       setError(
-        e.message.includes('Invalid login credentials') ? 'Email ou mot de passe incorrect'
+        e.message.includes('Invalid login credentials') ? (lang === 'en' ? 'Invalid email or password' : 'Email ou mot de passe incorrect')
         : e.message.includes('Email not confirmed') ? 'Confirmez votre email avant de vous connecter'
         : e.message
       )
@@ -82,8 +86,8 @@ export default function LoginPage() {
   }
 
   const handleSignup = async () => {
-    if (!email || !password) { setError('Email et mot de passe requis'); return }
-    if (password.length < 8) { setError('Mot de passe : minimum 8 caractères'); return }
+    if (!email || !password) { setError(lang === 'en' ? 'Email and password required' : 'Email et mot de passe requis'); return }
+    if (password.length < 8) { setError(lang === 'en' ? 'Password: minimum 8 characters' : 'Mot de passe : minimum 8 caractères'); return }
     setLoading(true)
     setError(null)
 
@@ -95,12 +99,13 @@ export default function LoginPage() {
         email, password,
         name: name || email.split('@')[0],
         ref_code: refCode || localStorage.getItem('px_ref') || '',
+        locale: lang,
       }),
     })
     const data = await res.json()
 
     if (!res.ok || !data.success) {
-      setError(data.error ?? 'Erreur inscription')
+      setError(data.error ?? (lang === 'en' ? 'Registration error' : 'Erreur inscription'))
       setLoading(false)
       return
     }
@@ -112,7 +117,7 @@ export default function LoginPage() {
     })
 
     if (sessErr) {
-      setError('Compte créé — connectez-vous manuellement.')
+      setError(lang === 'en' ? 'Account created — please sign in.' : 'Compte créé — connectez-vous manuellement.')
       setMode('login')
       setLoading(false)
       return
@@ -158,7 +163,7 @@ export default function LoginPage() {
       <div className="login-brand" style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ marginBottom: '3rem' }}>
           {/* Logo cliquable → landing page */}
-          <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 16 }}>
+          <a {...({"href": lang === 'en' ? '/en' : '/'})} style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 16 }}>
             <img src="/logo.png" alt="ProfityX" style={{ height: 80, width: 80, objectFit: 'contain' }} />
             <div>
               <div style={{ fontFamily: HUD, fontSize: 28, letterSpacing: 4, color: '#00FFB2', lineHeight: 1 }}>
@@ -192,7 +197,7 @@ export default function LoginPage() {
       <div className="login-form" style={{ position: 'relative', zIndex: 1 }}>
 
         {/* Retour landing — visible surtout sur mobile */}
-        <a href="/" style={{
+        <a {...({"href": lang === 'en' ? '/en' : '/'})} style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           fontFamily: HUD, fontSize: 8, letterSpacing: 2,
           color: 'rgba(232,244,248,0.35)', textDecoration: 'none',
@@ -204,15 +209,15 @@ export default function LoginPage() {
           onMouseEnter={e => { e.currentTarget.style.color = '#00FFB2'; e.currentTarget.style.borderColor = 'rgba(0,255,178,0.25)' }}
           onMouseLeave={e => { e.currentTarget.style.color = 'rgba(232,244,248,0.35)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)' }}>
           <i className="ti ti-arrow-left" style={{ fontSize: 12 }} />
-          RETOUR AU SITE
+          {lang === 'en' ? 'BACK TO SITE' : 'RETOUR AU SITE'}
         </a>
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 4, marginBottom: '2rem', background: '#0A0F1A', padding: 4, borderRadius: 6, border: '1px solid rgba(0,255,178,0.08)' }}>
           {(['login', 'signup'] as const).map(m => (
-            <button key={m} onClick={() => { setMode(m); setError(null); setSuccess(null) }}
+            <button key={m} onClick={() => { setMode(m as 'login'|'signup'); setError(null); setSuccess(null) }}
               style={{ flex: 1, padding: '9px', border: 'none', borderRadius: 4, background: mode === m ? 'rgba(0,255,178,0.1)' : 'transparent', color: mode === m ? '#00FFB2' : 'rgba(232,244,248,0.3)', fontFamily: HUD, fontSize: 10, letterSpacing: 2, cursor: 'pointer', outline: mode === m ? '1px solid rgba(0,255,178,0.2)' : 'none', transition: 'all .2s' }}>
-              {m === 'login' ? 'CONNEXION' : 'INSCRIPTION'}
+              {m === 'login' ? (lang === 'en' ? 'SIGN IN' : 'CONNEXION') : (lang === 'en' ? 'REGISTER' : 'INSCRIPTION')}
             </button>
           ))}
         </div>
@@ -220,8 +225,8 @@ export default function LoginPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {mode === 'signup' && (
             <div>
-              <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 7 }}>NOM COMPLET</label>
-              <input type="text" value={name} placeholder="Jean Kouassi" onChange={e => setName(e.target.value)} style={inputStyle}
+              <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 7 }}>{lang === 'en' ? 'FULL NAME' : 'NOM COMPLET'}</label>
+              <input type="text" value={name} {...{placeholder: lang === 'en' ? 'John Doe' : 'Jean Kouassi'}} onChange={e => setName(e.target.value)} style={inputStyle}
                 onFocus={e => (e.target.style.borderColor = 'rgba(0,255,178,0.5)')}
                 onBlur={e  => (e.target.style.borderColor = 'rgba(0,255,178,0.15)')} />
             </div>
@@ -244,7 +249,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 7 }}>MOT DE PASSE</label>
+            <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 7 }}>{lang === 'en' ? 'PASSWORD' : 'MOT DE PASSE'}</label>
             <input type="password" value={password} placeholder="••••••••" onChange={e => setPassword(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (mode === 'login' ? handleLogin() : handleSignup())} style={inputStyle}
               onFocus={e => (e.target.style.borderColor = 'rgba(0,255,178,0.5)')}
@@ -266,7 +271,7 @@ export default function LoginPage() {
             style={{ width: '100%', padding: '13px', background: loading ? 'rgba(0,255,178,0.4)' : '#00FFB2', border: 'none', borderRadius: 4, fontFamily: HUD, fontSize: 11, letterSpacing: 3, color: '#020408', fontWeight: 700, cursor: loading ? 'wait' : 'pointer', transition: 'all .2s', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
             {loading ? (
               <><div style={{ width: 14, height: 14, border: '2px solid rgba(0,0,0,0.3)', borderTop: '2px solid #020408', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />{mode === 'login' ? 'CONNEXION...' : 'CRÉATION...'}</>
-            ) : mode === 'login' ? 'SE CONNECTER →' : 'CRÉER MON COMPTE →'}
+            ) : mode === 'login' ? (lang === 'en' ? 'SIGN IN →' : 'SE CONNECTER →') : (lang === 'en' ? 'CREATE ACCOUNT →' : 'CRÉER MON COMPTE →')}
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

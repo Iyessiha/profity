@@ -71,6 +71,8 @@ export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
+    // Mémoriser la langue FR
+    if (typeof localStorage !== 'undefined') localStorage.setItem('pxLang', 'fr')
     fetch('/api/stats').then(r => r.json()).then(d => {
       if (d.analyses_24h) setAnalyses(d.analyses_24h)
       if (d.total_users)  setUsers(d.total_users)

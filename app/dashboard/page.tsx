@@ -56,7 +56,7 @@ export default function DashboardPage() {
       if (p) {
         setProfile(p)
         setPlan(p.user_plan as string || 'free')
-        setLocale(p.locale as string || 'fr')
+        setLocale((p.locale as string) || (typeof localStorage !== 'undefined' ? localStorage.getItem('pxLang') : null) || 'fr')
         if (!p.onboarding_done) setShowOnboarding(true)
       }
       setLoading(false)

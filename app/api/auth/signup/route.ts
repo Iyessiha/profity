@@ -10,7 +10,7 @@ import { sendEmail }                  from '@/lib/email'
 const SEQUENCE_DAYS = [0, 1, 3, 7, 14] // jours de la séquence
 
 export async function POST(req: NextRequest) {
-  const { email, password, name, ref_code } = await req.json()
+  const { email, password, name, ref_code, locale } = await req.json()
   if (!email || !password)
     return NextResponse.json({ error: 'Email et mot de passe requis' }, { status: 400 })
 
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     email,
     password,
     email_confirm: true,  // ← Auto-confirm, pas de vérification
-    user_metadata: { full_name: name || email.split('@')[0], ref_code: ref_code || '' },
+    user_metadata: { full_name: name || email.split('@')[0], ref_code: ref_code || '', locale: locale || 'fr' },
   })
 
   if (createErr) {

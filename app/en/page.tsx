@@ -64,6 +64,8 @@ export default function LandingEN() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
+    // Mémoriser la langue EN pour toute l'app
+    if (typeof localStorage !== 'undefined') localStorage.setItem('pxLang', 'en')
     fetch('/api/stats').then(r => r.json()).then(d => {
       if (d.analyses_24h) setAnalyses(d.analyses_24h)
       if (d.total_users)  setUsers(d.total_users)
