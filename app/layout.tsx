@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/lib/theme'
 import { MenuProvider } from '@/lib/menu-context'
 import PWAInstall from '@/components/PWAInstall'
 import AnalyticsProvider from '@/components/AnalyticsProvider'
+import RightClickGuard from '@/components/RightClickGuard'
 import './globals.css'
 
 export const viewport: Viewport = {
@@ -69,6 +70,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: REGISTER_SW }} />
         <PWAInstall />
         <AnalyticsProvider />
+        <RightClickGuard />
+        <style>{`
+          img { -webkit-user-drag: none; user-select: none; -webkit-user-select: none; pointer-events: auto; }
+          canvas { -webkit-user-drag: none; user-select: none; }
+        `}</style>
       </body>
     </html>
   )
