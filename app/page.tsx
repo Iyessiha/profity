@@ -155,10 +155,13 @@ export default function LandingPage() {
       </section>
 
       {/* ── ACTIFS SUPPORTÉS ──────────────────────────────────── */}
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '1.2rem 2rem', overflow: 'hidden', background: 'rgba(255,255,255,0.01)' }}>
-        <div style={{ display: 'flex', gap: 32, alignItems: 'center', animation: 'scrollTicker 18s linear infinite', whiteSpace: 'nowrap', width: 'max-content' }}>
+      <div style={{ borderTop: '1px solid rgba(0,255,178,0.12)', borderBottom: '1px solid rgba(0,255,178,0.12)', padding: '0.9rem 0', overflow: 'hidden', background: 'rgba(0,255,178,0.03)' }}>
+        <div style={{ display: 'flex', gap: 0, alignItems: 'center', animation: 'scrollTicker 22s linear infinite', whiteSpace: 'nowrap', width: 'max-content' }}>
           {[...ASSETS, ...ASSETS].map((a, i) => (
-            <span key={i} style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'rgba(240,248,255,0.3)', flexShrink: 0 }}>{a}</span>
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 0, flexShrink: 0 }}>
+              <span style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: '#00FFB2', fontWeight: 700, padding: '0 28px' }}>{a}</span>
+              <span style={{ color: 'rgba(0,255,178,0.25)', fontSize: 14 }}>·</span>
+            </span>
           ))}
         </div>
       </div>
