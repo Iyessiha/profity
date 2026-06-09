@@ -226,6 +226,8 @@ Analyze this chart. READ the visible timeframe (top-left corner or title), exact
     chochLevel:         signal.choch_level,
     liquidityHigh:      signal.liquidity_high,
     liquidityLow:       signal.liquidity_low,
+    chartRange:         signal.chart_range ?? null,
+    annotations:        signal.annotations ?? null,
   })
 
   // Notifier si solde bas après déduction

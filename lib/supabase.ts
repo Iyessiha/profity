@@ -130,6 +130,9 @@ export async function saveChartAnalysis(params: {
   chochLevel?:        number | null
   liquidityHigh?:     number | null
   liquidityLow?:      number | null
+  // Champs annotation chart (Pro/Elite)
+  chartRange?:        { high: number; low: number } | null
+  annotations?:       object[] | null
 }) {
   const { error } = await supabaseAdmin
     .from('chart_analyses')
@@ -160,6 +163,8 @@ export async function saveChartAnalysis(params: {
       choch_level:        params.chochLevel ?? null,
       liquidity_high:     params.liquidityHigh ?? null,
       liquidity_low:      params.liquidityLow ?? null,
+      chart_range:        params.chartRange ?? null,
+      annotations:        params.annotations ?? null,
     })
 
   if (error) console.error('[DB] Erreur sauvegarde chart:', error)
