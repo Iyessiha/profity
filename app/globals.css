@@ -32,26 +32,35 @@
 
 /* ── Light ─────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg0: #F0F4F8;
-  --bg1: #FFFFFF;
-  --bg2: #F7FAFB;
-  --bg3: #EBF2F7;
-  --tx0: #0D1B2A;
-  --tx1: #1E2D3D;
-  --tx2: #4A6070;
-  --tx3: #8A9FB0;
-  --ac:  #007A52;
-  --ac2: #0055A0;
-  --ac3: #7A5A00;
-  --red: #C62828;
-  --ora: #B85C00;
-  --ok:  #1B7A3E;
-  --bd:  rgba(13,27,42,0.09);
-  --bd1: rgba(0,122,82,0.18);
-  --bd2: rgba(0,122,82,0.32);
-  --sh: rgba(13,27,42,0.08);
-  --scr: rgba(0,122,82,0.25);
-  --card-glow: rgba(0,122,82,0.02);
+  /* ── Fonds — style NoOnes : gris iOS + cards blanches ── */
+  --bg0: #F2F4F7;       /* fond page — gris clair iOS */
+  --bg1: #FFFFFF;       /* cards, sidebar, topbar */
+  --bg2: #F8F9FB;       /* sous-cards, inputs */
+  --bg3: #EEF1F5;       /* hover, sélection */
+
+  /* ── Textes — dark charcoal ── */
+  --tx0: #111827;       /* texte principal — quasi-noir */
+  --tx1: #374151;       /* titres secondaires */
+  --tx2: #6B7280;       /* labels, secondaire */
+  --tx3: #9CA3AF;       /* hints, désactivé */
+
+  /* ── Accents — vert NoOnes ── */
+  --ac:  #00A651;       /* vert principal — identique NoOnes */
+  --ac2: #0070D8;       /* bleu complémentaire */
+  --ac3: #B45309;       /* ambre / avertissement */
+
+  --red: #DC2626;
+  --ora: #D97706;
+  --ok:  #16A34A;
+
+  /* ── Bordures légères ── */
+  --bd:  #E5E7EB;       /* bordure normale */
+  --bd1: rgba(0,166,81,0.2);
+  --bd2: rgba(0,166,81,0.35);
+
+  --sh:  rgba(0,0,0,0.06);
+  --scr: rgba(0,166,81,0.2);
+  --card-glow: rgba(0,166,81,0.03);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -74,23 +83,23 @@
 /* ── Sidebar light ──────────────────────────────────────────── */
 [data-theme="light"] .sidebar {
   background: #FFFFFF !important;
-  border-right: 1px solid rgba(13,27,42,0.08) !important;
-  box-shadow: 2px 0 12px rgba(13,27,42,0.06);
+  border-right: 1px solid var(--bd) !important;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.05);
 }
 [data-theme="light"] .sidebar-nav-item {
-  color: #4A6070 !important;
+  color: var(--tx2) !important;
 }
 [data-theme="light"] .sidebar-nav-item.active,
 [data-theme="light"] .sidebar-nav-item:hover {
   color: var(--ac) !important;
-  background: rgba(0,122,82,0.06) !important;
+  background: rgba(0,166,81,0.08) !important;
 }
 
 /* ── TopBar light ───────────────────────────────────────────── */
 [data-theme="light"] .topbar {
   background: #FFFFFF !important;
-  border-bottom: 1px solid rgba(13,27,42,0.08) !important;
-  box-shadow: 0 1px 8px rgba(13,27,42,0.06);
+  border-bottom: 1px solid var(--bd) !important;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
 }
 
 /* ── Cards inline-style — override rgba(232,244,248) ────────── */
@@ -107,7 +116,7 @@
 [data-theme="light"] [style*="background: #06090F"],
 [data-theme="light"] [style*="background:#06090F"] {
   background: #FFFFFF !important;
-  border-color: rgba(13,27,42,0.09) !important;
+  border-color: var(--bd) !important;
 }
 
 /* Textes E8F4F8 (blanc → texte foncé) */
@@ -134,31 +143,31 @@
 [data-theme="light"] [style*="border:1px solid rgba(255,255,255,0.07)"],
 [data-theme="light"] [style*="border: 1px solid rgba(255,255,255, 0.06)"],
 [data-theme="light"] [style*="border:1px solid rgba(255,255,255,0.06)"] {
-  border-color: rgba(13,27,42,0.09) !important;
+  border-color: var(--bd) !important;
 }
 
 /* ── Cards modules (accès rapide) ───────────────────────────── */
 [data-theme="light"] .dash-modules a {
   background: #FFFFFF !important;
-  box-shadow: 0 2px 12px rgba(13,27,42,0.06);
-  border-color: rgba(13,27,42,0.08) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border-color: var(--bd) !important;
 }
 [data-theme="light"] .dash-modules a:hover {
-  box-shadow: 0 8px 24px rgba(0,122,82,0.15) !important;
-  border-color: rgba(0,122,82,0.25) !important;
+  box-shadow: 0 8px 24px rgba(0,166,81,0.12) !important;
+  border-color: rgba(0,166,81,0.3) !important;
 }
 
 /* ── QuotaBar light ─────────────────────────────────────────── */
 [data-theme="light"] .quota-bar {
   background: #FFFFFF;
-  border-bottom: 1px solid rgba(13,27,42,0.08);
+  border-bottom: 1px solid var(--bd);
 }
 
 /* ── MarketClocks light ─────────────────────────────────────── */
 [data-theme="light"] .market-clocks-grid > div {
   background: #FFFFFF !important;
   box-shadow: 0 1px 8px rgba(13,27,42,0.06);
-  border-color: rgba(13,27,42,0.08) !important;
+  border-color: var(--bd) !important;
 }
 
 /* ── Tables light ───────────────────────────────────────────── */

@@ -94,6 +94,20 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
 
 
 
+        {/* Toggle thème ☀️/🌙 */}
+        <button onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+          style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 10px', borderRadius:7,
+            border:`1px solid ${theme === 'dark' ? 'rgba(201,168,76,0.3)' : 'rgba(0,166,81,0.3)'}`,
+            background: theme === 'dark' ? 'rgba(201,168,76,0.07)' : 'rgba(0,166,81,0.07)',
+            cursor:'pointer', flexShrink:0,
+            color: theme === 'dark' ? '#C9A84C' : '#00A651',
+          }}>
+          <i className={'ti ' + (theme === 'dark' ? 'ti-sun' : 'ti-moon')} style={{ fontSize:14 }} aria-hidden="true" />
+          <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1 }} className="topbar-hide">
+            {theme === 'dark' ? 'CLAIR' : 'SOMBRE'}
+          </span>
+        </button>
+
         {/* Avatar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
           <div style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, background: 'color-mix(in srgb, var(--ac) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--ac) 25%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: HUD, fontSize: 10, color: 'var(--ac)', fontWeight: 700 }}>
