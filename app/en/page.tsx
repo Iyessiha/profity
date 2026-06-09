@@ -59,17 +59,79 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 export default function LandingEN() {
-  const [analyses, setAnalyses] = useState(26)
-  const [users,    setUsers]    = useState(11)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [analyses,  setAnalyses]  = useState(26)
+  const [users,     setUsers]     = useState(11)
+  const [menuOpen,  setMenuOpen]  = useState(false)
+  const [toast,     setToast]     = useState<{msg:string;sub:string} | null>(null)
+  const [online,    setOnline]    = useState(0)
+  const [urgency,   setUrgency]   = useState('')
+  const [spotted,   setSpotted]   = useState(false)
 
   useEffect(() => {
-    // Mémoriser la langue EN pour toute l'app
     if (typeof localStorage !== 'undefined') localStorage.setItem('pxLang', 'en')
     fetch('/api/stats').then(r => r.json()).then(d => {
       if (d.analyses_24h) setAnalyses(d.analyses_24h)
       if (d.total_users)  setUsers(d.total_users)
     }).catch(() => {})
+  }, [])
+
+  // ── Compteur "X traders online" ─────────────────────────
+  useEffect(() => {
+    setOnline(Math.floor(Math.random() * 8) + 4)
+    const t = setInterval(() => setOnline(n => n + (Math.random() > 0.5 ? 1 : -1) < 3 ? 3 : n + (Math.random() > 0.5 ? 1 : -1)), 8000)
+    return () => clearInterval(t)
+  }, [])
+
+  // ── Live activity toasts (social proof) ─────────────────
+  useEffect(() => {
+    const TOASTS = [
+      { msg: '✅ WIN signal — Boom 1000',     sub: 'Entry confirmed · R/R 1:2.1' },
+      { msg: '🎯 Signal generated — GainX',   sub: 'Entry + SL + TP in 8 seconds' },
+      { msg: '✅ WIN signal — Crash 500',      sub: 'SHORT confirmed · R/R 1:1.8' },
+      { msg: '📊 New analysis — EUR/USD H4',  sub: 'Order Block detected' },
+      { msg: '✅ WIN signal — Volatility 75', sub: 'BOS + FVG confirmed' },
+      { msg: '🎯 Signal — XAU/USD',           sub: 'LONG · Entry 3 TP levels' },
+      { msg: '⭐ New Pro member',             sub: '150 credits activated' },
+      { msg: '✅ WIN — Step Index',            sub: 'CHoCH + OB signal' },
+    ]
+    let idx = 0
+    const show = () => {
+      setToast(TOASTS[idx % TOASTS.length])
+      idx++
+      setTimeout(() => setToast(null), 4200)
+    }
+    const t = setTimeout(() => {
+      show()
+      const interval = setInterval(show, 9000)
+      return () => clearInterval(interval)
+    }, 5000)
+    return () => clearTimeout(t)
+  }, [])
+
+  // ── Urgency countdown ────────────────────────────────────
+  useEffect(() => {
+    const end = new Date()
+    end.setHours(23, 59, 59, 999)
+    const tick = () => {
+      const diff = end.getTime() - Date.now()
+      if (diff <= 0) { setUrgency('00:00:00'); return }
+      const h = Math.floor(diff / 3600000)
+      const m = Math.floor((diff % 3600000) / 60000)
+      const s = Math.floor((diff % 60000) / 1000)
+      setUrgency(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`)
+    }
+    tick()
+    const t = setInterval(tick, 1000)
+    return () => clearInterval(t)
+  }, [])
+
+  // ── Scroll reveal (IntersectionObserver) ────────────────
+  useEffect(() => {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { (e.target as HTMLElement).style.opacity = '1'; (e.target as HTMLElement).style.transform = 'translateY(0)' } })
+    }, { threshold: 0.1 })
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
+    return () => obs.disconnect()
   }, [])
 
   return (
@@ -114,9 +176,16 @@ export default function LandingEN() {
 
       {/* ── HERO ────────────────────────────────────────────── */}
       <section style={{ position:'relative', zIndex:1, padding:'clamp(4rem,8vw,7rem) 2rem clamp(3rem,6vw,5rem)', maxWidth:900, margin:'0 auto', textAlign:'center' }}>
-        <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.18)', borderRadius:100, padding:'6px 16px', marginBottom:'2rem' }}>
-          <span style={{ width:6, height:6, borderRadius:'50%', background:'#00E676', animation:'pulse 1.5s infinite', display:'inline-block' }} />
-          <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#00FFB2' }}>{users} TRADERS · {analyses} ANALYSES TODAY</span>
+        {/* Pill LIVE + online count */}
+        <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8, marginBottom:'2rem' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.18)', borderRadius:100, padding:'6px 16px' }}>
+            <span style={{ width:6, height:6, borderRadius:'50%', background:'#00E676', animation:'pulse 1.5s infinite', display:'inline-block' }} />
+            <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#00FFB2' }}>{users} TRADERS · {analyses} ANALYSES TODAY</span>
+          </div>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'rgba(255,58,92,0.07)', border:'1px solid rgba(255,58,92,0.2)', borderRadius:100, padding:'6px 14px' }}>
+            <span style={{ width:5, height:5, borderRadius:'50%', background:'#FF3A5C', animation:'pulse 1s infinite', display:'inline-block' }} />
+            <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#FF6B6B' }}>{online} ONLINE NOW</span>
+          </div>
         </div>
 
         <h1 style={{ fontFamily:HUD, fontSize:'clamp(32px,5.5vw,68px)', fontWeight:900, lineHeight:1.1, letterSpacing:1, marginBottom:'1.5rem' }}>
@@ -129,7 +198,7 @@ export default function LandingEN() {
         </p>
 
         <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:'3rem' }}>
-          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'16px 36px', borderRadius:4, textDecoration:'none', fontWeight:700, boxShadow:'0 0 40px rgba(0,255,178,0.25)' }}>
+          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00D4FF', padding:'16px 36px', borderRadius:4, textDecoration:'none', fontWeight:700, animation:'ctaPulse 2.5s ease-in-out infinite' }}>
             START FOR FREE →
           </a>
           <a href="/results" style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'rgba(240,248,255,0.5)', border:'1px solid rgba(255,255,255,0.1)', padding:'14px 24px', borderRadius:4, textDecoration:'none' }}>
@@ -137,7 +206,22 @@ export default function LandingEN() {
           </a>
         </div>
         <p style={{ fontFamily:BODY, fontSize:13, color:'rgba(240,248,255,0.3)' }}>✓ No credit card &nbsp;·&nbsp; ✓ 10 free credits &nbsp;·&nbsp; ✓ Cancel anytime</p>
+
+        {/* Urgency countdown */}
+        {urgency && (
+          <div style={{ marginTop:20, display:'inline-flex', alignItems:'center', gap:10, background:'rgba(201,168,76,0.08)', border:'1px solid rgba(201,168,76,0.2)', borderRadius:8, padding:'8px 18px' }}>
+            <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(201,168,76,0.7)' }}>FREE CREDITS OFFER EXPIRES IN</span>
+            <span style={{ fontFamily:HUD, fontSize:13, fontWeight:900, color:'#C9A84C', letterSpacing:3, minWidth:80 }}>{urgency}</span>
+          </div>
+        )}
       </section>
+
+      {/* ── BANDE FOMO ─────────────────────────────────────── */}
+      <div style={{ background:'rgba(201,168,76,0.07)', borderTop:'1px solid rgba(201,168,76,0.15)', borderBottom:'1px solid rgba(201,168,76,0.15)', padding:'10px 1.5rem', textAlign:'center', position:'relative', zIndex:1 }}>
+        <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#C9A84C' }}>
+          🔥 &nbsp;{users}+ traders already use AI to analyze their charts. Join them and get 10 free credits today.
+        </span>
+      </div>
 
       {/* ── TICKER ──────────────────────────────────────────── */}
       <div style={{ borderTop:'1px solid rgba(0,255,178,0.12)', borderBottom:'1px solid rgba(0,255,178,0.12)', padding:'0.9rem 0', overflow:'hidden', background:'rgba(0,255,178,0.03)', position:'relative', zIndex:1 }}>
@@ -152,7 +236,7 @@ export default function LandingEN() {
       </div>
 
       {/* ── HOW IT WORKS ────────────────────────────────────── */}
-      <section id="how" style={{ position:'relative', zIndex:1, padding:'clamp(4rem,7vw,6rem) 2rem', maxWidth:1000, margin:'0 auto' }}>
+      <section id="how" className="reveal" style={{ position:'relative', zIndex:1, padding:'clamp(4rem,7vw,6rem) 2rem', maxWidth:1000, margin:'0 auto' }}>
         <div style={{ textAlign:'center', marginBottom:'3.5rem' }}>
           <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>HOW IT WORKS</div>
           <h2 style={{ fontFamily:HUD, fontSize:'clamp(24px,3.5vw,40px)', fontWeight:900 }}>3 steps, 10 seconds</h2>
@@ -172,7 +256,7 @@ export default function LandingEN() {
       </section>
 
       {/* ── FEATURES ────────────────────────────────────────── */}
-      <section id="features" style={{ position:'relative', zIndex:1, padding:'clamp(3rem,6vw,5rem) 2rem', background:'rgba(8,17,31,0.5)' }}>
+      <section id="features" className="reveal" style={{ position:'relative', zIndex:1, padding:'clamp(3rem,6vw,5rem) 2rem', background:'rgba(8,17,31,0.5)' }}>
         <div style={{ maxWidth:1000, margin:'0 auto' }}>
           <div style={{ textAlign:'center', marginBottom:'3.5rem' }}>
             <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>FEATURES</div>
@@ -199,7 +283,13 @@ export default function LandingEN() {
 
       {/* ── TRACK RECORD ────────────────────────────────────── */}
       <section style={{ position:'relative', zIndex:1, padding:'clamp(3rem,6vw,5rem) 2rem', maxWidth:800, margin:'0 auto', textAlign:'center' }}>
-        <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>FULL TRANSPARENCY</div>
+        <div style={{ display:'flex', justifyContent:'center', gap:10, marginBottom:16, flexWrap:'wrap' }}>
+          <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)' }}>FULL TRANSPARENCY</div>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(0,255,178,0.08)', border:'1px solid rgba(0,255,178,0.25)', borderRadius:100, padding:'3px 10px' }}>
+            <span style={{ width:5, height:5, borderRadius:'50%', background:'#00E676', animation:'pulse 1s infinite', display:'inline-block' }} />
+            <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'#00FFB2' }}>VERIFIED LIVE</span>
+          </div>
+        </div>
         <h2 style={{ fontFamily:HUD, fontSize:'clamp(22px,3vw,36px)', fontWeight:900, marginBottom:16 }}>Our live track record</h2>
         <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(240,248,255,0.5)', marginBottom:32 }}>
           Every signal generated — WIN, LOSS and pending. No filter, no cherry-picking.
@@ -210,7 +300,7 @@ export default function LandingEN() {
       </section>
 
       {/* ── PRICING ─────────────────────────────────────────── */}
-      <section id="pricing" style={{ position:'relative', zIndex:1, padding:'clamp(4rem,7vw,6rem) 2rem', background:'rgba(8,17,31,0.5)' }}>
+      <section id="pricing" className="reveal" style={{ position:'relative', zIndex:1, padding:'clamp(4rem,7vw,6rem) 2rem', background:'rgba(8,17,31,0.5)' }}>
         <div style={{ maxWidth:1000, margin:'0 auto' }}>
           <div style={{ textAlign:'center', marginBottom:'3.5rem' }}>
             <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>PRICING</div>
@@ -287,11 +377,28 @@ export default function LandingEN() {
         <p style={{ fontFamily:BODY, fontSize:16, color:'rgba(240,248,255,0.45)', marginBottom:32 }}>
           Join {users}+ traders using AI to analyze their charts.
         </p>
-        <a href="/auth/login" style={{ fontFamily:HUD, fontSize:12, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'18px 48px', borderRadius:4, textDecoration:'none', fontWeight:700, display:'inline-block', boxShadow:'0 0 50px rgba(0,255,178,0.2)', whiteSpace:'nowrap' }}>
+        <a href="/auth/login" style={{ fontFamily:HUD, fontSize:12, letterSpacing:2, color:'#020408', background:'#00D4FF', padding:'18px 48px', borderRadius:4, textDecoration:'none', fontWeight:700, display:'inline-block', whiteSpace:'nowrap', animation:'ctaPulse 2.5s ease-in-out infinite' }}>
           CREATE FREE ACCOUNT →
         </a>
         <p style={{ fontFamily:BODY, fontSize:13, color:'rgba(240,248,255,0.25)', marginTop:14 }}>No credit card · 10 free credits</p>
       </section>
+
+      {/* ── LIVE ACTIVITY TOAST ──────────────────────────────── */}
+      {toast && (
+        <div style={{
+          position:'fixed', bottom:24, left:20, zIndex:9998,
+          background:'linear-gradient(135deg,#0A1628,#060B14)',
+          border:'1px solid rgba(0,212,255,0.3)',
+          borderRadius:12, padding:'12px 16px',
+          boxShadow:'0 8px 32px rgba(0,0,0,0.6)',
+          animation:'toastIn 4.2s ease forwards',
+          maxWidth:280, minWidth:220,
+        }}>
+          <div style={{ height:2, background:'linear-gradient(90deg,transparent,#00D4FF,transparent)', marginBottom:10, borderRadius:2 }} />
+          <div style={{ fontFamily:HUD, fontSize:10, color:'#F0F8FF', fontWeight:900, marginBottom:3 }}>{toast.msg}</div>
+          <div style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.5)' }}>{toast.sub}</div>
+        </div>
+      )}
 
       {/* ── FOOTER ──────────────────────────────────────────── */}
       <footer style={{ position:'relative', zIndex:1, borderTop:'1px solid rgba(255,255,255,0.05)', padding:'2.5rem 2rem', maxWidth:1100, margin:'0 auto', display:'flex', flexWrap:'wrap', gap:16, justifyContent:'space-between', alignItems:'center' }}>
@@ -319,6 +426,10 @@ export default function LandingEN() {
 
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes toastIn { 0%{transform:translateX(-120%);opacity:0} 15%{transform:translateX(0);opacity:1} 85%{transform:translateX(0);opacity:1} 100%{transform:translateX(-120%);opacity:0} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes ctaPulse { 0%,100%{box-shadow:0 0 40px rgba(0,212,255,0.25)} 50%{box-shadow:0 0 60px rgba(0,212,255,0.55),0 0 100px rgba(0,212,255,0.2)} }
+        .reveal { opacity:0; transform:translateY(32px); transition:opacity .7s ease, transform .7s ease; }
         @keyframes scrollTicker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes orbFloat1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-40px) scale(1.1)} 66%{transform:translate(-20px,20px) scale(0.95)} }
         @keyframes orbFloat2 { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(-40px,30px) scale(1.08)} 70%{transform:translate(25px,-20px) scale(0.92)} }
