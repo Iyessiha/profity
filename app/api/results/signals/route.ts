@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 export async function GET() {
   const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
   const { data } = await admin.from('chart_analyses')
@@ -8,6 +8,6 @@ export async function GET() {
     .order('created_at', { ascending: false })
     .limit(50)
   return NextResponse.json({ signals: data ?? [] }, {
-    headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120' }
+    headers: { 'Cache-Control': 'no-store, no-cache' }
   })
 }

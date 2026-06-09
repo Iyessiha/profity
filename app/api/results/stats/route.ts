@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 export async function GET() {
   const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
   const { data } = await admin.from('chart_analyses').select('trade_result, rr_ratio, created_at, user_id, pair')
@@ -18,6 +18,6 @@ export async function GET() {
   const this_week = rows.filter(r => r.created_at > week).length
   const pairs_traded = new Set(rows.map(r => r.pair).filter(Boolean)).size
   return NextResponse.json({ total, wins, losses, pending, winrate, avg_rr, traders, this_week, pairs_traded }, {
-    headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120' }
+    headers: { 'Cache-Control': 'no-store, no-cache' }
   })
 }
