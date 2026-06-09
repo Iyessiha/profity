@@ -121,6 +121,74 @@ export default function LandingPage() {
         </div>
       )}
 
+      {/* ── FOND ANIMÉ ───────────────────────────────────────────── */}
+      <div aria-hidden="true" style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none', overflow:'hidden' }}>
+
+        {/* Orbe 1 — vert bas-gauche */}
+        <div style={{ position:'absolute', width:'60vw', height:'60vw', maxWidth:700, maxHeight:700,
+          borderRadius:'50%', left:'-15%', bottom:'-10%',
+          background:'radial-gradient(circle, rgba(0,255,178,0.12) 0%, transparent 70%)',
+          animation:'orbFloat1 18s ease-in-out infinite', filter:'blur(40px)' }} />
+
+        {/* Orbe 2 — bleu haut-droite */}
+        <div style={{ position:'absolute', width:'50vw', height:'50vw', maxWidth:600, maxHeight:600,
+          borderRadius:'50%', right:'-10%', top:'-5%',
+          background:'radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)',
+          animation:'orbFloat2 22s ease-in-out infinite', filter:'blur(50px)' }} />
+
+        {/* Orbe 3 — or centre-haut */}
+        <div style={{ position:'absolute', width:'35vw', height:'35vw', maxWidth:400, maxHeight:400,
+          borderRadius:'50%', left:'35%', top:'15%',
+          background:'radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%)',
+          animation:'orbFloat3 28s ease-in-out infinite', filter:'blur(60px)' }} />
+
+        {/* Grille perspective */}
+        <div style={{ position:'absolute', inset:0,
+          backgroundImage:`
+            linear-gradient(rgba(0,255,178,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,255,178,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize:'60px 60px',
+          animation:'gridPulse 8s ease-in-out infinite',
+          maskImage:'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)',
+          WebkitMaskImage:'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)'
+        }} />
+
+        {/* Bougies flottantes */}
+        {[
+          { l:'8%',  t:'20%', h:40, body:16, up:true,  d:0,    dur:14 },
+          { l:'18%', t:'65%', h:28, body:10, up:false, d:1.5,  dur:17 },
+          { l:'75%', t:'30%', h:52, body:20, up:true,  d:0.8,  dur:12 },
+          { l:'85%', t:'70%', h:34, body:14, up:false, d:2.5,  dur:19 },
+          { l:'55%', t:'10%', h:44, body:18, up:true,  d:1.2,  dur:15 },
+          { l:'42%', t:'80%', h:30, body:12, up:false, d:3,    dur:20 },
+          { l:'92%', t:'45%', h:48, body:18, up:true,  d:0.5,  dur:13 },
+          { l:'28%', t:'35%', h:36, body:14, up:false, d:2,    dur:16 },
+        ].map((c, i) => (
+          <div key={i} style={{
+            position:'absolute', left:c.l, top:c.t,
+            display:'flex', flexDirection:'column', alignItems:'center',
+            opacity:0, animation:`candleFloat ${c.dur}s ease-in-out ${c.d}s infinite`,
+          }}>
+            {/* Mèche haute */}
+            <div style={{ width:1, height:(c.h-c.body)/2, background: c.up ? 'rgba(0,255,178,0.4)' : 'rgba(255,58,92,0.4)' }} />
+            {/* Corps */}
+            <div style={{ width:6, height:c.body, borderRadius:1, background: c.up ? 'rgba(0,255,178,0.25)' : 'rgba(255,58,92,0.2)', border:`1px solid ${c.up ? 'rgba(0,255,178,0.5)' : 'rgba(255,58,92,0.45)'}` }} />
+            {/* Mèche basse */}
+            <div style={{ width:1, height:(c.h-c.body)/2, background: c.up ? 'rgba(0,255,178,0.4)' : 'rgba(255,58,92,0.4)' }} />
+          </div>
+        ))}
+
+        {/* Lignes de prix horizontales */}
+        {[15, 38, 62, 78].map((top, i) => (
+          <div key={i} style={{
+            position:'absolute', left:0, right:0, top:`${top}%`, height:1,
+            background:`linear-gradient(90deg, transparent 0%, rgba(0,255,178,0.06) 20%, rgba(0,255,178,0.06) 80%, transparent 100%)`,
+            animation:`linePulse ${6 + i * 2}s ease-in-out ${i * 1.5}s infinite`,
+          }} />
+        ))}
+      </div>
+
       {/* ── HERO ──────────────────────────────────────────────── */}
       <section style={{ padding: 'clamp(4rem,8vw,7rem) 2rem clamp(3rem,6vw,5rem)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
 
@@ -334,6 +402,34 @@ export default function LandingPage() {
 
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes orbFloat1 {
+          0%,100% { transform:translate(0,0) scale(1); }
+          33%     { transform:translate(30px,-40px) scale(1.1); }
+          66%     { transform:translate(-20px,20px) scale(0.95); }
+        }
+        @keyframes orbFloat2 {
+          0%,100% { transform:translate(0,0) scale(1); }
+          40%     { transform:translate(-40px,30px) scale(1.08); }
+          70%     { transform:translate(25px,-20px) scale(0.92); }
+        }
+        @keyframes orbFloat3 {
+          0%,100% { transform:translate(0,0) scale(1); }
+          50%     { transform:translate(-30px,40px) scale(1.15); }
+        }
+        @keyframes gridPulse {
+          0%,100% { opacity:0.6; }
+          50%     { opacity:1; }
+        }
+        @keyframes candleFloat {
+          0%     { opacity:0; transform:translateY(0px); }
+          15%    { opacity:1; }
+          85%    { opacity:1; }
+          100%   { opacity:0; transform:translateY(-30px); }
+        }
+        @keyframes linePulse {
+          0%,100% { opacity:0.4; }
+          50%     { opacity:1; }
+        }
         @keyframes scrollTicker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
