@@ -55,9 +55,9 @@ export default function ResultsPage() {
   return (
     <div style={{ minHeight:'100vh', background:'#020408', color:'#F0F8FF', fontFamily:BODY }}>
       {/* Header */}
-      <header style={{ borderBottom:'1px solid rgba(0,255,178,0.08)', padding:'1rem 2rem', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, background:'rgba(2,4,8,0.92)', backdropFilter:'blur(12px)', zIndex:10 }}>
-        <a href="/" style={{ textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
-          <img src="/logo.png" alt="ProfityX" style={{ height:40, objectFit:'contain' }} />
+      <header style={{ borderBottom:'1px solid rgba(0,255,178,0.08)', padding:'0 1.5rem', height:56, display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, background:'rgba(2,4,8,0.95)', backdropFilter:'blur(12px)', zIndex:10 }}>
+        <a href="/" style={{ textDecoration:'none' }}>
+          <span style={{ fontFamily:HUD, fontSize:15, fontWeight:900, letterSpacing:2, color:'#00FFB2' }}>PROFIT<span style={{ color:'#00D4FF' }}>YX</span></span>
         </a>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <div style={{ width:7, height:7, borderRadius:'50%', background:'#00E676', animation:'pulse 1.5s infinite' }} />
@@ -68,7 +68,7 @@ export default function ResultsPage() {
         </a>
       </header>
 
-      <div style={{ maxWidth:1100, margin:'0 auto', padding:'3rem 2rem' }}>
+      <div style={{ maxWidth:1100, margin:'0 auto', padding:'2rem 1rem' }}>
         {/* Titre */}
         <div style={{ textAlign:'center', marginBottom:'3rem' }}>
           <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:10 }}>TRANSPARENCE TOTALE</div>
@@ -86,9 +86,9 @@ export default function ResultsPage() {
         ) : stats && (
           <>
             {/* KPI principal — Win Rate */}
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 2fr', gap:16, marginBottom:20 }}>
-              {/* Gauge winrate */}
-              <div style={{ background:'#08111F', border:'1px solid rgba(0,255,178,0.15)', borderRadius:12, padding:'2rem', textAlign:'center', position:'relative', overflow:'hidden' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', gap:12, marginBottom:20 }}>
+              {/* Gauge winrate — pleine largeur */}
+              <div style={{ background:'#08111F', border:'1px solid rgba(0,255,178,0.15)', borderRadius:12, padding:'1.5rem', textAlign:'center', position:'relative', overflow:'hidden', gridColumn:'1 / -1' }}>
                 <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:'linear-gradient(90deg,transparent,#00FFB2,transparent)' }} />
                 <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>WIN RATE</div>
                 <div style={{ fontFamily:HUD, fontSize:56, fontWeight:900, lineHeight:1,
@@ -109,9 +109,8 @@ export default function ResultsPage() {
                 </div>
               </div>
 
-              {/* Autres KPIs */}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
-                {[
+              {/* KPIs secondaires */}
+              {[
                   { l:'SIGNAUX GÉNÉRÉS', v:fmt(stats.total),      s:'total cumulé',          c:'var(--ac)' },
                   { l:'CETTE SEMAINE',   v:fmt(stats.this_week),  s:'7 derniers jours',       c:'#00D4FF' },
                   { l:'TRADERS ACTIFS',  v:fmt(stats.traders),    s:'utilisateurs',           c:'#C9A84C' },
@@ -125,7 +124,6 @@ export default function ResultsPage() {
                     <div style={{ fontFamily:BODY, fontSize:10, color:'rgba(240,248,255,0.3)', marginTop:4 }}>{k.s}</div>
                   </div>
                 ))}
-              </div>
             </div>
 
             {/* Disclaimer honnête */}
@@ -184,7 +182,6 @@ export default function ResultsPage() {
                     </div>
                   </div>
                 ))}
-              </div>
             </div>
           </>
         )}
