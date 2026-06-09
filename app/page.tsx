@@ -268,7 +268,7 @@ export default function LandingPage() {
         <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 3, color: 'rgba(240,248,255,0.3)', marginBottom: 24 }}>PAYEZ COMME VOUS VOULEZ</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
           {[
-            { src: '/logos/wave.svg',         alt: 'Wave',         bg: 'rgba(13,197,255,0.06)',   bd: 'rgba(13,197,255,0.2)'  },
+            { src: '/logos/wave.png',         alt: 'Wave',         bg: 'rgba(13,197,255,0.06)',   bd: 'rgba(13,197,255,0.2)'  },
             { src: '/logos/orange_money.png', alt: 'Orange Money', bg: '#1A0A00',                 bd: 'rgba(255,140,0,0.3)'   },
             { src: '/logos/mtn.png',          alt: 'MTN',          bg: '#FFCC00',                 bd: 'rgba(255,180,0,0.5)'   },
             { src: '/logos/moov.png',         alt: 'Moov',         bg: '#1A6DC8',                 bd: 'rgba(0,100,200,0.5)'   },
