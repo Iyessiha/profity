@@ -81,22 +81,45 @@ export default function LandingPage() {
     <div style={{ minHeight: '100vh', background: '#020408', color: '#F0F8FF', fontFamily: BODY, overflowX: 'hidden' }}>
 
       {/* ── NAVBAR ────────────────────────────────────────────── */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(0,255,178,0.07)', background: 'rgba(2,4,8,0.92)', backdropFilter: 'blur(16px)', padding: '0 2rem', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="/logo.png" alt="ProfityX" style={{ height: 32, width: 32, objectFit: 'contain' }} />
-          <span style={{ fontFamily: HUD, fontSize: 15, fontWeight: 900, letterSpacing: 2, color: '#00FFB2' }}>PROFIT<span style={{ color: '#00D4FF' }}>YX</span></span>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(0,255,178,0.07)', background: 'rgba(2,4,8,0.95)', backdropFilter: 'blur(16px)', padding: '0 1.5rem', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+        {/* Brand — texte seul, pas de logo */}
+        <a href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
+          <span style={{ fontFamily: HUD, fontSize: 16, fontWeight: 900, letterSpacing: 2, color: '#00FFB2' }}>PROFIT<span style={{ color: '#00D4FF' }}>YX</span></span>
         </a>
-        <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          {[['#how', 'Comment'], ['#features', 'Features'], ['#pricing', 'Tarifs']].map(([href, label]) => (
-            <a key={href} href={href} style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(240,248,255,0.45)', textDecoration: 'none' }}>{label}</a>
+
+        {/* Liens desktop */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} className="nav-desktop">
+          {[['#how','Comment'],['#features','Features'],['#pricing','Tarifs'],['/results','Résultats']].map(([href,label]) => (
+            <a key={href} href={href} style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.45)', textDecoration:'none' }}>{label}</a>
           ))}
-          <a href="/results" style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(240,248,255,0.45)', textDecoration: 'none' }}>Résultats</a>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(240,248,255,0.5)', textDecoration: 'none' }}>CONNEXION</a>
-          <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '9px 18px', borderRadius: 4, textDecoration: 'none', fontWeight: 700 }}>ESSAI GRATUIT</a>
+
+        {/* CTA desktop + hamburger mobile */}
+        <div style={{ display:'flex', gap:10, alignItems:'center', flexShrink:0 }}>
+          <a href="/auth/login" className="nav-desktop" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.5)', textDecoration:'none' }}>CONNEXION</a>
+          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'9px 18px', borderRadius:4, textDecoration:'none', fontWeight:700, whiteSpace:'nowrap' }}>ESSAI GRATUIT</a>
+
+          {/* Hamburger — mobile seulement */}
+          <button onClick={() => setMenuOpen(o => !o)} className="nav-mobile-btn" aria-label="Menu" style={{ background:'transparent', border:'1px solid rgba(0,255,178,0.2)', borderRadius:6, color:'#00FFB2', padding:'7px 10px', cursor:'pointer', fontSize:18, lineHeight:1, display:'none' }}>
+            {menuOpen ? '✕' : '☰'}
+          </button>
         </div>
       </nav>
+
+      {/* Drawer menu mobile */}
+      {menuOpen && (
+        <div style={{ position:'fixed', top:60, left:0, right:0, background:'rgba(2,4,8,0.98)', borderBottom:'1px solid rgba(0,255,178,0.12)', zIndex:99, padding:'1.5rem', display:'flex', flexDirection:'column', gap:4 }}>
+          {[['#how','Comment ça marche'],['#features','Fonctionnalités'],['#pricing','Tarifs'],['/results','Résultats live'],['/auth/login','Se connecter']].map(([href,label]) => (
+            <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'rgba(240,248,255,0.6)', textDecoration:'none', padding:'14px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+              {label}
+            </a>
+          ))}
+          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'14px', borderRadius:6, textDecoration:'none', fontWeight:700, textAlign:'center', marginTop:12 }}>
+            COMMENCER GRATUITEMENT →
+          </a>
+        </div>
+      )}
 
       {/* ── HERO ──────────────────────────────────────────────── */}
       <section style={{ padding: 'clamp(4rem,8vw,7rem) 2rem clamp(3rem,6vw,5rem)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
@@ -311,8 +334,12 @@ export default function LandingPage() {
         @keyframes scrollTicker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        .nav-links { display: flex; }
-        @media (max-width: 768px) { .nav-links { display: none; } }
+        .nav-desktop { display: flex !important; }
+        .nav-mobile-btn { display: none !important; }
+        @media (max-width: 768px) {
+          .nav-desktop { display: none !important; }
+          .nav-mobile-btn { display: flex !important; }
+        }
       `}</style>
     </div>
   )
