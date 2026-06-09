@@ -269,12 +269,12 @@ export default function LandingPage() {
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
           {[
             { src: '/logos/wave.svg',         alt: 'Wave',         bg: 'rgba(13,197,255,0.06)',   bd: 'rgba(13,197,255,0.2)'  },
-            { src: '/logos/orange_money.svg', alt: 'Orange Money', bg: 'rgba(255,102,0,0.06)',    bd: 'rgba(255,102,0,0.2)'   },
-            { src: '/logos/mtn.svg',          alt: 'MTN',          bg: 'rgba(255,204,0,0.06)',    bd: 'rgba(255,204,0,0.2)'   },
-            { src: '/logos/moov.svg',         alt: 'Moov',         bg: 'rgba(0,85,165,0.06)',     bd: 'rgba(0,85,165,0.2)'    },
-            { src: '/logos/visa.svg',         alt: 'Visa',         bg: 'rgba(255,255,255,0.95)',  bd: 'rgba(0,0,0,0.1)'       },
-            { src: '/logos/mastercard.svg',   alt: 'Mastercard',   bg: 'rgba(255,255,255,0.95)',  bd: 'rgba(0,0,0,0.1)'       },
-            { src: '/logos/geniuspay.svg',    alt: 'GeniusPay',    bg: 'rgba(0,255,178,0.04)',    bd: 'rgba(0,255,178,0.2)'   },
+            { src: '/logos/orange_money.png', alt: 'Orange Money', bg: '#1A0A00',                 bd: 'rgba(255,140,0,0.3)'   },
+            { src: '/logos/mtn.png',          alt: 'MTN',          bg: '#FFCC00',                 bd: 'rgba(255,180,0,0.5)'   },
+            { src: '/logos/moov.png',         alt: 'Moov',         bg: '#1A6DC8',                 bd: 'rgba(0,100,200,0.5)'   },
+            { src: '/logos/visa.png',         alt: 'Visa',         bg: 'rgba(255,255,255,0.95)',  bd: 'rgba(0,0,0,0.1)'       },
+            { src: '/logos/mastercard.png',   alt: 'Mastercard',   bg: 'rgba(255,255,255,0.95)',  bd: 'rgba(0,0,0,0.1)'       },
+            { src: '/logos/geniuspay.png',    alt: 'GeniusPay',    bg: '#FFFFFF',                 bd: 'rgba(0,0,0,0.1)'       },
           ].map(l => (
             <div key={l.alt} style={{ background: l.bg, border: `1px solid ${l.bd}`, borderRadius: 8, padding: '8px 14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 100, height: 50 }}>
               <img src={l.src} alt={l.alt} style={{ height: 30, maxWidth: 110, objectFit: 'contain' }} />
