@@ -111,7 +111,7 @@ export default function ResultsPage() {
 
               {/* KPIs secondaires */}
               {[
-                  { l:'SIGNAUX GÉNÉRÉS', v:fmt(stats.total),      s:'total cumulé',          c:'var(--ac)' },
+                  { l:'SIGNAUX GÉNÉRÉS', v:fmt(stats.total),      s:'total cumulé',          c:'#00FFB2' },
                   { l:'CETTE SEMAINE',   v:fmt(stats.this_week),  s:'7 derniers jours',       c:'#00D4FF' },
                   { l:'TRADERS ACTIFS',  v:fmt(stats.traders),    s:'utilisateurs',           c:'#C9A84C' },
                   { l:'R/R MOYEN',       v:stats.avg_rr ? `1:${stats.avg_rr}` : '—', s:'ratio risque/récompense', c:'#00FFB2' },
