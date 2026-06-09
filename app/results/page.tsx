@@ -188,14 +188,20 @@ export default function ResultsPage() {
         )}
 
         {/* CTA bas */}
-        <div style={{ textAlign:'center', marginTop:'4rem', padding:'3rem', background:'rgba(0,255,178,0.03)', border:'1px solid rgba(0,255,178,0.1)', borderRadius:12 }}>
-          <div style={{ fontFamily:HUD, fontSize:'clamp(18px,3vw,28px)', fontWeight:900, marginBottom:12 }}>
+        <div style={{ textAlign:'center', marginTop:'3rem', padding:'2rem 1rem', background:'rgba(0,255,178,0.03)', border:'1px solid rgba(0,255,178,0.1)', borderRadius:12 }}>
+          <div style={{ fontFamily:HUD, fontSize:'clamp(16px,3vw,24px)', fontWeight:900, marginBottom:12 }}>
             GÉNÈRE TON PROCHAIN SIGNAL
           </div>
-          <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(240,248,255,0.5)', marginBottom:24 }}>
+          <p style={{ fontFamily:BODY, fontSize:14, color:'rgba(240,248,255,0.5)', marginBottom:24 }}>
             Upload ton chart → reçois l'entrée, le Stop Loss et les Take Profit en 10 secondes.
           </p>
-          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'15px 40px', borderRadius:4, textDecoration:'none', fontWeight:700, boxShadow:'0 0 30px rgba(0,255,178,0.3)' }}>
+          <a href="/auth/login" style={{
+            fontFamily:HUD, fontSize:'clamp(10px,2.5vw,11px)', letterSpacing:2,
+            color:'#020408', background:'#00FFB2',
+            padding:'14px 24px', borderRadius:4, textDecoration:'none', fontWeight:700,
+            boxShadow:'0 0 30px rgba(0,255,178,0.3)',
+            display:'inline-block', whiteSpace:'nowrap',
+          }}>
             COMMENCER GRATUITEMENT →
           </a>
           <p style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.3)', marginTop:12 }}>✓ Sans carte bancaire · ✓ 10 crédits offerts</p>
