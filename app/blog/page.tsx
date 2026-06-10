@@ -1,3 +1,4 @@
+'use client'
 import { POSTS } from '@/lib/blog-posts'
 import { Metadata } from 'next'
 import Link from 'next/link'

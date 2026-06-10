@@ -189,6 +189,8 @@ export default function AdminDashboard() {
     const res  = await fetch('/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } })
     const json = await res.json()
     if (json.success) setStats(json.data)
+    setLastSync(new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit',second:'2-digit'}))
+    setSyncing(false)
   }, [token])
 
   // ── Fetch users ────────────────────────────────────────
