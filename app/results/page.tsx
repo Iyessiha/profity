@@ -1,8 +1,8 @@
+'use client'
 // ============================================================
 // PROFITYX — /results : Track record public live
 // Accessible sans connexion — preuve sociale
 // ============================================================
-'use client'
 import { useEffect, useState } from 'react'
 
 const HUD  = "'Orbitron',monospace"

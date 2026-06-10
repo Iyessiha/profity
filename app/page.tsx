@@ -1,7 +1,7 @@
+'use client'
 // ============================================================
 // PROFITYX — Landing Page v3 — Conversion-first
 // ============================================================
-'use client'
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useTheme }            from '@/lib/theme'

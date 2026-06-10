@@ -1,8 +1,8 @@
+'use client'
 // ============================================================
 // PROFITYX — Landing Page EN — Nigeria / English market
 // URL : profity-x.com/en
 // ============================================================
-'use client'
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 
