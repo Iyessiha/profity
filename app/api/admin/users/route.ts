@@ -31,18 +31,21 @@ export async function GET(req: NextRequest) {
     .order('last_active_date', { ascending: false, nullsFirst: false })
     .range(offset, offset + limit - 1)
 
-  // Récupérer aussi email, is_admin, suspended depuis profiles
-  const { data: profiles } = await supabaseAdmin
-    .from('profiles')
-    .select('id, public_id, email, is_admin, suspended, locale, currency, notifications_push, created_at, updated_at, subscriptions(status, amount, current_period_end)')
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1)
-
   if (search) query = query.or(`full_name.ilike.%${search}%`)
   if (plan && plan !== 'all') query = query.eq('user_plan', plan)
 
   const { data: activity, count, error } = await query
   if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+
+  // Récupérer les profils UNIQUEMENT pour les IDs retournés par activity
+  // (évite le mismatch de pagination entre les deux requêtes)
+  const activityIds = (activity ?? []).map(a => a.id).filter(Boolean)
+  const { data: profiles } = activityIds.length > 0
+    ? await supabaseAdmin
+        .from('profiles')
+        .select('id, public_id, email, is_admin, suspended, locale, currency, notifications_push, created_at, updated_at, subscriptions(status, amount, current_period_end)')
+        .in('id', activityIds)
+    : { data: [] }
 
   // Fusionner les deux sources
   const profilesMap = new Map((profiles ?? []).map(p => [p.id, p]))
