@@ -25,7 +25,8 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'ProfityX' },
   icons: { icon: '/favicon.svg', apple: '/favicon.svg', other: [{ rel: 'apple-touch-icon', url: '/icon-192.png' }] },
   keywords: ['trading', 'forex', 'crypto', 'signaux', 'IA', 'analyse technique', 'SMC'],
-  openGraph: { title: 'ProfityX — Trading IA', description: 'Signaux de trading propulsés par l\'IA', type: 'website', locale: 'fr_FR' },
+  openGraph: {
+    images: [{ url: '/logos/profityx-logo.jpg', width: 800, height: 800 }], title: 'ProfityX — Trading IA', description: 'Signaux de trading propulsés par l\'IA', type: 'website', locale: 'fr_FR' },
 }
 
 const ANTI_FLASH = `(function(){try{var t=localStorage.getItem('pxTheme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`

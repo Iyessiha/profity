@@ -390,7 +390,7 @@ export default function LandingPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <img src="/logo.png" alt="ProfityX" style={{ height: 28, objectFit: 'contain' }} />
           <div>
-            <div style={{ fontFamily: HUD, fontSize: 12, letterSpacing: 2, color: '#00FFB2' }}>PROFIT<span style={{ color: '#00D4FF' }}>YX</span></div>
+            <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:32, width:'auto', objectFit:'contain' }} />
             <div style={{ fontFamily: BODY, fontSize: 11, color: 'rgba(240,248,255,0.25)' }}>By MonWe Infinity LLC</div>
           </div>
         </div>

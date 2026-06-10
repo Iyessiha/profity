@@ -102,7 +102,7 @@ export default function Sidebar({ plan, locale }: Props) {
         <div className="sidebar-logo" style={{ padding: '1.1rem 1rem', borderBottom: '1px solid var(--bd)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="/dashboard" onClick={close} style={{ textDecoration: 'none' }}>
             <div style={{ fontFamily: HUD, fontSize: 16, letterSpacing: 3, color: 'var(--ac)', lineHeight: 1 }}>
-              PROFIT<span style={{ color: 'var(--ac2)' }}>YX</span>
+              <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:32, width:'auto', objectFit:'contain' }} />
             </div>
             <div style={{ fontFamily: BODY, fontSize: 9, color: 'var(--tx3)', letterSpacing: 2, marginTop: 2 }}>AI TRADING</div>
           </a>

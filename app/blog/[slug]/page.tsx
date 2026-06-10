@@ -129,7 +129,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         {/* Nav */}
         <nav style={{ position:'sticky', top:0, zIndex:100, background:'rgba(2,4,8,0.95)', backdropFilter:'blur(16px)', borderBottom:'1px solid rgba(0,255,178,0.07)', padding:'0 1.5rem', height:60, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <Link href="/" style={{ fontFamily:HUD, fontSize:16, fontWeight:900, letterSpacing:2, color:'#00FFB2', textDecoration:'none' }}>
-            PROFIT<span style={{ color:'#00D4FF' }}>YX</span>
+            <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:28, width:'auto', objectFit:'contain' }} />
           </Link>
           <div style={{ display:'flex', gap:16, alignItems:'center' }}>
             <Link href="/blog" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.45)', textDecoration:'none' }}>BLOG</Link>
@@ -188,7 +188,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           {/* CTA final */}
           <div style={{ marginTop:56, background:'linear-gradient(135deg,rgba(0,255,178,0.05),rgba(0,212,255,0.03))', border:'1px solid rgba(0,255,178,0.2)', borderRadius:14, padding:'2.5rem', textAlign:'center' }}>
             <div style={{ fontFamily:HUD, fontSize:20, fontWeight:900, color:'#00FFB2', marginBottom:12 }}>
-              PROFIT<span style={{ color:'#00D4FF' }}>YX</span>
+              <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:28, width:'auto', objectFit:'contain' }} />
             </div>
             <p style={{ fontFamily:BODY, fontSize:16, color:'rgba(240,248,255,0.6)', marginBottom:24, maxWidth:500, margin:'0 auto 24px' }}>
               {post.lang === 'en'
@@ -223,7 +223,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         {/* Footer */}
         <footer style={{ borderTop:'1px solid rgba(255,255,255,0.05)', padding:'2rem', textAlign:'center' }}>
           <Link href="/" style={{ fontFamily:HUD, fontSize:12, letterSpacing:2, color:'#00FFB2', textDecoration:'none' }}>
-            PROFIT<span style={{ color:'#00D4FF' }}>YX</span>
+            <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:28, width:'auto', objectFit:'contain' }} />
           </Link>
           <div style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.2)', marginTop:8 }}>© 2026 MonWe Infinity LLC</div>
         </footer>
