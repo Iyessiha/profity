@@ -150,7 +150,7 @@ export default function LandingEN() {
           <span style={{ fontFamily:HUD, fontSize:16, fontWeight:900, letterSpacing:2, color:'#00FFB2' }}>PROFIT<span style={{ color:'#00D4FF' }}>YX</span></span>
         </a>
         <div style={{ display:'flex', alignItems:'center', gap:28 }} className="nav-desktop">
-          {[['#how','How it works'],['#features','Features'],['#pricing','Pricing'],['/results','Results']].map(([href,label]) => (
+          {[['#how','How it works'],['#features','Features'],['#pricing','Pricing'],['/results','Results'],['/blog','Blog']].map(([href,label]) => (
             <a key={href} href={href} style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.45)', textDecoration:'none' }}>{label}</a>
           ))}
         </div>
@@ -165,7 +165,7 @@ export default function LandingEN() {
 
       {menuOpen && (
         <div style={{ position:'fixed', top:60, left:0, right:0, background:'rgba(2,4,8,0.98)', borderBottom:'1px solid rgba(0,255,178,0.12)', zIndex:99, padding:'1.5rem', display:'flex', flexDirection:'column', gap:4 }}>
-          {[['#how','How it works'],['#features','Features'],['#pricing','Pricing'],['/results','Live Results'],['/auth/login','Login']].map(([href,label]) => (
+          {[['#how','How it works'],['#features','Features'],['#pricing','Pricing'],['/results','Live Results'],['/blog','Blog'],['/auth/login','Login']].map(([href,label]) => (
             <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'rgba(240,248,255,0.6)', textDecoration:'none', padding:'14px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>{label}</a>
           ))}
           <a href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'14px', borderRadius:6, textDecoration:'none', fontWeight:700, textAlign:'center', marginTop:12 }}>
@@ -407,7 +407,7 @@ export default function LandingEN() {
           <div style={{ fontFamily:BODY, fontSize:11, color:'rgba(240,248,255,0.25)' }}>By MonWe Infinity LLC</div>
         </div>
         <div style={{ display:'flex', gap:20, flexWrap:'wrap' }}>
-          {[['#pricing','Pricing'],['#how','How it works'],['#features','Features'],['/results','Results'],['/legal/cgu','Terms'],['/legal/confidentialite','Privacy']].map(([href,label]) => (
+          {[['#pricing','Pricing'],['#how','How it works'],['#features','Features'],['/results','Results'],['/blog','Blog'],['/legal/cgu','Terms'],['/legal/confidentialite','Privacy']].map(([href,label]) => (
             <a key={href} href={href} style={{ fontFamily:BODY, fontSize:13, color:'rgba(240,248,255,0.3)', textDecoration:'none' }}>{label}</a>
           ))}
         </div>

@@ -92,7 +92,7 @@ export default function LandingPage() {
 
         {/* Liens desktop */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} className="nav-desktop">
-          {[['#how','Comment'],['#features','Features'],['#pricing','Tarifs'],['/results','Résultats']].map(([href,label]) => (
+          {[['#how','Comment'],['#features','Features'],['#pricing','Tarifs'],['/results','Résultats'],['/blog','Blog']].map(([href,label]) => (
             <a key={href} href={href} style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.45)', textDecoration:'none' }}>{label}</a>
           ))}
         </div>
@@ -112,7 +112,7 @@ export default function LandingPage() {
       {/* Drawer menu mobile */}
       {menuOpen && (
         <div style={{ position:'fixed', top:60, left:0, right:0, background:'rgba(2,4,8,0.98)', borderBottom:'1px solid rgba(0,255,178,0.12)', zIndex:99, padding:'1.5rem', display:'flex', flexDirection:'column', gap:4 }}>
-          {[['#how','Comment ça marche'],['#features','Fonctionnalités'],['#pricing','Tarifs'],['/results','Résultats live'],['/auth/login','Se connecter']].map(([href,label]) => (
+          {[['#how','Comment ça marche'],['#features','Fonctionnalités'],['#pricing','Tarifs'],['/results','Résultats live'],['/blog','Blog'],['/auth/login','Se connecter']].map(([href,label]) => (
             <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'rgba(240,248,255,0.6)', textDecoration:'none', padding:'14px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
               {label}
             </a>
@@ -395,7 +395,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-          {[['#pricing','Tarifs'],['#how','Comment'],['#features','Features'],['/results','Résultats'],['/legal/cgu','CGU'],['/legal/confidentialite','Confidentialité']].map(([href,label]) => (
+          {[['#pricing','Tarifs'],['#how','Comment'],['#features','Features'],['/results','Résultats'],['/blog','Blog'],['/legal/cgu','CGU'],['/legal/confidentialite','Confidentialité']].map(([href,label]) => (
             <a key={href} href={href} style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(240,248,255,0.3)', textDecoration: 'none' }}>{label}</a>
           ))}
         </div>
