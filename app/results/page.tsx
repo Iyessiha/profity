@@ -37,6 +37,8 @@ export default function ResultsPage() {
   const [signals, setSignals] = useState<Signal[]>([])
   const [loading, setLoading] = useState(true)
 
+  useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
+
   useEffect(() => {
     Promise.all([
       fetch('/api/results/stats').then(r => r.json()),

@@ -16,6 +16,13 @@ export const metadata: Metadata = {
   },
 }
 
+import { useEffect, useState } from 'react'
+
+function useLang() {
+  const [l,s]=useState('fr')
+  useEffect(()=>{s(localStorage.getItem('pxLang')||'fr')},[]);return l
+}
+
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 
@@ -26,6 +33,7 @@ const CAT_COLORS: Record<string, string> = {
 }
 
 export default function BlogPage() {
+  const lang = useLang()
   const frPosts = POSTS.filter(p => p.lang === 'fr')
   const enPosts = POSTS.filter(p => p.lang === 'en')
 
@@ -106,10 +114,10 @@ export default function BlogPage() {
       {/* CTA */}
       <section style={{ padding:'4rem 2rem', textAlign:'center', maxWidth:700, margin:'0 auto' }}>
         <h2 style={{ fontFamily:HUD, fontSize:'clamp(20px,3vw,32px)', fontWeight:900, marginBottom:16 }}>
-          Prêt à trader avec l'<span style={{ color:'#00FFB2' }}>IA</span> ?
+          lang === 'en' ? 'Ready to trade with ' : "Prêt à trader avec l'"<span style={{ color:'#00FFB2' }}>IA</span> ?
         </h2>
         <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(240,248,255,0.5)', marginBottom:28 }}>
-          Analysez vos charts Boom 1000, Crash 500 et Forex en 10 secondes.
+          {lang === 'en' ? 'Analyze your Boom 1000, Crash 500 and Forex charts in 10 seconds.' : 'Analysez vos charts Boom 1000, Crash 500 et Forex en 10 secondes.'}, Crash 500 et Forex en 10 secondes.
         </p>
         <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'16px 40px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
           ESSAI GRATUIT — 10 CRÉDITS →

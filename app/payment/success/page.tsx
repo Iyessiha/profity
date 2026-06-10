@@ -11,7 +11,10 @@ export default function PaymentSuccess() {
   const [credits, setCredits] = useState(0)
   const [name,    setName]    = useState('Trader')
   const [confetti, setConfetti] = useState(true)
+  const [lang, setLang] = useState('fr')
 
+
+  useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     ;(async () => {
@@ -52,15 +55,15 @@ export default function PaymentSuccess() {
         </div>
 
         <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:3, color:cfg.color, marginBottom:12 }}>
-          PAIEMENT CONFIRMÉ
+          {lang === 'en' ? 'PAYMENT CONFIRMED' : 'PAIEMENT CONFIRMÉ'}
         </div>
 
         <h1 style={{ fontFamily:HUD, fontSize:28, fontWeight:900, color:'#E8F4F8', margin:'0 0 8px' }}>
-          Félicitations, {name} !
+          {lang === 'en' ? `Congratulations, ${name}!` : `Félicitations, ${name} !`}
         </h1>
 
         <p style={{ fontFamily:BODY, fontSize:16, color:'rgba(232,244,248,0.55)', marginBottom:32 }}>
-          Votre plan <strong style={{ color:cfg.color }}>{cfg.label}</strong> est maintenant actif.
+          {lang === 'en' ? <>Your <strong style={{ color:cfg.color }}>{cfg.label}</strong> plan is now active.</> : <>Votre plan <strong style={{ color:cfg.color }}>{cfg.label}</strong> est maintenant actif.</>}
         </p>
 
         {/* Récap */}
@@ -69,8 +72,8 @@ export default function PaymentSuccess() {
             {[
               { l:'PLAN ACTIF', v:cfg.label, c:cfg.color },
               { l:'CRÉDITS', v:`${credits || cfg.credits}`, c:'#00FFB2' },
-              { l:'ANALYSES', v:'Illimitées', c:'var(--ac2)' },
-              { l:'SMC', v:'Activé ✓', c:'#00FFB2' },
+              { l: lang === 'en' ? 'ANALYSES' : 'ANALYSES', v: lang === 'en' ? 'Unlimited' : 'Illimitées', c:'var(--ac2)' },
+              { l:'SMC', v: lang === 'en' ? 'Active ✓' : 'Activé ✓', c:'#00FFB2' },
             ].map(s => (
               <div key={s.l} style={{ textAlign:'center' }}>
                 <div style={{ fontFamily:HUD, fontSize:18, fontWeight:900, color:s.c, marginBottom:4 }}>{s.v}</div>
@@ -83,7 +86,7 @@ export default function PaymentSuccess() {
         {/* Actions */}
         <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
           <a href="/analysis" style={{ flex:1, minWidth:160, background:cfg.color, color:'#020408', fontFamily:HUD, fontSize:10, letterSpacing:2, fontWeight:900, padding:'14px', borderRadius:7, textDecoration:'none', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
-            📊 ANALYSER UN CHART
+            {lang === 'en' ? '📊 ANALYZE A CHART' : '📊 ANALYSER UN CHART'}
           </a>
           <a href="/dashboard" style={{ flex:1, minWidth:160, background:'transparent', color:'rgba(232,244,248,0.5)', fontFamily:HUD, fontSize:10, letterSpacing:2, padding:'14px', borderRadius:7, border:'1px solid rgba(255,255,255,0.1)', textDecoration:'none', display:'flex', alignItems:'center', justifyContent:'center' }}>
             DASHBOARD →

@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { supabasePublic } from '@/lib/supabase'
@@ -6,6 +7,7 @@ import { supabasePublic } from '@/lib/supabase'
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 type Plan = 'free' | 'pro' | 'elite'
+
 const RANK: Record<Plan,number> = { free:0, pro:1, elite:2 }
 
 // Bandeau urgence dynamique
@@ -62,7 +64,7 @@ const PLANS = [
     key: 'pro' as Plan, name: 'PRO', price: '17 500', period: 'par mois',
     color: '#00B890', featured: true, headline: '87% des traders actifs choisissent Pro',
     promo: '🔥 POPULAIRE',
-    credits: 150, creditLabel: '150 crédits / mois',
+    credits: 150, creditLabel: '150 crédits/mois',
     perks: [
       { icon: 'ti-coin',          text: '150 crédits renouvelés chaque mois' },
       { icon: 'ti-sparkles',      text: '1 crédit = analyse SMC (Order Blocks, FVG, Liquidité)' },
@@ -78,7 +80,7 @@ const PLANS = [
   {
     key: 'elite' as Plan, name: 'ELITE', price: '35 000', period: 'par mois',
     color: '#92671A', featured: false, headline: 'Pour les traders sérieux — tout sans limite',
-    credits: 600, creditLabel: '600 crédits / mois',
+    credits: 600, creditLabel: '600 crédits/mois',
     perks: [
       { icon: 'ti-coin',         text: '600 crédits renouvelés chaque mois (4× Pro)' },
       { icon: 'ti-infinity',     text: 'Analyses chart & signaux — quota élevé' },
@@ -134,7 +136,15 @@ const FAQS = [
   { q: 'Quels actifs sont analysables ?',     r: 'Forex, Crypto, Indices synthétiques Deriv, Or/Pétrole, Indices boursiers. Tout actif qui a un graphique.' },
 ]
 
+
+function useLang() {
+  const [lang, setLang] = React.useState('fr')
+  React.useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
+  return lang
+}
+
 export default function PricingPage() {
+  const lang = useLang()
   const [currentPlan, setCurrentPlan] = useState<Plan>('free')
   const [loading,     setLoading]     = useState<Plan|null>(null)
   const [loadingPack, setLoadingPack] = useState<string|null>(null)

@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 // ============================================================
 // PROFITYX — /install : Guide d'installation (PWA)
 // ============================================================
@@ -137,6 +138,8 @@ const FEATURES = [
 ]
 
 export default function InstallPage() {
+  const [lang, setLang] = React.useState('fr')
+  React.useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
   const [os, setOs] = useState<OS>('android')  // android par défaut (cible principale)
   const [installed, setInstalled] = useState(false)
   const [step, setStep] = useState(0)

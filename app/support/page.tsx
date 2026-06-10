@@ -7,6 +7,8 @@ const BODY = "'Rajdhani', sans-serif"
 
 export default function SupportPage() {
   const { toggleTheme, theme } = useTheme()
+  const [lang, setLang] = React.useState('fr')
+  React.useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
   return (
     <div style={{ minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY, display:'flex', flexDirection:'column' }}>
       {/* Header */}
@@ -40,7 +42,7 @@ export default function SupportPage() {
         <div style={{ background:'linear-gradient(135deg, #25D366, #128C7E)', borderRadius:16, padding:'2rem', textAlign:'center', marginBottom:'2rem', position:'relative', overflow:'hidden' }}>
           <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse at top right, rgba(255,255,255,0.1), transparent 60%)', pointerEvents:'none' }} />
           <i className="ti ti-brand-whatsapp" style={{ fontSize:48, color:'#fff', marginBottom:12, display:'block' }} />
-          <div style={{ fontFamily:HUD, fontSize:16, color:'#fff', letterSpacing:1, marginBottom:8 }}>SUPPORT WHATSAPP</div>
+          <div style={{ fontFamily:HUD, fontSize:16, color:'#fff', letterSpacing:1, marginBottom:8 }}>{lang === 'en' ? 'SUPPORT' : 'SUPPORT'} WHATSAPP</div>
           <p style={{ fontSize:14, color:'rgba(255,255,255,0.8)', marginBottom:'1.5rem', lineHeight:1.6 }}>
             Discutez directement avec notre équipe. Réponse rapide en français, anglais et autres langues.
           </p>
@@ -55,7 +57,7 @@ export default function SupportPage() {
         {/* Autres options */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:14, marginBottom:'2rem' }}>
           {[
-            { icon:'ti-mail', title:'Email', desc:'monweci@gmail.com', action:'mailto:monweci@gmail.com', label:'Envoyer un email', color:'#00D4FF' },
+            { icon:'ti-mail', title:'Email', desc:'monweci@gmail.com', action:'mailto:monweci@gmail.com', label:lang === 'en' ? 'Send an email' : 'Envoyer un email', color:'#00D4FF' },
             { icon:'ti-link', title:'Linktree', desc:'Coach Yessiha', action:'https://linktr.ee/coachyessiha', label:'Voir les liens', color:'#39E09B' },
             { icon:'ti-book', title:'Documentation', desc:'FAQ & guides', action:'/legal/cgu', label:'Consulter', color:'var(--ac3)' },
           ].map(o => (
