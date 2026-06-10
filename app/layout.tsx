@@ -5,6 +5,7 @@ import { MenuProvider } from '@/lib/menu-context'
 import PWAInstall from '@/components/PWAInstall'
 import AnalyticsProvider from '@/components/AnalyticsProvider'
 import RightClickGuard from '@/components/RightClickGuard'
+import LangDetector    from '@/components/LangDetector'
 import './globals.css'
 
 export const viewport: Viewport = {
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PWAInstall />
         <AnalyticsProvider />
         <RightClickGuard />
+        <LangDetector />
         {/* Google Ads Tag — next/script pour chargement garanti */}
         <Script src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: GTAG_SCRIPT }} />
