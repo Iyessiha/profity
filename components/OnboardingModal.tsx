@@ -13,14 +13,14 @@ interface Props { userId: string; locale?: string; onClose: () => void }
 const TRADING_TYPES = [
   { v:'forex',     icon:'ti-currency-dollar', label:'Forex (EUR/USD, GBP/USD…)' },
   { v:'crypto',    icon:'ti-currency-bitcoin', label:'Crypto (BTC, ETH, BNB…)' },
-  { v:'synthetic', icon:'ti-chart-line',       label:'Indices synthétiques (Deriv)' },
+  { v:'synthetic', icon:'ti-chart-line',       label:'Indices Synthétiqueseriv)' },
   { v:'commodities',icon:'ti-oil',             label:'Matières premières (Or, Pétrole)' },
   { v:'indices',   icon:'ti-chart-bar',        label:'Indices (NAS100, SP500…)' },
   { v:'stocks',    icon:'ti-building-store',   label:'Actions (AAPL, TSLA…)' },
 ]
 
 const BROKERS = [
-  { v:'deriv',    label:'Deriv (Synthétiques)',  logo:'DV' },
+  { v:'deriv',    label:'Indices Synthétiques',  logo:'DV' },
   { v:'weltrade', label:'WelTrade',              logo:'WT' },
   { v:'exness',   label:'Exness',                logo:'EX' },
   { v:'binance',  label:'Binance',               logo:'BNB' },
@@ -158,7 +158,7 @@ function suggestAssets(type: string, broker: string): string[] {
     indices:     ['NAS100','SP500','DOW30','DAX40','FTSE100'],
     stocks:      ['AAPL','TSLA','NVDA','META','AMZN'],
   }
-  // Broker Deriv → favoriser les synthétiques
+  // Broker Indices Synthétiques → favoriser les synthétiques
   if (broker === 'deriv') return map.synthetic
   return map[type] ?? map.forex
 }

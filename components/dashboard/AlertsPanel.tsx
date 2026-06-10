@@ -15,8 +15,8 @@ const PAIRS = [
   { label:'USD/JPY', group:'Forex' },
   { label:'BTC/USD', group:'Crypto' },
   { label:'ETH/USD', group:'Crypto' },
-  { label:'V75',     group:'Deriv Synthétique' },
-  { label:'V10',     group:'Deriv Synthétique' },
+  { label:'V75',     group:'Indices Synthétiques' },
+  { label:'V10',     group:'Indices Synthétiques' },
 ]
 
 interface Alert { id:string; pair:string; target_price:number; condition:'above'|'below'; triggered:boolean; active:boolean; created_at:string }

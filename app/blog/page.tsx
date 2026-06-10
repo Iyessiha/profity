@@ -6,11 +6,11 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Blog Trading SMC — Stratégies, Tutoriels et Signaux | ProfityX',
   description: 'Articles experts sur le Smart Money Concept, Order Blocks, FVG, Boom 1000, Crash 500 et signaux IA. Apprenez à trader comme les institutionnels.',
-  keywords: ['blog trading SMC', 'tutoriel order block', 'signaux trading Deriv', 'stratégie Boom 1000'],
+  keywords: ['blog trading SMC', 'tutoriel order block', 'signaux trading Indices Synthétiques', 'stratégie Boom 1000'],
   alternates: { canonical: 'https://profity-x.com/blog' },
   openGraph: {
     title: 'Blog ProfityX — Tout sur le Trading SMC',
-    description: 'Stratégies, tutoriels et guides pour trader Deriv avec le Smart Money Concept.',
+    description: 'Stratégies, tutoriels et guides pour trader les Indices Synthétiques avec le Smart Money Concept.',
     url: 'https://profity-x.com/blog',
     siteName: 'ProfityX',
     type: 'website',
@@ -58,7 +58,7 @@ export default function BlogPage() {
           Blog <span style={{ color:'#00FFB2' }}>SMC Trading</span>
         </h1>
         <p style={{ fontFamily:BODY, fontSize:16, color:'rgba(240,248,255,0.5)', maxWidth:600, margin:'0 auto' }}>
-          Guides, stratégies et tutoriels pour maîtriser le Smart Money Concept sur Deriv et Forex.
+          Guides, stratégies et tutoriels pour maîtriser le Smart Money Concept sur Indices Synthétiques et Forex.
         </p>
       </section>
 

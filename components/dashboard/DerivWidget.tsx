@@ -147,7 +147,7 @@ export default function DerivWidget() {
       <div>
         {loading ? (
           <div style={{ padding:'2rem', textAlign:'center', fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>
-            Connexion Deriv…
+            Connexion Indices Synthétiques…
           </div>
         ) : shown.map(item => {
           const change  = pct(item.price, item.prev)

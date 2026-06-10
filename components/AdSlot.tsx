@@ -85,7 +85,7 @@ export default function AdSlot({ type, slot, manual, showAds = true }: AdSlotPro
 // Annonces intégrées ProfityX (brokers affiliés)
 export const PROFITYX_ADS = [
   { title:'Exness — Spreads dès 0.0 pip', desc:'Ouvrez un compte Exness et commencez à trader', cta:'OUVRIR UN COMPTE', url:'https://one.exnessonelink.com/a/o13sztxg6a', logo:'EX', color:'#F7D000' },
-  { title:'Deriv — Indices Synthétiques', desc:'Tradez les indices Deriv 24/7 sans interruption', cta:'COMMENCER', url:'https://deriv.partners/rx?sidc=3FE806F1-F584-4A05-BC12-54EE5EE8709E', logo:'DV', color:'#FF444F' },
+  { title:'Indices Synthétiques', desc:'Tradez les Indices Synthétiques 24/7 sans interruption', cta:'COMMENCER', url:'https://deriv.partners/rx?sidc=3FE806F1-F584-4A05-BC12-54EE5EE8709E', logo:'DV', color:'#FF444F' },
   { title:'WelTrade — CFD & Forex', desc:'Spreads compétitifs sur 200+ instruments', cta:'S\'INSCRIRE', url:'https://gowt.net/ib66022', logo:'WT', color:'#0066B3' },
   { title:'Binance — Crypto Exchange', desc:'Tradez 350+ cryptos avec les meilleurs frais', cta:'REJOINDRE', url:'https://www.binance.com/en/activity/referral-entry/CPA?ref=CPA_0080G3N0DZ', logo:'BNB', color:'#F0B90B' },
   { title:'HFM — Forex & Métaux', desc:'Bonus et cashback sur vos transactions', cta:'DÉCOUVRIR', url:'https://www.hfm.com/sv/en/?refid=30490867', logo:'HFM', color:'#E30613' },

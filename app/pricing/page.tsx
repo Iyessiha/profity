@@ -133,7 +133,7 @@ const FAQS = [
   { q: 'Les crédits expirent-ils ?',          r: 'Les crédits inclus dans un plan sont renouvelés chaque mois. Les crédits achetés en pack ne s\'expirent jamais.' },
   { q: 'Puis-je acheter des crédits en plus ?', r: 'Oui. Des packs de crédits sont disponibles à tout moment, quel que soit votre plan. Ils s\'ajoutent à votre solde existant.' },
   { q: 'Puis-je annuler à tout moment ?',     r: 'Oui. Depuis Paramètres → Abonnement → Annuler. Vous gardez vos crédits restants et l\'accès jusqu\'à la fin de la période.' },
-  { q: 'Quels actifs sont analysables ?',     r: 'Forex, Crypto, Indices synthétiques Deriv, Or/Pétrole, Indices boursiers. Tout actif qui a un graphique.' },
+  { q: 'Quels actifs sont analysables ?',     r: 'Forex, Crypto, Indices Synthétiquesthétiques Deriv, Or/Pétrole, Indices boursiers. Tout actif qui a un graphique.' },
 ]
 
 

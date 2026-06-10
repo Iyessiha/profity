@@ -13,7 +13,7 @@ const PLANS = [
   {
     key: 'free', name: 'FREE', price: '0', sub: 'forever',
     color: '#888', credits: '10 credits', analyses: '3 analyses/day',
-    features: ['Basic SMC signals', 'Forex + Deriv', 'Macro calendar'],
+    features: ['Basic SMC signals', 'Forex + Synthetic Indices', 'Macro calendar'],
     cta: 'START FOR FREE', highlight: false,
   },
   {
@@ -31,7 +31,7 @@ const PLANS = [
 ]
 
 const STEPS = [
-  { n: '01', icon: '📤', title: 'Upload your chart', desc: 'Take a screenshot of your chart on Deriv or TradingView and upload it.' },
+  { n: '01', icon: '📤', title: 'Upload your chart', desc: 'Take a screenshot of your chart on Synthetic Indices or TradingView and upload it.' },
   { n: '02', icon: '🤖', title: 'AI analyzes in 10s', desc: 'Our AI detects SMC structures: Order Blocks, FVG, BOS, CHoCH and Liquidity zones.' },
   { n: '03', icon: '🎯', title: 'Get your signal', desc: 'Precise entry, Stop Loss and 3 Take Profit levels calculated automatically.' },
 ]
@@ -39,7 +39,7 @@ const STEPS = [
 const ASSETS = ['Boom 1000','Crash 500','GainX 600','Volatility 75','Step Index','EUR/USD','XAU/USD','GBP/USD']
 
 const FAQ = [
-  { q: 'Which assets does it work with?', a: 'ProfityX works with all Deriv synthetic assets (Boom 1000, Crash 500, GainX, Volatility 75, Step Index) and major Forex pairs (EUR/USD, GBP/USD, XAU/USD, USD/JPY...). Select your asset before uploading your chart.' },
+  { q: 'Which assets does it work with?', a: 'ProfityX works with all Synthetic Indices assets (Boom 1000, Crash 500, GainX, Volatility 75, Step Index) and major Forex pairs (EUR/USD, GBP/USD, XAU/USD, USD/JPY...). Select your asset before uploading your chart.' },
   { q: 'What is Smart Money Concept (SMC)?', a: 'SMC is an institutional analysis method that follows "smart money" (big banks). ProfityX automatically detects Order Blocks, Fair Value Gaps, BOS and CHoCH on your chart.' },
   { q: 'How do I pay from Nigeria?', a: 'We accept Visa, Mastercard and MTN MoMo via GeniusPay. International cards from GTBank, Access Bank, UBA are all supported.' },
   { q: 'Can I cancel anytime?', a: 'Yes, no commitment. Cancel your subscription from your account page at any time, no fees.' },
@@ -194,7 +194,7 @@ export default function LandingEN() {
         </h1>
 
         <p style={{ fontSize:'clamp(16px,1.8vw,20px)', color:'rgba(240,248,255,0.55)', lineHeight:1.7, maxWidth:580, margin:'0 auto 2.5rem', fontWeight:300 }}>
-          Upload your Deriv or TradingView chart → get your <strong style={{ color:'#F0F8FF' }}>entry, Stop Loss and Take Profit</strong> in 10 seconds. AI-powered SMC analysis.
+          Upload your Synthetic Indices or TradingView chart → get your <strong style={{ color:'#F0F8FF' }}>entry, Stop Loss and Take Profit</strong> in 10 seconds. AI-powered SMC analysis.
         </p>
 
         <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', marginBottom:'3rem' }}>
@@ -267,7 +267,7 @@ export default function LandingEN() {
               { icon:'🧠', title:'SMC Analysis', desc:'Order Block, Fair Value Gap, BOS, CHoCH, Liquidity — all detected automatically.' },
               { icon:'⚡', title:'10 Seconds', desc:'Full signal in under 10 seconds after uploading your chart.' },
               { icon:'📊', title:'Macro Calendar', desc:'NFP, CPI, FOMC — real-time alerts with anticipatory signals.' },
-              { icon:'🌍', title:'Deriv + Forex', desc:'Boom, Crash, GainX, Volatility, EUR/USD, XAU/USD and more.' },
+              { icon:'🌍', title:'Synthetic Indices + Forex', desc:'Boom, Crash, GainX, Volatility, EUR/USD, XAU/USD and more.' },
               { icon:'📱', title:'Mobile First', desc:'Optimized for mobile. Install the PWA app in 1 tap.' },
               { icon:'🔒', title:'Secure', desc:'SSL encrypted. Payments via certified GeniusPay gateway.' },
             ].map(f => (

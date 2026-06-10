@@ -22,15 +22,15 @@ export const POSTS: BlogPost[] = [
     slug:        'comment-trader-boom-1000-smc',
     lang:        'fr',
     title:       'Comment trader Boom 1000 avec le Smart Money Concept (SMC)',
-    description: 'Guide complet pour trader l\'indice Boom 1000 de Deriv avec la méthode SMC : Order Blocks, FVG, BOS et liquidité. Stratégie pas à pas pour 2026.',
-    keywords:    ['Boom 1000 trading', 'SMC Boom 1000', 'trader Boom 1000', 'Smart Money Concept Deriv', 'signaux Boom 1000'],
+    description: 'Guide complet pour trader l\'indice Boom 1000 de Synthetic Indices avec la méthode SMC : Order Blocks, FVG, BOS et liquidité. Stratégie pas à pas pour 2026.',
+    keywords:    ['Boom 1000 trading', 'SMC Boom 1000', 'trader Boom 1000', 'Smart Money Concept Indices Synthétiques', 'signaux Boom 1000'],
     date:        '2026-06-01',
     readTime:    8,
     category:    'Stratégie',
     content: `
 ## Pourquoi le Boom 1000 est-il si populaire ?
 
-Le Boom 1000 Index est l'un des instruments synthétiques les plus tradés sur la plateforme Deriv. Sa particularité ? Il monte en permanence, avec des "booms" (pics soudains à la hausse) qui surviennent en moyenne une fois toutes les 1000 ticks. Cette caractéristique unique le rend idéal pour une approche Smart Money Concept (SMC).
+Le Boom 1000 Index est l'un des instruments synthétiques les plus tradés sur la plateforme Indices Synthétiques. Sa particularité ? Il monte en permanence, avec des "booms" (pics soudains à la hausse) qui surviennent en moyenne une fois toutes les 1000 ticks. Cette caractéristique unique le rend idéal pour une approche Smart Money Concept (SMC).
 
 Contrairement au Forex où les deux directions sont aussi valides, sur le Boom 1000 **les positions LONG sont statistiquement avantagées** : vous tradez dans le sens du mouvement naturel de l'actif.
 
@@ -88,7 +88,7 @@ Sur M15, cherchez une confirmation : bougie d'inversion (engulfing bullish), CHo
 
 ProfityX analyse automatiquement vos captures d'écran de graphique Boom 1000 et identifie pour vous les Order Blocks, Fair Value Gaps et niveaux de BOS. En 10 secondes, vous obtenez une entrée précise, un Stop Loss calculé et trois niveaux de Take Profit.
 
-L'IA est spécifiquement calibrée pour distinguer le Boom 1000 des autres actifs Deriv — les fourchettes de prix (100 à 10 000) sont prises en compte pour éviter les confusions avec d'autres instruments.
+L'IA est spécifiquement calibrée pour distinguer le Boom 1000 des autres Indices Synthétiques — les fourchettes de prix (100 à 10 000) sont prises en compte pour éviter les confusions avec d'autres instruments.
 
 **Essayez gratuitement sur profity-x.com — 10 crédits offerts à l'inscription, sans carte bancaire.**
     `.trim(),
@@ -100,7 +100,7 @@ L'IA est spécifiquement calibrée pour distinguer le Boom 1000 des autres actif
     lang:        'fr',
     title:       'Order Block en Trading : Guide Complet pour Débutants',
     description: 'Apprenez à identifier et trader les Order Blocks (OB) avec la méthode SMC. Exemples concrets sur Forex, Boom 1000, Crash 500 et GainX.',
-    keywords:    ['order block trading', 'qu\'est-ce qu\'un order block', 'SMC order block', 'order block Deriv', 'zone ordre institutionnel'],
+    keywords:    ['order block trading', 'qu\'est-ce qu\'un order block', 'SMC order block', 'order block Indices Synthétiques', 'zone ordre institutionnel'],
     date:        '2026-06-02',
     readTime:    7,
     category:    'Éducation',
@@ -173,7 +173,7 @@ Un OB qui n'a été que partiellement "mitigé" (touché) par le prix. S'il rest
 
 ## ProfityX et les Order Blocks
 
-L'intelligence artificielle de ProfityX identifie automatiquement les Order Blocks sur votre graphique. Uploadez une capture d'écran de votre chart Deriv ou TradingView, et en 10 secondes vous recevez les zones OB actives, leur niveau de validité, et l'entrée optimale calculée.
+L'intelligence artificielle de ProfityX identifie automatiquement les Order Blocks sur votre graphique. Uploadez une capture d'écran de votre chart Indices Synthétiques ou TradingView, et en 10 secondes vous recevez les zones OB actives, leur niveau de validité, et l'entrée optimale calculée.
 
 **Testez gratuitement sur profity-x.com**
     `.trim(),
@@ -184,15 +184,15 @@ L'intelligence artificielle de ProfityX identifie automatiquement les Order Bloc
     slug:        'strategie-crash-500-2026',
     lang:        'fr',
     title:       'Meilleure Stratégie Crash 500 en 2026 — Guide Complet',
-    description: 'Découvrez la stratégie la plus efficace pour trader le Crash 500 Index de Deriv en 2026. SMC, CHoCH, gestion du risque et exemples réels.',
-    keywords:    ['Crash 500 stratégie', 'trader Crash 500', 'Crash 500 Deriv 2026', 'signal Crash 500', 'stratégie synthétique Deriv'],
+    description: 'Découvrez la stratégie la plus efficace pour trader le Crash 500 Index de Synthetic Indices en 2026. SMC, CHoCH, gestion du risque et exemples réels.',
+    keywords:    ['Crash 500 stratégie', 'trader Crash 500', 'Crash 500 Synthetic Indices 2026', 'signal Crash 500', 'stratégie synthétique Deriv'],
     date:        '2026-06-03',
     readTime:    9,
     category:    'Stratégie',
     content: `
 ## Comprendre le Crash 500 avant de trader
 
-Le Crash 500 Index est l'inverse du Boom 1000 : cet instrument synthétique de Deriv tend à **baisser continuellement**, avec des "crashes" (chutes soudaines) survenant en moyenne une fois toutes les 500 ticks. Cette fréquence élevée de crashes en fait l'un des instruments les plus volatils de la plateforme.
+Le Crash 500 Index est l'inverse du Boom 1000 : cet instrument synthétique de Synthetic Indices tend à **baisser continuellement**, avec des "crashes" (chutes soudaines) survenant en moyenne une fois toutes les 500 ticks. Cette fréquence élevée de crashes en fait l'un des instruments les plus volatils de la plateforme.
 
 Sa particularité : le prix baisse lentement, puis chute brutalement lors d'un crash, avant de remonter légèrement et de reprendre sa descente. Ce pattern répétitif crée des opportunités prévisibles pour un trader préparé.
 
@@ -278,7 +278,7 @@ ProfityX analyse vos charts Crash 500 et identifie instantanément les zones d'e
     slug:        'fair-value-gap-fvg-explication',
     lang:        'fr',
     title:       'Fair Value Gap (FVG) en Trading : Explication Complète',
-    description: 'Tout sur le Fair Value Gap (FVG) en SMC trading. Comment l\'identifier, le trader et l\'utiliser avec les Order Blocks sur Deriv et Forex.',
+    description: 'Tout sur le Fair Value Gap (FVG) en SMC trading. Comment l\'identifier, le trader et l\'utiliser avec les Order Blocks sur Indices Synthétiques et Forex.',
     keywords:    ['fair value gap', 'FVG trading', 'qu\'est-ce qu\'un FVG', 'imbalance trading', 'fair value gap SMC'],
     date:        '2026-06-04',
     readTime:    6,
@@ -420,15 +420,15 @@ L'IA de trading n'est pas un substitut à l'apprentissage — c'est un accélér
     slug:        'how-to-trade-boom-1000-smc',
     lang:        'en',
     title:       'How to Trade Boom 1000 with Smart Money Concept (SMC)',
-    description: 'Complete guide to trading the Deriv Boom 1000 Index with SMC: Order Blocks, FVG, BOS and liquidity. Step-by-step strategy for 2026.',
-    keywords:    ['Boom 1000 trading strategy', 'SMC Boom 1000', 'trade Boom 1000', 'Deriv synthetic indices', 'Boom 1000 signals'],
+    description: 'Complete guide to trading the Synthetic Indices Boom 1000 Index with SMC: Order Blocks, FVG, BOS and liquidity. Step-by-step strategy for 2026.',
+    keywords:    ['Boom 1000 trading strategy', 'SMC Boom 1000', 'trade Boom 1000', 'Synthetic Indices', 'Boom 1000 signals'],
     date:        '2026-06-01',
     readTime:    8,
     category:    'Strategy',
     content: `
 ## Why Boom 1000 is One of the Most Popular Synthetic Indices
 
-The Boom 1000 Index is among the most traded synthetic instruments on Deriv. Its unique feature: the price rises consistently, with sudden "booms" (upward spikes) occurring on average once every 1,000 ticks. This predictable pattern makes it ideal for a Smart Money Concept (SMC) approach.
+The Boom 1000 Index is among the most traded synthetic instruments on Synthetic Indices. Its unique feature: the price rises consistently, with sudden "booms" (upward spikes) occurring on average once every 1,000 ticks. This predictable pattern makes it ideal for a Smart Money Concept (SMC) approach.
 
 Unlike Forex where both directions are equally valid, on Boom 1000 **LONG positions are statistically favored** — you're trading with the instrument's natural movement.
 
@@ -498,7 +498,7 @@ The AI is specifically calibrated for Boom 1000's price ranges (100 to 10,000) t
     lang:        'en',
     title:       'What is an Order Block in Trading? Complete SMC Guide',
     description: 'Learn how to identify and trade Order Blocks (OB) using the SMC method. Real examples on Forex, Boom 1000, Crash 500, and Volatility indices.',
-    keywords:    ['order block trading', 'what is order block', 'SMC order block explained', 'order block Deriv', 'institutional order block'],
+    keywords:    ['order block trading', 'what is order block', 'SMC order block explained', 'order block Synthetic Indices', 'institutional order block'],
     date:        '2026-06-02',
     readTime:    7,
     category:    'Education',
@@ -560,7 +560,7 @@ The bearish OB zone corresponds to the body of the last green candle before the 
 
 ## ProfityX and Order Blocks
 
-ProfityX's AI automatically identifies Order Blocks on your chart. Upload a screenshot of your Deriv or TradingView chart, and in 10 seconds receive active OB zones, their validity level, and the optimal calculated entry.
+ProfityX's AI automatically identifies Order Blocks on your chart. Upload a screenshot of your Synthetic Indices or TradingView chart, and in 10 seconds receive active OB zones, their validity level, and the optimal calculated entry.
 
 **Test free at profity-x.com/en**
     `.trim(),
@@ -571,15 +571,15 @@ ProfityX's AI automatically identifies Order Blocks on your chart. Upload a scre
     slug:        'best-crash-500-strategy-2026',
     lang:        'en',
     title:       'Best Crash 500 Strategy 2026 — Complete Trading Guide',
-    description: 'Discover the most effective strategy for trading the Deriv Crash 500 Index in 2026. SMC, CHoCH, risk management, and real examples.',
-    keywords:    ['Crash 500 strategy', 'trade Crash 500', 'Crash 500 Deriv 2026', 'Crash 500 signals', 'synthetic indices strategy'],
+    description: 'Discover the most effective strategy for trading the Synthetic Indices Crash 500 Index in 2026. SMC, CHoCH, risk management, and real examples.',
+    keywords:    ['Crash 500 strategy', 'trade Crash 500', 'Crash 500 Synthetic Indices 2026', 'Crash 500 signals', 'synthetic indices strategy'],
     date:        '2026-06-03',
     readTime:    9,
     category:    'Strategy',
     content: `
 ## Understanding Crash 500 Before Trading
 
-The Crash 500 Index is the inverse of Boom 1000: this Deriv synthetic instrument tends to **fall continuously**, with sudden "crashes" (sharp drops) occurring on average once every 500 ticks. This high crash frequency makes it one of the most volatile instruments on the platform.
+The Crash 500 Index is the inverse of Boom 1000: this Synthetic Indices synthetic instrument tends to **fall continuously**, with sudden "crashes" (sharp drops) occurring on average once every 500 ticks. This high crash frequency makes it one of the most volatile instruments on the platform.
 
 Its pattern: price drops slowly, then crashes brutally, bounces slightly, and resumes its descent. This repetitive pattern creates predictable opportunities for prepared traders.
 
@@ -647,9 +647,9 @@ ProfityX analyzes your Crash 500 charts and instantly identifies optimal SHORT e
   {
     slug:        'bos-choch-explained-deriv',
     lang:        'en',
-    title:       'BOS and CHoCH Explained — How to Read Market Structure on Deriv',
-    description: 'Complete guide to Break of Structure (BOS) and Change of Character (CHoCH) in SMC trading. Learn to read market structure on Deriv synthetic indices.',
-    keywords:    ['BOS trading', 'CHoCH trading', 'break of structure SMC', 'change of character forex', 'market structure Deriv'],
+    title:       'BOS and CHoCH Explained — How to Read Market Structure on Synthetic Indices',
+    description: 'Complete guide to Break of Structure (BOS) and Change of Character (CHoCH) in SMC trading. Learn to read market structure on Synthetic Indices synthetic indices.',
+    keywords:    ['BOS trading', 'CHoCH trading', 'break of structure SMC', 'change of character forex', 'market structure Synthetic Indices'],
     date:        '2026-06-04',
     readTime:    7,
     category:    'Education',

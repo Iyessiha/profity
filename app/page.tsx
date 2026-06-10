@@ -14,7 +14,7 @@ const PLANS = [
     key: 'free', name: 'FREE', price: '0', currency: 'FCFA/mois',
     color: '#888', bg: 'rgba(100,100,120,0.06)',
     credits: '10 crédits', analyses: '3 analyses/jour',
-    features: ['Signaux SMC basiques', 'Forex + Deriv', 'Calendrier macro'],
+    features: ['Signaux SMC basiques', 'Forex + Indices Synthétiques', 'Calendrier macro'],
     cta: 'COMMENCER GRATUITEMENT', href: '/auth/login',
     highlight: false,
   },
@@ -37,7 +37,7 @@ const PLANS = [
 ]
 
 const STEPS = [
-  { n: '01', icon: '📤', title: 'Uploade ton chart', desc: 'Prends une capture d\'écran de ton chart TradingView ou Deriv et uploade-la.' },
+  { n: '01', icon: '📤', title: 'Uploade ton chart', desc: 'Prends une capture d\'écran de ton chart TradingView ou Indices Synthétiques et uploade-la.' },
   { n: '02', icon: '🤖', title: 'L\'IA analyse en 10s', desc: 'Notre IA détecte les structures SMC : Order Blocks, FVG, BOS, CHoCH et Liquidité.' },
   { n: '03', icon: '🎯', title: 'Reçois ton signal', desc: 'Entrée précise, Stop Loss et 3 niveaux de Take Profit calculés automatiquement.' },
 ]
@@ -45,7 +45,7 @@ const STEPS = [
 const ASSETS = ['Boom 1000','Crash 500','GainX 600','Step Index','EUR/USD','XAU/USD','GBP/USD','USD/JPY']
 
 const FAQ = [
-  { q: 'Ça marche avec quels actifs ?', a: 'ProfityX fonctionne avec tous les actifs Deriv (Boom, Crash, Volatility, GainX, Step Index) et les paires Forex majeures (EUR/USD, GBP/USD, XAU/USD, USD/JPY…). Tu sélectionnes l\'actif dans le menu avant d\'uploader ton chart.' },
+  { q: 'Ça marche avec quels actifs ?', a: 'ProfityX fonctionne avec tous les Indices Synthétiques (Boom, Crash, Volatility, GainX, Step Index) et les paires Forex majeures (EUR/USD, GBP/USD, XAU/USD, USD/JPY…). Tu sélectionnes l\'actif dans le menu avant d\'uploader ton chart.' },
   { q: 'C\'est quoi le Smart Money Concept (SMC) ?', a: 'Le SMC est une méthode d\'analyse institutionnelle qui suit les "smart money" (grandes banques). ProfityX détecte automatiquement les Order Blocks, Fair Value Gaps, BOS et CHoCH sur ton chart.' },
   { q: 'Comment payer depuis la Côte d\'Ivoire ?', a: 'On accepte Wave, Orange Money, MTN MoMo, Moov Money, Visa et Mastercard via GeniusPay. Aucun compte bancaire international nécessaire.' },
   { q: 'Puis-je annuler à tout moment ?', a: 'Oui, aucun engagement. Tu peux annuler ton abonnement depuis ton espace compte à tout moment, sans frais.' },
@@ -268,7 +268,7 @@ export default function LandingPage() {
               { icon: '🧠', title: 'Analyse SMC', desc: 'Order Block, Fair Value Gap, BOS, CHoCH, Liquidité détectés automatiquement.' },
               { icon: '⚡', title: '10 secondes', desc: 'Signal complet en moins de 10 secondes après upload du chart.' },
               { icon: '📊', title: 'Calendrier macro', desc: 'NFP, CPI, FOMC — alertes en temps réel avec signal anticipatoire.' },
-              { icon: '🌍', title: 'Deriv + Forex', desc: 'Boom, Crash, GainX, Volatility, EUR/USD, XAU/USD et plus.' },
+              { icon: '🌍', title: 'Indices Synthétiques + Forex', desc: 'Boom, Crash, GainX, Volatility, EUR/USD, XAU/USD et plus.' },
               { icon: '📱', title: 'Mobile first', desc: 'Interface optimisée pour mobile. Installe l\'app PWA en 1 clic.' },
               { icon: '🔒', title: 'Sécurisé', desc: 'Données chiffrées SSL. Paiements via GeniusPay certifié.' },
             ].map(f => (
