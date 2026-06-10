@@ -6,6 +6,7 @@
 export const dynamic = 'force-dynamic'
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams }               from 'next/navigation'
+import { gtagPurchase }                  from '@/lib/gtag'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -22,8 +23,11 @@ function CallbackContent() {
       .then(r => r.json())
       .then(data => {
         if (data.data?.status === 'success') {
-          setPlan(data.data?.metadata?.plan ?? 'pro')
+          const p = data.data?.metadata?.plan ?? 'pro'
+          const amount = data.data?.amount ?? 0
+          setPlan(p)
           setStatus('success')
+          gtagPurchase(p as 'pro'|'elite', amount / 100, 'NGN') // 🎯 Conversion achat
           setTimeout(() => { window.location.href = '/dashboard' }, 3000)
         } else {
           setStatus('error')

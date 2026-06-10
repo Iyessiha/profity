@@ -136,6 +136,7 @@ export default function LoginPage() {
     }
 
     // Redirection directe vers le dashboard ✅
+    gtagLead()  // 🎯 Conversion Google Ads — Inscription
     window.location.replace('/dashboard')
     setLoading(false)
   }
