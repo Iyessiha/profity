@@ -50,7 +50,7 @@ export default function ResultsPage() {
     }).catch(() => setLoading(false))
   }, [])
 
-  const fmt = (n: number) => n.toLocaleString('fr-FR')
+  const fmt = (n: number) => n.toLocaleString(lang === 'en' ? 'en-US' : 'fr-FR')
   const dirColor = (d: string) => d?.includes('BUY') || d?.includes('LONG') ? '#00FFB2' : '#FF3A5C'
   const resColor = (r: string | null) => r === 'WIN' ? '#00FFB2' : r === 'LOSS' ? '#FF3A5C' : 'rgba(240,248,255,0.35)'
 
@@ -65,8 +65,25 @@ export default function ResultsPage() {
           <div style={{ width:7, height:7, borderRadius:'50%', background:'#00E676', animation:'pulse 1.5s infinite' }} />
           <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#00E676' }}>LIVE</span>
         </div>
+        {/* Switcher langue */}
+        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <span style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.3)' }}>🌐</span>
+          <a href="/" onClick={() => { localStorage.setItem('pxLang','fr') }}
+            style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, textDecoration:'none', padding:'4px 10px', borderRadius:4,
+              color: lang === 'fr' ? '#00FFB2' : 'rgba(240,248,255,0.3)',
+              background: lang === 'fr' ? 'rgba(0,255,178,0.1)' : 'transparent',
+              border: lang === 'fr' ? '1px solid rgba(0,255,178,0.3)' : '1px solid rgba(255,255,255,0.08)',
+            }}>FR</a>
+          <a href="/en" onClick={() => { localStorage.setItem('pxLang','en') }}
+            style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, textDecoration:'none', padding:'4px 10px', borderRadius:4,
+              color: lang === 'en' ? '#00D4FF' : 'rgba(240,248,255,0.3)',
+              background: lang === 'en' ? 'rgba(0,212,255,0.1)' : 'transparent',
+              border: lang === 'en' ? '1px solid rgba(0,212,255,0.3)' : '1px solid rgba(255,255,255,0.08)',
+            }}>EN</a>
+        </div>
+
         <a href="/auth/login" style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'9px 20px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
-          ESSAYER GRATUIT
+          {lang === 'en' ? 'FREE TRIAL' : 'ESSAYER GRATUIT'}
         </a>
       </header>
 
@@ -75,7 +92,7 @@ export default function ResultsPage() {
         <div style={{ textAlign:'center', marginBottom:'3rem' }}>
           <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:10 }}>TRANSPARENCE TOTALE</div>
           <h1 style={{ fontFamily:HUD, fontSize:'clamp(28px,4vw,48px)', fontWeight:900, lineHeight:1.1, marginBottom:14 }}>
-            TRACK RECORD <span style={{ color:'#00FFB2' }}>EN DIRECT</span>
+            lang === 'en' ? <>LIVE <span style={{ color:'#00FFB2' }}>TRACK RECORD</span></> : <>TRACK RECORD <span style={{ color:'#00FFB2' }}>EN DIRECT</span></>
           </h1>
           <p style={{ fontFamily:BODY, fontSize:16, color:'rgba(240,248,255,0.5)', maxWidth:520, margin:'0 auto' }}>
             Tous les signaux générés par ProfityX — WIN, LOSS et en cours. Aucun filtre, aucune triche.
@@ -116,9 +133,9 @@ export default function ResultsPage() {
                   { l:'SIGNAUX GÉNÉRÉS', v:fmt(stats.total),      s:'total cumulé',          c:'#00FFB2' },
                   { l:'CETTE SEMAINE',   v:fmt(stats.this_week),  s:'7 derniers jours',       c:'#00D4FF' },
                   { l:'TRADERS ACTIFS',  v:fmt(stats.traders),    s:'utilisateurs',           c:'#C9A84C' },
-                  { l:'R/R MOYEN',       v:stats.avg_rr ? `1:${stats.avg_rr}` : '—', s:'ratio risque/récompense', c:'#00FFB2' },
+                  { l: lang === 'en' ? 'AVG R/R' : 'R/R MOYEN',       v:stats.avg_rr ? `1:${stats.avg_rr}` : '—', s: lang === 'en' ? 'risk/reward ratio' : 'ratio risque/récompense', c:'#00FFB2' },
                   { l:'PAIRES TRADÉES',  v:fmt(stats.pairs_traded),s:'actifs différents',    c:'#00D4FF' },
-                  { l:'EN ATTENTE',      v:fmt(stats.pending),    s:'trades non encore notés', c:'rgba(240,248,255,0.4)' },
+                  { l: lang === 'en' ? 'PENDING' : 'EN ATTENTE',      v:fmt(stats.pending),    s: lang === 'en' ? 'unrated trades' : 'trades non encore notés', c:'rgba(240,248,255,0.4)' },
                 ].map(k => (
                   <div key={k.l} style={{ background:'#08111F', border:'1px solid rgba(255,255,255,0.06)', borderRadius:10, padding:'1rem' }}>
                     <div style={{ fontFamily:HUD, fontSize:6, letterSpacing:1.5, color:'rgba(240,248,255,0.4)', marginBottom:6 }}>{k.l}</div>
@@ -180,7 +197,7 @@ export default function ResultsPage() {
                     )}
                     {/* Date */}
                     <div style={{ marginLeft:'auto', fontFamily:BODY, fontSize:11, color:'rgba(240,248,255,0.25)' }}>
-                      {new Date(s.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}
+                      {new Date(s.created_at).toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}
                     </div>
                   </div>
                 ))}
@@ -204,7 +221,7 @@ export default function ResultsPage() {
             boxShadow:'0 0 30px rgba(0,255,178,0.3)',
             display:'inline-block', whiteSpace:'nowrap',
           }}>
-            COMMENCER GRATUITEMENT →
+            {lang === 'en' ? 'START FOR FREE →' : 'COMMENCER GRATUITEMENT →'}
           </a>
           <p style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.3)', marginTop:12 }}>✓ Sans carte bancaire · ✓ 10 crédits offerts</p>
         </div>
