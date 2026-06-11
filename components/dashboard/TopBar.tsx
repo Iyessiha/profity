@@ -65,6 +65,11 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
           <i className="ti ti-menu-2" style={{ fontSize: 18 }} aria-hidden="true" />
         </button>
 
+        {/* Logo */}
+        <a href="/" style={{ textDecoration:'none', flexShrink:0, display:'flex', alignItems:'center' }}>
+          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:28, width:'auto', objectFit:'contain' }} />
+        </a>
+
         {/* Horloge */}
         <div className="topbar-clock" style={{ fontFamily: HUD, color: 'var(--ac)', letterSpacing: 2, flexShrink: 0 }}>{time}</div>
         <div className="topbar-hide" style={{ width: 1, height: 16, background: 'var(--bd1)', flexShrink: 0 }} />
