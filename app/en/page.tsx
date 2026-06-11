@@ -427,7 +427,7 @@ export default function LandingEN() {
       {/* ── FOOTER ──────────────────────────────────────────── */}
       <footer style={{ position:'relative', zIndex:1, borderTop:'1px solid rgba(255,255,255,0.05)', padding:'2.5rem 2rem', maxWidth:1100, margin:'0 auto', display:'flex', flexWrap:'wrap', gap:16, justifyContent:'space-between', alignItems:'center' }}>
         <div>
-          <div style={{ fontFamily:HUD, fontSize:12, letterSpacing:2, color:'#00FFB2' }}>PROFIT<span style={{ color:'#00D4FF' }}>YX</span></div>
+          
           <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:32, width:'auto', objectFit:'contain' }} />
           <div style={{ fontFamily:BODY, fontSize:11, color:'rgba(240,248,255,0.25)' }}>By MonWe Infinity LLC</div>
         </div>

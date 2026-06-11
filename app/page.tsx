@@ -88,7 +88,7 @@ export default function LandingPage() {
 
         {/* Brand — texte seul, pas de logo */}
         <a href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
-          <span style={{ fontFamily: HUD, fontSize: 16, fontWeight: 900, letterSpacing: 2, color: '#00FFB2' }}>PROFIT<span style={{ color: '#00D4FF' }}>YX</span></span>
+          
         </a>
 
         {/* Liens desktop */}
