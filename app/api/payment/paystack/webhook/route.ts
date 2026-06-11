@@ -126,6 +126,15 @@ export async function POST(req: NextRequest) {
     }).catch(() => {})
   }
 
+  // Bonus parrainage conversion
+  const { data: refResult } = await admin.rpc('convert_referral', {
+    p_referred_id: userId,
+    p_plan: plan,
+  })
+  if (refResult?.success) {
+    console.log(`[Paystack] 🎁 Bonus parrainage: +${refResult.bonus_credits} crédits → ${refResult.referrer_email}`)
+  }
+
   console.log(`[Paystack Webhook] ✅ Plan ${plan} activé — ${credits} crédits — user:${userId}`)
   return NextResponse.json({ received: true, action: 'plan_activated', plan, credits })
 }

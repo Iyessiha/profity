@@ -181,7 +181,16 @@ export async function POST(req: NextRequest) {
       }
 
       if (logId) await db.from('webhook_logs').update({ status: 'processed' }).eq('id', logId)
-      console.log(`[Webhook] ✅ Plan ${planKey} activé — ${credits} crédits — ${userEmail}`)
+      // Bonus parrainage : filleul qui convertit → +50/100 crédits au parrain
+    const { data: refResult } = await db.rpc('convert_referral', {
+      p_referred_id: userId,
+      p_plan:        planKey,
+    })
+    if (refResult?.success) {
+      console.log(`[Webhook] 🎁 Bonus parrainage: +${refResult.bonus_credits} crédits → ${refResult.referrer_email}`)
+    }
+
+    console.log(`[Webhook] ✅ Plan ${planKey} activé — ${credits} crédits — ${userEmail}`)
       return NextResponse.json({ received: true, action: 'plan_activated', plan: planKey, credits })
     }
 
