@@ -35,7 +35,7 @@ export default function LeaderboardPage() {
     <div style={{ minHeight:'100vh', background:'#020408', color:'#F0F8FF', fontFamily:BODY }}>
       <nav style={{ position:'sticky', top:0, zIndex:100, background:'rgba(2,4,8,0.95)', backdropFilter:'blur(16px)', borderBottom:'1px solid rgba(0,255,178,0.07)', padding:'0 1.5rem', height:56, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <Link href="/" style={{ textDecoration:'none' }}>
-          <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:32, objectFit:'contain' }} />
+          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:32, objectFit:'contain' }} />
         </Link>
         <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 18px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
           JOINDRE

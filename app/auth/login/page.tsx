@@ -168,7 +168,7 @@ export default function LoginPage() {
             <img src="/logo.png" alt="ProfityX" style={{ height: 80, width: 80, objectFit: 'contain' }} />
             <div>
               <div style={{ fontFamily: HUD, fontSize: 28, letterSpacing: 4, color: '#00FFB2', lineHeight: 1 }}>
-                <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:36, width:'auto', objectFit:'contain' }} />
+                <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:36, width:'auto', objectFit:'contain' }} />
               </div>
               <div style={{ fontFamily: BODY, fontSize: 11, color: 'rgba(232,244,248,0.35)', letterSpacing: 3, marginTop: 5 }}>AI TRADING SIGNALS</div>
             </div>

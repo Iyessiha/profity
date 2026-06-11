@@ -148,7 +148,7 @@ export default function LandingEN() {
       {/* ── NAVBAR ──────────────────────────────────────────── */}
       <nav style={{ position:'sticky', top:0, zIndex:100, borderBottom:'1px solid rgba(0,255,178,0.07)', background:'rgba(2,4,8,0.95)', backdropFilter:'blur(16px)', padding:'0 1.5rem', height:60, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <a href="/en" style={{ textDecoration:'none', flexShrink:0 }}>
-          <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:40, width:'auto', objectFit:'contain' }} />
+          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:40, width:'auto', objectFit:'contain' }} />
         </a>
         <div style={{ display:'flex', alignItems:'center', gap:28 }} className="nav-desktop">
           {[['#how','How it works'],['#features','Features'],['#pricing','Pricing'],['/results','Results'],['/blog','Blog']].map(([href,label]) => (
@@ -428,7 +428,7 @@ export default function LandingEN() {
       <footer style={{ position:'relative', zIndex:1, borderTop:'1px solid rgba(255,255,255,0.05)', padding:'2.5rem 2rem', maxWidth:1100, margin:'0 auto', display:'flex', flexWrap:'wrap', gap:16, justifyContent:'space-between', alignItems:'center' }}>
         <div>
           <div style={{ fontFamily:HUD, fontSize:12, letterSpacing:2, color:'#00FFB2' }}>PROFIT<span style={{ color:'#00D4FF' }}>YX</span></div>
-          <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:32, width:'auto', objectFit:'contain' }} />
+          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:32, width:'auto', objectFit:'contain' }} />
           <div style={{ fontFamily:BODY, fontSize:11, color:'rgba(240,248,255,0.25)' }}>By MonWe Infinity LLC</div>
         </div>
         <div style={{ display:'flex', gap:20, flexWrap:'wrap' }}>

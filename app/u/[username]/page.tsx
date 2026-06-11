@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: { username: string 
     openGraph: {
       title: `${profile.full_name} trade avec ProfityX IA`,
       description: 'Voir ses signaux SMC vérifiés en temps réel.',
-      images: ['/logos/profityx-logo.jpg'],
+      images: ['/logos/profityx-logo.png'],
     },
   }
 }
@@ -62,7 +62,7 @@ export default async function PublicProfile({ params }: { params: { username: st
       {/* Nav */}
       <nav style={{ position:'sticky', top:0, zIndex:100, background:'rgba(2,4,8,0.95)', backdropFilter:'blur(16px)', borderBottom:'1px solid rgba(0,255,178,0.07)', padding:'0 1.5rem', height:56, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <Link href="/" style={{ textDecoration:'none' }}>
-          <img src="/logos/profityx-logo.jpg" alt="ProfityX" style={{ height:32, width:'auto', objectFit:'contain' }} />
+          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:32, width:'auto', objectFit:'contain' }} />
         </Link>
         <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 18px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
           ESSAI GRATUIT
