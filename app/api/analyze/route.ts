@@ -243,6 +243,19 @@ Analyze this chart. READ the visible timeframe (top-left corner or title), exact
       action_url:'/pricing', action_label:'Voir les packs' })
   }
 
+  // Telegram : envoyer le signal si chat_id configuré
+  try {
+    const { data: tgProf } = await admin.from('profiles')
+      .select('telegram_chat_id').eq('id', user.id).single()
+    if (tgProf?.telegram_chat_id) {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://profity-x.com'
+      await fetch(`${siteUrl}/api/telegram/send`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: tgProf.telegram_chat_id, signal }),
+      }).catch(() => {})
+    }
+  } catch {}
+
   return NextResponse.json({ success:true, data:signal, free_daily_smc: freeDailySmc, smc_already_used: smcAlreadyUsed, mode: analysisMode }, { status:200 })
 }
 
