@@ -45,6 +45,7 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
   const [showAnnot,setShowAnnot]= useState(true)
   const [loaded,   setLoaded]   = useState(false)
   const [dims,     setDims]     = useState({ w: 0, h: 0 })
+  const [nudge,    setNudge]    = useState(0) // calibrage vertical manuel en % de hauteur
 
   // Créer l'URL de l'image
   useEffect(() => {
@@ -66,11 +67,12 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
 
     const img = new Image()
     img.onload = () => {
-      // Dimensions adaptées à l'écran mobile
+      // Dimensions adaptées à l'écran mobile — hauteur plafonnée sans letterbox
       const maxW = Math.min(window.innerWidth - 32, 640)
       const ratio = img.height / img.width
-      const w = maxW
-      const h = Math.round(w * ratio)
+      let w = maxW
+      let h = Math.round(w * ratio)
+      if (h > 440) { h = 440; w = Math.round(h / ratio) }
 
       canvas.width  = w
       canvas.height = h
@@ -134,22 +136,46 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
             CHART ANNOTÉ · {signal.pair} {signal.timeframe}
           </span>
         </div>
-        <button onClick={() => setShowAnnot(v => !v)}
-          style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'3px 10px', borderRadius:4,
-            border:'1px solid rgba(0,255,178,0.2)', background:'transparent', color:'rgba(0,255,178,0.6)', cursor:'pointer' }}>
-          {showAnnot ? '👁 MASQUER' : '👁 AFFICHER'}
-        </button>
+        <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+          {showAnnot && (
+            <>
+              <button onClick={() => setNudge(n => Math.max(n - 1, -15))} title="Monter les tracés"
+                style={{ fontFamily:HUD, fontSize:8, padding:'3px 8px', borderRadius:4,
+                  border:'1px solid rgba(0,255,178,0.2)', background:'transparent', color:'rgba(0,255,178,0.6)', cursor:'pointer' }}>
+                ▲
+              </button>
+              <button onClick={() => setNudge(n => Math.min(n + 1, 15))} title="Descendre les tracés"
+                style={{ fontFamily:HUD, fontSize:8, padding:'3px 8px', borderRadius:4,
+                  border:'1px solid rgba(0,255,178,0.2)', background:'transparent', color:'rgba(0,255,178,0.6)', cursor:'pointer' }}>
+                ▼
+              </button>
+              {nudge !== 0 && (
+                <button onClick={() => setNudge(0)} title="Réinitialiser le calibrage"
+                  style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'3px 6px', borderRadius:4,
+                    border:'1px solid rgba(201,168,76,0.3)', background:'rgba(201,168,76,0.08)', color:'#C9A84C', cursor:'pointer' }}>
+                  ↕ {nudge > 0 ? '+' : ''}{nudge}%
+                </button>
+              )}
+            </>
+          )}
+          <button onClick={() => setShowAnnot(v => !v)}
+            style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'3px 10px', borderRadius:4,
+              border:'1px solid rgba(0,255,178,0.2)', background:'transparent', color:'rgba(0,255,178,0.6)', cursor:'pointer' }}>
+            {showAnnot ? '👁 MASQUER' : '👁 AFFICHER'}
+          </button>
+        </div>
       </div>
 
-      {/* Image + Overlay SVG */}
-      <div style={{ position:'relative', lineHeight:0 }}>
+      {/* Image + Overlay SVG — le wrapper épouse exactement le canvas (alignement pixel) */}
+      <div style={{ position:'relative', lineHeight:0, width:'fit-content', maxWidth:'100%', margin:'0 auto' }}>
         {/* Canvas pour l'image */}
         <canvas ref={canvasRef}
-          style={{ width:'100%', display:'block', maxHeight:400, objectFit:'contain' }} />
+          style={{ display:'block', maxWidth:'100%', height:'auto' }} />
 
         {/* SVG overlay — tracés courts ancrés à droite, rendu pro */}
         {loaded && showAnnot && range && dims.w > 0 && (() => {
           const fmt = (p: number) => p.toFixed(p > 100 ? 2 : 5)
+          const toY = (p: number) => priceToY(p, range.high, range.low, dims.h) + (dims.h * nudge) / 100
           const TAG_H  = 13
           const STRUCT = new Set(['bos', 'choch', 'liquidity_high', 'liquidity_low'])
 
@@ -158,7 +184,7 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
 
           // Niveaux : position Y + tag prix avec anti-chevauchement vertical
           const items = lines
-            .map(ann => ({ ann, y: priceToY(ann.price, range.high, range.low, dims.h) }))
+            .map(ann => ({ ann, y: toY(ann.price) }))
             .filter(it => it.y >= 0 && it.y <= dims.h)
             .sort((a, b) => a.y - b.y)
             .map(it => ({ ...it, tagY: Math.max(TAG_H / 2 + 2, Math.min(dims.h - TAG_H / 2 - 2, it.y)) }))
@@ -174,8 +200,8 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
             >
               {/* Zones OB / FVG : boîtes compactes sur la moitié droite */}
               {zones.map((ann, i) => {
-                const yA = priceToY(ann.price, range.high, range.low, dims.h)
-                const yB = priceToY(ann.zone_end!, range.high, range.low, dims.h)
+                const yA = toY(ann.price)
+                const yB = toY(ann.zone_end!)
                 const yTop = Math.max(0, Math.min(yA, yB))
                 const yBot = Math.min(dims.h, Math.max(yA, yB))
                 if (yBot <= 0 || yTop >= dims.h) return null

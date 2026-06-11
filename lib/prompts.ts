@@ -133,9 +133,13 @@ export function getElitePrompt(locale: string): string {
   "raw_analysis": ""
 
 RÈGLES ANNOTATIONS :
-- chart_range.high et chart_range.low = prix le plus haut et le plus bas VISIBLES sur le chart
+- CALIBRAGE chart_range (CRUCIAL pour aligner les tracés sur l'image) :
+  chart_range.high = prix correspondant au BORD SUPÉRIEUR de l'image (pixel tout en haut)
+  chart_range.low  = prix correspondant au BORD INFÉRIEUR de l'image (pixel tout en bas, axe du temps inclus)
+  Méthode : repère 2 graduations de l'axe des prix à droite, déduis l'échelle prix/pixel, puis EXTRAPOLE jusqu'aux bords haut et bas de l'image.
+  NE DONNE PAS le plus haut / plus bas des bougies : l'image a des marges au-dessus de la price action et l'axe du temps en dessous — chart_range doit couvrir TOUTE la hauteur de l'image.
 - N'inclure que les annotations pertinentes (retirer celles à prix 0)
-- Les prices doivent être dans [chart_range.low, chart_range.high]
+- Les prices des annotations doivent être dans [chart_range.low, chart_range.high]
 - Zone annotations : price = bas de la zone, zone_end = haut de la zone`
   )
 }
