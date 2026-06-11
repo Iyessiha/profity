@@ -47,6 +47,9 @@ function UrgencyBanner() {
   )
 }
 
+// ─── Réduction annuelle : -2 mois offerts (≈ 17% d'économie) ────
+const ANNUAL_DISCOUNT = 10  // mois facturés sur 12
+
 const PLANS = [
   {
     key: 'free' as Plan, name: 'STARTER', price: '0', period: 'pour toujours',
@@ -61,7 +64,7 @@ const PLANS = [
     missing: ['Analyse SMC professionnelle', 'Crédits mensuels renouvelés', 'Alertes push NFP/CPI'],
   },
   {
-    key: 'pro' as Plan, name: 'PRO', price: '17 500', period: 'par mois',
+    key: 'pro' as Plan, name: 'PRO', price: '17 500', priceYear: '150 000', period: 'par mois', periodYear: 'par an',
     color: '#00B890', featured: true, headline: '87% des traders actifs choisissent Pro',
     promo: '🔥 POPULAIRE',
     credits: 150, creditLabel: '150 crédits/mois',
@@ -78,7 +81,7 @@ const PLANS = [
     missing: [],
   },
   {
-    key: 'elite' as Plan, name: 'ELITE', price: '35 000', period: 'par mois',
+    key: 'elite' as Plan, name: 'ELITE', price: '35 000', priceYear: '300 000', period: 'par mois', periodYear: 'par an',
     color: '#92671A', featured: false, headline: 'Pour les traders sérieux — tout sans limite',
     credits: 600, creditLabel: '600 crédits/mois',
     perks: [
@@ -280,6 +283,31 @@ export default function PricingPage() {
           </div>
         </div>
 
+        {/* Toggle mensuel / annuel */}
+        <div style={{ display:'flex', justifyContent:'center', margin:'0 0 2rem' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:4, gap:4 }}>
+            {(['monthly','annual'] as const).map(b => (
+              <button key={b} onClick={() => setBilling(b)} style={{
+                fontFamily:HUD, fontSize:9, letterSpacing:2, padding:'8px 18px', borderRadius:6,
+                border:'none', cursor:'pointer', transition:'all .2s',
+                background: billing === b ? 'var(--ac)' : 'transparent',
+                color: billing === b ? '#020408' : 'rgba(240,248,255,0.5)',
+                fontWeight: billing === b ? 700 : 400,
+              }}>
+                {b === 'monthly'
+                  ? (lang === 'en' ? 'MONTHLY' : 'MENSUEL')
+                  : <span style={{ display:'flex', alignItems:'center', gap:6 }}>
+                      {lang === 'en' ? 'ANNUAL' : 'ANNUEL'}
+                      <span style={{ fontSize:7, background:'rgba(0,255,178,0.15)', padding:'2px 7px', borderRadius:4, color:'var(--ac)' }}>
+                        {lang === 'en' ? '2 MONTHS FREE' : '2 MOIS OFFERTS'}
+                      </span>
+                    </span>
+                }
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Plans */}
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:16, marginBottom:'2rem' }}>
           {PLANS.map(plan => {
@@ -302,10 +330,10 @@ export default function PricingPage() {
                 <div style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:c, marginBottom:6 }}>{plan.name}</div>
                 <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', marginBottom:12 }}>{plan.headline}</div>
                 <div style={{ display:'flex', alignItems:'baseline', gap:6, marginBottom:4 }}>
-                  <span style={{ fontFamily:HUD, fontSize:28, fontWeight:900, color:'var(--tx0)', lineHeight:1 }}>{plan.price}</span>
+                  <span style={{ fontFamily:HUD, fontSize:28, fontWeight:900, color:'var(--tx0)', lineHeight:1 }}>{billing === 'annual' && (plan as {priceYear?: string}).priceYear ? (plan as {priceYear?: string}).priceYear! : plan.price}</span>
                   <span style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>FCFA</span>
                 </div>
-                <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', marginBottom:'1rem' }}>{plan.period}</div>
+                <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', marginBottom:'1rem' }}>{billing === 'annual' && (plan as {periodYear?: string}).periodYear ? (plan as {periodYear?: string}).periodYear! : plan.period}</div>
 
                 {/* Badge crédits */}
                 <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:`color-mix(in srgb, ${c} 10%, transparent)`, border:`1px solid color-mix(in srgb, ${c} 25%, transparent)`, borderRadius:6, padding:'6px 12px', marginBottom:'1.25rem' }}>
