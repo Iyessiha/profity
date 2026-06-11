@@ -47,6 +47,21 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
   const [dims,     setDims]     = useState({ w: 0, h: 0 })
   const [nudge,    setNudge]    = useState(0) // calibrage vertical manuel en % de hauteur
 
+  // Recharger le calibrage mémorisé (appliqué à toutes les analyses futures)
+  useEffect(() => {
+    try {
+      const saved = parseInt(localStorage.getItem('px_chart_nudge') ?? '', 10)
+      if (!Number.isNaN(saved) && saved >= -15 && saved <= 15 && saved !== 0) setNudge(saved)
+    } catch {}
+  }, [])
+
+  // Appliquer + mémoriser le calibrage
+  const applyNudge = (next: number) => {
+    const v = Math.max(-15, Math.min(15, next))
+    setNudge(v)
+    try { localStorage.setItem('px_chart_nudge', String(v)) } catch {}
+  }
+
   // Créer l'URL de l'image
   useEffect(() => {
     if (imageFile) {
@@ -139,18 +154,18 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
         <div style={{ display:'flex', alignItems:'center', gap:5 }}>
           {showAnnot && (
             <>
-              <button onClick={() => setNudge(n => Math.max(n - 1, -15))} title="Monter les tracés"
+              <button onClick={() => applyNudge(nudge - 1)} title="Monter les tracés (mémorisé)"
                 style={{ fontFamily:HUD, fontSize:8, padding:'3px 8px', borderRadius:4,
                   border:'1px solid rgba(0,255,178,0.2)', background:'transparent', color:'rgba(0,255,178,0.6)', cursor:'pointer' }}>
                 ▲
               </button>
-              <button onClick={() => setNudge(n => Math.min(n + 1, 15))} title="Descendre les tracés"
+              <button onClick={() => applyNudge(nudge + 1)} title="Descendre les tracés (mémorisé)"
                 style={{ fontFamily:HUD, fontSize:8, padding:'3px 8px', borderRadius:4,
                   border:'1px solid rgba(0,255,178,0.2)', background:'transparent', color:'rgba(0,255,178,0.6)', cursor:'pointer' }}>
                 ▼
               </button>
               {nudge !== 0 && (
-                <button onClick={() => setNudge(0)} title="Réinitialiser le calibrage"
+                <button onClick={() => applyNudge(0)} title="Réinitialiser le calibrage"
                   style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'3px 6px', borderRadius:4,
                     border:'1px solid rgba(201,168,76,0.3)', background:'rgba(201,168,76,0.08)', color:'#C9A84C', cursor:'pointer' }}>
                   ↕ {nudge > 0 ? '+' : ''}{nudge}%

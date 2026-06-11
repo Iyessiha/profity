@@ -434,6 +434,9 @@ export default function AnalysisPage() {
                     <div style={{ fontFamily:HUD, fontSize:13, letterSpacing:2, color:'var(--tx1)', marginBottom:8 }}>UPLOADEZ VOTRE CHART</div>
                     <div style={{ fontFamily:BODY, fontSize:14, color:'var(--tx2)', marginBottom:6 }}>Glissez-déposez ou cliquez pour choisir</div>
                     <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>JPG · PNG · WEBP · Max 8 Mo</div>
+                    <div style={{ fontFamily:BODY, fontSize:12, color:'#C9A84C', marginTop:10, opacity:0.85 }}>
+                      💡 Tracés au pixel près : capturez le chart en plein écran — PC, tablette ou téléphone en paysage
+                    </div>
                     <input ref={fileRef} type="file" accept="image/*" style={{ display:'none' }} onChange={e=>{const f=e.target.files?.[0];if(f)handleFile(f)}} />
                   </div>
                 ) : (
