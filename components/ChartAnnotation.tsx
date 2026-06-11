@@ -147,62 +147,87 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
         <canvas ref={canvasRef}
           style={{ width:'100%', display:'block', maxHeight:400, objectFit:'contain' }} />
 
-        {/* SVG overlay */}
-        {loaded && showAnnot && range && dims.w > 0 && (
-          <svg
-            viewBox={`0 0 ${dims.w} ${dims.h}`}
-            style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', pointerEvents:'none' }}
-            preserveAspectRatio="none"
-          >
-            {effectiveAnnotations.map((ann, i) => {
-              const y = priceToY(ann.price, range.high, range.low, dims.h)
-              if (y < 0 || y > dims.h) return null
-              const color = ann.color || TYPE_COLORS[ann.type] || '#00FFB2'
+        {/* SVG overlay — tracés courts ancrés à droite, rendu pro */}
+        {loaded && showAnnot && range && dims.w > 0 && (() => {
+          const fmt = (p: number) => p.toFixed(p > 100 ? 2 : 5)
+          const TAG_H  = 13
+          const STRUCT = new Set(['bos', 'choch', 'liquidity_high', 'liquidity_low'])
 
-              if (ann.style === 'zone' && ann.zone_end != null) {
-                const y2 = priceToY(ann.zone_end, range.high, range.low, dims.h)
-                const yTop = Math.min(y, y2), yBot = Math.max(y, y2)
+          const zones = effectiveAnnotations.filter(a => a.style === 'zone' && a.zone_end != null)
+          const lines = effectiveAnnotations.filter(a => !(a.style === 'zone' && a.zone_end != null))
+
+          // Niveaux : position Y + tag prix avec anti-chevauchement vertical
+          const items = lines
+            .map(ann => ({ ann, y: priceToY(ann.price, range.high, range.low, dims.h) }))
+            .filter(it => it.y >= 0 && it.y <= dims.h)
+            .sort((a, b) => a.y - b.y)
+            .map(it => ({ ...it, tagY: Math.max(TAG_H / 2 + 2, Math.min(dims.h - TAG_H / 2 - 2, it.y)) }))
+          for (let i = 1; i < items.length; i++) {
+            if (items[i].tagY - items[i - 1].tagY < TAG_H + 1) items[i].tagY = items[i - 1].tagY + TAG_H + 1
+          }
+
+          return (
+            <svg
+              viewBox={`0 0 ${dims.w} ${dims.h}`}
+              style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', pointerEvents:'none' }}
+              preserveAspectRatio="none"
+            >
+              {/* Zones OB / FVG : boîtes compactes sur la moitié droite */}
+              {zones.map((ann, i) => {
+                const yA = priceToY(ann.price, range.high, range.low, dims.h)
+                const yB = priceToY(ann.zone_end!, range.high, range.low, dims.h)
+                const yTop = Math.max(0, Math.min(yA, yB))
+                const yBot = Math.min(dims.h, Math.max(yA, yB))
+                if (yBot <= 0 || yTop >= dims.h) return null
+                const color = ann.color || TYPE_COLORS[ann.type] || '#00FFB2'
+                const x0 = dims.w * 0.52
+                const zw = dims.w * 0.465
+                const tall = yBot - yTop >= 12
                 return (
-                  <g key={i}>
-                    <rect x={0} y={yTop} width={dims.w} height={yBot - yTop}
-                      fill={color} fillOpacity={0.12} />
-                    <line x1={0} y1={yTop} x2={dims.w} y2={yTop}
-                      stroke={color} strokeWidth={1} strokeOpacity={0.5} />
-                    <line x1={0} y1={yBot} x2={dims.w} y2={yBot}
-                      stroke={color} strokeWidth={1} strokeOpacity={0.5} />
-                    <text x={6} y={yTop - 3} fill={color} fontSize={9}
-                      fontFamily="Orbitron, monospace" opacity={0.9}>
+                  <g key={`z${i}`}>
+                    <rect x={x0} y={yTop} width={zw} height={Math.max(yBot - yTop, 1.5)} rx={2}
+                      fill={color} fillOpacity={0.10} stroke={color} strokeWidth={0.8} strokeOpacity={0.4} />
+                    <text x={x0 + 5} y={tall ? (yTop + yBot) / 2 : Math.max(yTop - 4, 7)}
+                      fill={color} fontSize={7} fontFamily="Orbitron, monospace"
+                      dominantBaseline={tall ? 'middle' : 'auto'} opacity={0.85} letterSpacing={0.5}>
                       {ann.label}
                     </text>
                   </g>
                 )
-              }
+              })}
 
-              const dashArray = ann.style === 'dashed' ? '5,3' : undefined
-
-              return (
-                <g key={i}>
-                  <line x1={0} y1={y} x2={dims.w} y2={y}
-                    stroke={color} strokeWidth={1.5} strokeOpacity={0.85}
-                    strokeDasharray={dashArray} />
-                  {/* Label */}
-                  <rect x={2} y={y - 10} width={ann.label.length * 6 + 8} height={13}
-                    rx={2} fill={color} fillOpacity={0.15} />
-                  <text x={6} y={y} fill={color} fontSize={9}
-                    fontFamily="Orbitron, monospace" dominantBaseline="middle" opacity={0.95}>
-                    {ann.label}
-                  </text>
-                  {/* Niveau prix côté droit */}
-                  <text x={dims.w - 4} y={y} fill={color} fontSize={8}
-                    fontFamily="Orbitron, monospace" dominantBaseline="middle"
-                    textAnchor="end" opacity={0.8}>
-                    {ann.price.toFixed(ann.price > 100 ? 2 : 5)}
-                  </text>
-                </g>
-              )
-            })}
-          </svg>
-        )}
+              {/* Niveaux : segment court + tag prix aligné à droite */}
+              {items.map(({ ann, y, tagY }, i) => {
+                const color    = ann.color || TYPE_COLORS[ann.type] || '#00FFB2'
+                const isStruct = STRUCT.has(ann.type)
+                const xStart   = dims.w * (isStruct ? 0.68 : 0.55)
+                const text     = `${ann.label} ${fmt(ann.price)}`
+                const tagW     = text.length * 5 + 10
+                const tagX     = dims.w - tagW - 3
+                const dash     = ann.style === 'dashed' ? (isStruct ? '2,3' : '5,3') : undefined
+                return (
+                  <g key={i}>
+                    <circle cx={xStart} cy={y} r={1.6} fill={color} fillOpacity={isStruct ? 0.55 : 0.9} />
+                    <line x1={xStart} y1={y} x2={tagX - 4} y2={y}
+                      stroke={color} strokeWidth={isStruct ? 0.8 : 1.1}
+                      strokeOpacity={isStruct ? 0.55 : 0.85}
+                      strokeDasharray={dash} strokeLinecap="round" />
+                    {Math.abs(tagY - y) > 1 && (
+                      <line x1={tagX - 4} y1={y} x2={tagX} y2={tagY}
+                        stroke={color} strokeWidth={0.6} strokeOpacity={0.35} />
+                    )}
+                    <rect x={tagX} y={tagY - TAG_H / 2} width={tagW} height={TAG_H} rx={2.5}
+                      fill="rgba(2,4,8,0.88)" stroke={color} strokeWidth={0.7} strokeOpacity={0.8} />
+                    <text x={tagX + tagW / 2} y={tagY + 0.5} textAnchor="middle" dominantBaseline="middle"
+                      fill={color} fontSize={7.5} fontFamily="Orbitron, monospace" letterSpacing={0.3}>
+                      {text}
+                    </text>
+                  </g>
+                )
+              })}
+            </svg>
+          )
+        })()}
       </div>
 
       {/* Légende */}
