@@ -14,7 +14,10 @@ interface Props { tab: Tab; setTab: (t: Tab) => void; plan: string; locale: stri
 // Clé localStorage — changer la valeur force le badge à réapparaître pour tous les users
 const ANALYSIS_BADGE_KEY = 'px_seen_chart_v2'
 
-const NAV_GROUPS = [
+const NAV_GROUPS: {
+  labelFr: string; labelEn: string
+  items: { key: string; icon: string; fr: string; en: string; href: string; badge: string | null }[]
+}[] = [
   {
     labelFr: 'TRADING',
     labelEn: 'TRADING',
@@ -43,7 +46,7 @@ const NAV_GROUPS = [
       { key: 'support',    icon: 'ti-headset',     fr: 'ASSISTANCE',   en: 'SUPPORT',      href: '/support',   badge: null },
     ],
   },
-] as const
+] 
 
 const PLAN_COLORS: Record<string, string> = { free: '#888', pro: '#00B890', elite: '#92671A' }
 const HUD  = "'Orbitron', monospace"
