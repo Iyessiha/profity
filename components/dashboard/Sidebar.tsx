@@ -21,7 +21,7 @@ const NAV_GROUPS = [
     items: [
       { key: 'dashboard', icon: 'ti-layout-dashboard', fr: 'TABLEAU DE BORD', en: 'DASHBOARD',    href: '/dashboard', badge: null  },
       { key: 'chart',     icon: 'ti-chart-candle',     fr: 'ANALYSE IA',     en: 'AI ANALYSIS',  href: '/analysis',  badge: 'NEW' },
-      { key: 'calendar',  icon: 'ti-news',             fr: 'ANNONCES MACRO', en: 'MACRO NEWS',   href: '/news',      badge: null  },
+      { key: 'calendar',  icon: 'ti-news',             fr: 'ANNONCES MACRO', en: 'MACRO NEWS',   href: '/news',      badge: 'LIVE' },
       { key: 'history',   icon: 'ti-history',          fr: 'HISTORIQUE',     en: 'HISTORY',      href: '/history',   badge: null  },
     ],
   },
@@ -30,14 +30,14 @@ const NAV_GROUPS = [
     labelEn: 'TOOLS',
     items: [
       { key: 'journal',    icon: 'ti-notebook',    fr: 'JOURNAL',     en: 'JOURNAL',     href: '/journal',     badge: 'NEW' },
-      { key: 'calculator', icon: 'ti-calculator',  fr: 'CALCULATEUR', en: 'CALCULATOR',  href: '/calculator',  badge: null  },
+      { key: 'calculator', icon: 'ti-calculator',  fr: 'CALCULATEUR', en: 'CALCULATOR',  href: '/calculator',  badge: 'PRO'  },
     ],
   },
   {
     labelFr: 'COMPTE',
     labelEn: 'ACCOUNT',
     items: [
-      { key: 'referral',   icon: 'ti-users-plus',  fr: 'PARRAINAGE',   en: 'REFERRAL',     href: '/referral',  badge: null },
+      { key: 'referral',   icon: 'ti-users-plus',  fr: 'PARRAINAGE',   en: 'REFERRAL',     href: '/referral',  badge: '+20 CR' },
       { key: 'pricing',    icon: 'ti-credit-card', fr: 'ABONNEMENT',   en: 'SUBSCRIPTION', href: '/pricing',   badge: null },
       { key: 'settings',   icon: 'ti-settings',    fr: 'PARAMÈTRES',   en: 'SETTINGS',     href: '/settings',  badge: null },
       { key: 'support',    icon: 'ti-headset',     fr: 'ASSISTANCE',   en: 'SUPPORT',      href: '/support',   badge: null },
@@ -181,16 +181,25 @@ export default function Sidebar({ plan, locale }: Props) {
                     <span className="sidebar-label" style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 1.5, color: isActive ? 'var(--ac)' : inactiveColor, fontWeight: isActive ? 700 : 400, flex: 1 }}>
                       {label}
                     </span>
-                    {(item.key === 'chart' ? chartBadge : item.badge) && (
-                      <span className="sidebar-label" style={{
-                        fontFamily: HUD, fontSize: 6, letterSpacing: 1,
-                        background: item.key === 'chart' ? '#00FFB2' : 'var(--ac2)',
-                        color: '#020408', borderRadius: 3, padding: '2px 5px', fontWeight: 700,
-                        animation: item.key === 'chart' && chartBadge ? 'px-pulse 2s ease-in-out infinite' : undefined,
-                      }}>
-                        {item.key === 'chart' ? 'NEW' : item.badge}
-                      </span>
-                    )}
+                    {(item.key === 'chart' ? chartBadge : item.badge) && (() => {
+                      const txt = item.key === 'chart' ? 'NEW' : item.badge as string
+                      const styles: Record<string, React.CSSProperties> = {
+                        NEW:    { background: '#00FFB2', color: '#020408', animation: 'px-pulse 2s ease-in-out infinite' },
+                        LIVE:   { background: '#FF6B35', color: '#fff' },
+                        PRO:    { background: 'rgba(201,168,76,0.18)', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.4)' },
+                        '+20 CR': { background: 'rgba(0,212,255,0.12)', color: '#00D4FF', border: '1px solid rgba(0,212,255,0.35)' },
+                      }
+                      const s = styles[txt] ?? { background: 'var(--ac2)', color: '#020408' }
+                      return (
+                        <span className="sidebar-label" style={{
+                          fontFamily: HUD, fontSize: 6, letterSpacing: 1,
+                          borderRadius: 3, padding: '2px 5px', fontWeight: 700, flexShrink: 0,
+                          ...s,
+                        }}>
+                          {txt}
+                        </span>
+                      )
+                    })()}
                   </a>
                 )
               })}
