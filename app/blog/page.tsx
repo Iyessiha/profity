@@ -1,7 +1,8 @@
-'use client'
 import { POSTS } from '@/lib/blog-posts'
 import { Metadata } from 'next'
 import Link from 'next/link'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Blog Trading SMC — Stratégies, Tutoriels et Signaux | ProfityX',
@@ -17,13 +18,6 @@ export const metadata: Metadata = {
   },
 }
 
-import { useEffect, useState } from 'react'
-
-function useLang() {
-  const [l,s]=useState('fr')
-  useEffect(()=>{s(localStorage.getItem('pxLang')||'fr')},[]);return l
-}
-
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 
@@ -34,7 +28,6 @@ const CAT_COLORS: Record<string, string> = {
 }
 
 export default function BlogPage() {
-  const lang = useLang()
   const frPosts = POSTS.filter(p => p.lang === 'fr')
   const enPosts = POSTS.filter(p => p.lang === 'en')
 

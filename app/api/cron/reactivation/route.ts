@@ -3,13 +3,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '@/lib/email'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   const secret = req.headers.get('x-cron-secret') || new URL(req.url).searchParams.get('secret')
   if (secret !== process.env.PROFITY_CRON_KEY && process.env.NODE_ENV !== 'development') {
     return NextResponse.json({ error:'Unauthorized' }, { status:401 })
   }
 
-  const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth:{autoRefreshToken:false,persistSession:false} })
+  const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co', process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key', { auth:{autoRefreshToken:false,persistSession:false} })
 
   // Utilisateurs inactifs depuis 7 jours (pas de connexion = last_active_date)
   const cutoff = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0,10)

@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-dynamic'
 // ============================================================
 // PROFITYX — /results : Track record public live
 // Accessible sans connexion — preuve sociale
@@ -37,6 +38,7 @@ export default function ResultsPage() {
   const [signals, setSignals] = useState<Signal[]>([])
   const [loading, setLoading] = useState(true)
 
+  const [lang, setLang] = useState('fr')
   useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
 
   useEffect(() => {

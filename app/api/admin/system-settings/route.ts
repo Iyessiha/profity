@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/admin-auth'
 import { createClient } from '@supabase/supabase-js'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   const auth = await requireAdmin(req)
   if ('error' in auth) return NextResponse.json({ error: auth.error }, { status: auth.status })
   const { anthropic_budget, anthropic_spent, xof_per_usd } = await req.json()
-  const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+  const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co', process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key')
   // Stocker dans une table settings
   await admin.from('system_settings').upsert([
     { key: 'anthropic_budget', value: String(anthropic_budget ?? 500) },

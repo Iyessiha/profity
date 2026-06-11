@@ -6,6 +6,8 @@ import { saveChartAnalysis }         from '@/lib/supabase'
 import { rateLimit }                 from '@/lib/rate-limit'
 import type { ApiResponse, ChartSignal } from '@/types'
 
+export const dynamic = 'force-dynamic'
+
 const MAX_SIZE_MB = 4.5
 
 export async function POST(req: NextRequest) {
@@ -14,7 +16,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json<ApiResponse<null>>({ success:false, error:'Non authentifié', code:'UNAUTHORIZED' }, { status:401 })
 
   const token = authHeader.replace('Bearer ', '')
-  const anon  = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+  const anon  = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-anon-key')
   const { data:{ user }, error:authErr } = await anon.auth.getUser(token)
   if (authErr || !user)
     return NextResponse.json<ApiResponse<null>>({ success:false, error:'Token invalide', code:'UNAUTHORIZED' }, { status:401 })
@@ -26,8 +28,8 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key',
     { auth:{ autoRefreshToken:false, persistSession:false } }
   )
 
@@ -68,8 +70,8 @@ export async function POST(req: NextRequest) {
   } else {
     // Free : vérifier et consommer le SMC gratuit du jour
     const admin2 = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+      process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key',
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
     const { data: smcResult } = await admin2.rpc('check_free_smc', { p_user_id: user.id })

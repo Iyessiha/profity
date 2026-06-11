@@ -148,6 +148,7 @@ function useLang() {
 
 export default function PricingPage() {
   const lang = useLang()
+  const [billing,     setBilling]     = useState<'monthly'|'annual'>('monthly')
   const [currentPlan, setCurrentPlan] = useState<Plan>('free')
   const [loading,     setLoading]     = useState<Plan|null>(null)
   const [loadingPack, setLoadingPack] = useState<string|null>(null)

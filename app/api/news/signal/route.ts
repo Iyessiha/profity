@@ -8,10 +8,13 @@ import { createClient }              from '@supabase/supabase-js'
 import { getNewsPrompt }             from '@/lib/prompts'
 import { parseClaudeJSON, validateNewsSignal } from '@/lib/parser'
 import {
+
   checkAndConsumeNewsQuota,
   saveNewsSignal,
 } from '@/lib/supabase'
 import type { ApiResponse, NewsSignal } from '@/types'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
   // ----------------------------------------------------------
@@ -27,8 +30,8 @@ export async function POST(req: NextRequest) {
 
   const token = authHeader.replace('Bearer ', '')
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-anon-key'
   )
 
   const { data: { user }, error: authError } = await supabase.auth.getUser(token)

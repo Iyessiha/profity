@@ -5,6 +5,8 @@
 import { NextRequest, NextResponse }       from 'next/server'
 import { requireAdmin, supabaseAdmin, logAdminAction } from '@/lib/admin'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   const auth = await requireAdmin(req)
   if (!auth.ok) return auth.error!

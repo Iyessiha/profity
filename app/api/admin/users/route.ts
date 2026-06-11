@@ -7,6 +7,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin, supabaseAdmin, logAdminAction } from '@/lib/admin'
 
+export const dynamic = 'force-dynamic'
+
 const PLAN_AMOUNTS: Record<string, number> = { free: 0, pro: 17500, elite: 35000 }
 
 // ─── GET : liste des utilisateurs ─────────────────────────

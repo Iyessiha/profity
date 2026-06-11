@@ -8,6 +8,8 @@ import { createClient }              from '@supabase/supabase-js'
 import { sendEmail }                  from '@/lib/email'
 import { createHmac }                 from 'node:crypto'
 
+export const dynamic = 'force-dynamic'
+
 const PLAN_CREDITS: Record<string, number> = { pro: 150, elite: 600 }
 
 export async function POST(req: NextRequest) {
@@ -50,8 +52,8 @@ export async function POST(req: NextRequest) {
 
   const credits = PLAN_CREDITS[plan]
   const admin   = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key',
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
 

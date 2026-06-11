@@ -8,15 +8,19 @@ import { createClient }              from '@supabase/supabase-js'
 import webpush                       from 'web-push'
 
 // Configurer web-push avec les clés VAPID
-webpush.setVapidDetails(
-  `mailto:${process.env.VAPID_EMAIL ?? 'monweci@gmail.com'}`,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-)
+
+export const dynamic = 'force-dynamic'
+if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    `mailto:${process.env.VAPID_EMAIL ?? 'monweci@gmail.com'}`,
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  )
+}
 
 const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key',
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 

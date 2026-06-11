@@ -1,5 +1,6 @@
 'use client'
 export const dynamic = 'force-dynamic'
+import { useState, useEffect } from 'react'
 import { useTheme } from '@/lib/theme'
 
 const HUD  = "'Orbitron', monospace"
@@ -7,8 +8,8 @@ const BODY = "'Rajdhani', sans-serif"
 
 export default function SupportPage() {
   const { toggleTheme, theme } = useTheme()
-  const [lang, setLang] = React.useState('fr')
-  React.useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
+  const [lang, setLang] = useState('fr')
+  useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
   return (
     <div style={{ minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY, display:'flex', flexDirection:'column' }}>
       {/* Header */}

@@ -6,6 +6,8 @@ import { createClient } from '@supabase/supabase-js'
 import { sendText, sendButtons, markAsRead, extractText } from '@/lib/whatsapp'
 import { AGENT_SYSTEM_PROMPT } from '@/lib/whatsapp-prompt'
 
+export const dynamic = 'force-dynamic'
+
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN!
 
 // ── GET : vérification du webhook par Meta ────────────────────
@@ -47,8 +49,8 @@ export async function POST(req: NextRequest) {
 
     // DB
     const db = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+      process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key',
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
 

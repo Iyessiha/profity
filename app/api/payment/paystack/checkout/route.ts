@@ -5,6 +5,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 
+export const dynamic = 'force-dynamic'
+
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY ?? ''
 const SITE_URL        = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://profity-x.com'
 
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
   const reference = `PX-${Date.now()}-${Math.random().toString(36).slice(2,8).toUpperCase()}`
 
   // Sauvegarder la référence en DB pour la retrouver dans le webhook
-  const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+  const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co', process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key')
   await admin.from('payment_transactions').insert({
     geniuspay_ref: reference,
     user_id,

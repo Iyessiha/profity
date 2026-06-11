@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { sendEmail }                  from '@/lib/email'
 
+export const dynamic = 'force-dynamic'
+
 const SEQUENCE_DAYS = [0, 1, 3, 7, 14] // jours de la séquence
 
 export async function POST(req: NextRequest) {
@@ -15,8 +17,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Email et mot de passe requis' }, { status: 400 })
 
   const admin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key',
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
 
@@ -60,8 +62,8 @@ export async function POST(req: NextRequest) {
 
   // 4. Connexion automatique pour récupérer le token
   const anon = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-anon-key'
   )
   const { data: signIn, error: signInErr } = await anon.auth.signInWithPassword({ email, password })
 

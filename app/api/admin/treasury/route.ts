@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 
 // ── Constantes financières ───────────────────────────────────
+
+export const dynamic = 'force-dynamic'
 const XOF_PER_USD       = 620
 const ANTHROPIC_BUDGET  = 500    // Budget mensuel Anthropic en $
 const ANTHROPIC_SPENT   = 0.80   // Dépensé ce mois (à remplacer par API Anthropic quand disponible)
@@ -16,7 +18,7 @@ const PLAN_PRICES: Record<string, number> = { pro: 17500, elite: 35000 }
 async function getUser(req: NextRequest) {
   const token = req.headers.get('Authorization')?.replace('Bearer ', '')
   if (!token) return null
-  const anon = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+  const anon = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-anon-key')
   const { data: { user } } = await anon.auth.getUser(token)
   return user
 }
@@ -26,8 +28,8 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
 
   const admin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key',
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
 

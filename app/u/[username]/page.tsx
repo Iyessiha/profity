@@ -2,6 +2,7 @@
 // PROFITYX — /u/[username]
 // Track record public partageable par chaque trader
 // ============================================================
+export const dynamic = 'force-dynamic'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
@@ -11,8 +12,8 @@ const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 
 const db = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key',
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
