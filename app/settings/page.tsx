@@ -462,6 +462,54 @@ export default function SettingsPage() {
           {/* ── NOTIFICATIONS ─────────────────────────────── */}
           {tab === 'notifications' && (
             <div>
+              {/* ── TELEGRAM ─────────────────────────────── */}
+              <div style={cardStyle}>
+                <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#00D4FF', marginBottom:'0.75rem' }}>
+                  📱 ALERTES TELEGRAM
+                </div>
+
+                {plan === 'free' ? (
+                  <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:8, padding:'1rem', textAlign:'center' }}>
+                    <div style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.5)', marginBottom:12 }}>
+                      Recevez vos signaux directement sur Telegram.
+                    </div>
+                    <a href="/pricing" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'9px 18px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+                      PASSER EN PRO →
+                    </a>
+                  </div>
+                ) : (
+                  <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+                    {/* Badge limite */}
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8 }}>
+                      <div style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.7)' }}>
+                        {plan === 'elite'
+                          ? '✅ Alertes illimitées — Plan ELITE'
+                          : '⚡ 3 alertes/mois incluses — Plan PRO'}
+                      </div>
+                      {plan === 'pro' && (
+                        <a href="/pricing" style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'#C9A84C', border:'1px solid rgba(201,168,76,0.3)', padding:'4px 12px', borderRadius:4, textDecoration:'none' }}>
+                          ILLIMITÉ EN ELITE
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Instructions connexion */}
+                    <div style={{ background:'rgba(0,212,255,0.04)', border:'1px solid rgba(0,212,255,0.12)', borderRadius:8, padding:'1rem' }}>
+                      <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(0,212,255,0.7)', marginBottom:10 }}>COMMENT CONNECTER</div>
+                      <div style={{ display:'flex', flexDirection:'column', gap:8, fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.6)' }}>
+                        <div>1. Ouvrez Telegram et cherchez <strong style={{ color:'#00D4FF' }}>@ProfityXBot</strong></div>
+                        <div>2. Envoyez la commande <strong style={{ color:'#00D4FF' }}>/start</strong></div>
+                        <div>3. Copiez votre <strong>Chat ID</strong> reçu en réponse</div>
+                        <div>4. Collez-le ci-dessous</div>
+                      </div>
+                    </div>
+
+                    {/* Input Chat ID */}
+                    <TelegramConnect plan={plan as string} />
+                  </div>
+                )}
+              </div>
+
               {/* Push Web */}
               <div style={cardStyle}>
                 <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#00D4FF', marginBottom:'1.25rem' }}>
@@ -751,6 +799,69 @@ export default function SettingsPage() {
   )
 }
 
+
+
+// ─────────────────────────────────────────────────────────
+// TELEGRAM CONNECT
+// ─────────────────────────────────────────────────────────
+function TelegramConnect({ plan }: { plan: string }) {
+  const [chatId,   setChatId]   = useState('')
+  const [saved,    setSaved]    = useState(false)
+  const [loading,  setLoading]  = useState(false)
+  const [current,  setCurrent]  = useState('')
+  const HUD  = "'Orbitron', monospace"
+  const BODY = "'Rajdhani', sans-serif"
+
+  useEffect(() => {
+    // Charger le chat_id actuel
+    const token = localStorage.getItem('sb-access-token') || ''
+    if (!token) return
+    fetch('/api/me', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json()).then(d => { if (d.telegram_chat_id) setCurrent(d.telegram_chat_id) })
+      .catch(() => {})
+  }, [])
+
+  const save = async () => {
+    if (!chatId.trim()) return
+    setLoading(true)
+    const token = localStorage.getItem('sb-access-token') || ''
+    const res = await fetch('/api/telegram/connect', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ chat_id: chatId.trim() }),
+    })
+    if (res.ok) { setSaved(true); setCurrent(chatId.trim()); setChatId('') }
+    setLoading(false)
+  }
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+      {current && (
+        <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.15)', borderRadius:6, padding:'10px 14px' }}>
+          <span style={{ color:'#00FFB2' }}>✓</span>
+          <span style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.7)' }}>
+            Connecté — Chat ID : <strong style={{ color:'#F0F8FF' }}>{current}</strong>
+          </span>
+        </div>
+      )}
+      {saved && (
+        <div style={{ fontFamily:BODY, fontSize:13, color:'#00FFB2' }}>✅ Telegram connecté ! Vous recevrez le prochain signal.</div>
+      )}
+      <div style={{ display:'flex', gap:8 }}>
+        <input
+          value={chatId} onChange={e => setChatId(e.target.value)}
+          placeholder="Votre Chat ID Telegram (ex: 123456789)"
+          style={{ flex:1, background:'rgba(0,0,0,0.3)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'11px 14px', fontFamily:BODY, fontSize:14, color:'#F0F8FF', outline:'none' }}
+        />
+        <button onClick={save} disabled={loading || !chatId.trim()} style={{
+          fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00D4FF',
+          border:'none', borderRadius:6, padding:'0 18px', cursor:'pointer', fontWeight:700, opacity: loading ? 0.6 : 1,
+        }}>
+          {loading ? '...' : 'SAVE'}
+        </button>
+      </div>
+    </div>
+  )
+}
 
 
 // ─────────────────────────────────────────────────────────

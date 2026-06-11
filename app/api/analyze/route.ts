@@ -243,16 +243,57 @@ Analyze this chart. READ the visible timeframe (top-left corner or title), exact
       action_url:'/pricing', action_label:'Voir les packs' })
   }
 
-  // Telegram : envoyer le signal si chat_id configuré
+  // Telegram : envoi selon le plan
+  // Free → jamais | PRO → 3/mois | ELITE → illimité
   try {
     const { data: tgProf } = await admin.from('profiles')
-      .select('telegram_chat_id').eq('id', user.id).single()
-    if (tgProf?.telegram_chat_id) {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://profity-x.com'
-      await fetch(`${siteUrl}/api/telegram/send`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: tgProf.telegram_chat_id, signal }),
-      }).catch(() => {})
+      .select('telegram_chat_id, user_plan').eq('id', user.id).single()
+
+    if (tgProf?.telegram_chat_id && tgProf?.user_plan !== 'free') {
+      let canSend = false
+
+      if (tgProf.user_plan === 'elite') {
+        canSend = true
+      } else if (tgProf.user_plan === 'pro') {
+        // Compter les alertes Telegram envoyées ce mois
+        const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+        const { count } = await admin.from('credit_transactions')
+          .select('id', { count: 'exact' })
+          .eq('user_id', user.id)
+          .eq('type', 'telegram_alert')
+          .gte('created_at', monthStart)
+        const used = count ?? 0
+        canSend = used < 3
+
+        if (!canSend) {
+          // Notifier que la limite est atteinte
+          await admin.rpc('notify_user', {
+            p_user_id:     user.id,
+            p_type:        'upsell',
+            p_title:       '📱 Limite Telegram atteinte',
+            p_message:     'Vos 3 alertes Telegram PRO du mois sont épuisées. Passez en ELITE pour des alertes illimitées !',
+            p_action_url:  '/pricing',
+            p_action_label:'Passer en ELITE',
+            p_priority:    'high',
+          })
+        }
+      }
+
+      if (canSend) {
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://profity-x.com'
+        await fetch(`${siteUrl}/api/telegram/send`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: tgProf.telegram_chat_id, signal }),
+        }).catch(() => {})
+
+        // Logger l'envoi pour comptage PRO
+        if (tgProf.user_plan === 'pro') {
+          await admin.from('credit_transactions').insert({
+            user_id: user.id, amount: 0, type: 'telegram_alert',
+            description: `Alerte Telegram PRO — ${signal.pair}`,
+          }).catch(() => {})
+        }
+      }
     }
   } catch {}
 
