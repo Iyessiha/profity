@@ -135,6 +135,13 @@ export async function POST(req: NextRequest) {
 
       await db.from('profiles').update({ user_plan: planKey }).eq('id', userId)
 
+      // Marquer l'intent de paiement comme complété (stoppe la relance)
+      await db.from('checkout_intents')
+        .update({ status: 'completed', completed_at: new Date().toISOString() })
+        .eq('user_id', userId)
+        .eq('plan', planKey)
+        .eq('status', 'pending')
+
       await db.rpc('add_credits', {
         p_user_id: userId, p_amount: credits,
         p_type: 'subscription',

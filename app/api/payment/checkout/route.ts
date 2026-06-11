@@ -49,7 +49,19 @@ export async function POST(req: NextRequest) {
   const pid      = (profile.public_id as string) ?? 'INCONNU'
   const txId     = `PX-${pid}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`
 
-  // ═══════════════════════════════════════════════════════
+  // ── Enregistrer l'intention de paiement (relance panier abandonné) ──
+  // Fait avant l'appel GeniusPay pour capturer même les redirections qui ne reviennent pas
+  await supabaseAdmin.from('checkout_intents').insert({
+    user_id:   user.id,
+    tx_id:     txId,
+    plan:      planKey,
+    amount_xof: PLAN_PRICES.XOF[planKey] ?? 0,
+    email,
+    full_name: name,
+    status:    'pending',
+  }).then(({ error: e }) => {
+    if (e) console.warn('[Checkout] intent insert warn:', e.message)
+  })
   // ESSAI : Supabase Edge Function → GeniusPay
   // (Deno Deploy — IPs non bloquées par GeniusPay)
   // ═══════════════════════════════════════════════════════
