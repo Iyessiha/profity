@@ -2,6 +2,7 @@
 // PROFITYX — Sidebar (drawer mobile via MenuContext)
 // ============================================================
 'use client'
+import { useState, useEffect } from 'react'
 import { supabasePublic } from '@/lib/supabase'
 import { useTheme } from '@/lib/theme'
 import { useMenu } from '@/lib/menu-context'
