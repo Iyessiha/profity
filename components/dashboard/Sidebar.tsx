@@ -10,13 +10,16 @@ type Tab = 'chart' | 'calendar' | 'history'
 interface Props { tab: Tab; setTab: (t: Tab) => void; plan: string; locale: string }
 
 // ── 3 groupes logiques ───────────────────────────────────────
+// Clé localStorage — changer la valeur force le badge à réapparaître pour tous les users
+const ANALYSIS_BADGE_KEY = 'px_seen_chart_v2'
+
 const NAV_GROUPS = [
   {
     labelFr: 'TRADING',
     labelEn: 'TRADING',
     items: [
       { key: 'dashboard', icon: 'ti-layout-dashboard', fr: 'TABLEAU DE BORD', en: 'DASHBOARD',    href: '/dashboard', badge: null  },
-      { key: 'chart',     icon: 'ti-chart-candle',     fr: 'ANALYSE IA',     en: 'AI ANALYSIS',  href: '/analysis',  badge: null  },
+      { key: 'chart',     icon: 'ti-chart-candle',     fr: 'ANALYSE IA',     en: 'AI ANALYSIS',  href: '/analysis',  badge: 'NEW' },
       { key: 'calendar',  icon: 'ti-news',             fr: 'ANNONCES MACRO', en: 'MACRO NEWS',   href: '/news',      badge: null  },
       { key: 'history',   icon: 'ti-history',          fr: 'HISTORIQUE',     en: 'HISTORY',      href: '/history',   badge: null  },
     ],
@@ -48,6 +51,19 @@ const BODY = "'Rajdhani', sans-serif"
 export default function Sidebar({ plan, locale }: Props) {
   const { open, close } = useMenu()
   const { isDark } = useTheme()
+
+  // Badge NEW sur ANALYSE IA — disparaît après la première visite
+  const [chartBadge, setChartBadge] = useState(false)
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem(ANALYSIS_BADGE_KEY)) setChartBadge(true)
+    } catch {}
+    // Si on est déjà sur /analysis, marquer comme vu
+    if (typeof window !== 'undefined' && window.location.pathname === '/analysis') {
+      try { localStorage.setItem(ANALYSIS_BADGE_KEY, '1') } catch {}
+      setChartBadge(false)
+    }
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -142,7 +158,14 @@ export default function Sidebar({ plan, locale }: Props) {
                 const isActive = currentPath === item.href
                 const label    = locale === 'fr' ? item.fr : item.en
                 return (
-                  <a key={item.key} href={item.href} onClick={close} style={{
+                  <a key={item.key} href={item.href} onClick={() => {
+                    close()
+                    // Marquer ANALYSE IA comme vu au premier clic
+                    if (item.key === 'chart') {
+                      try { localStorage.setItem(ANALYSIS_BADGE_KEY, '1') } catch {}
+                      setChartBadge(false)
+                    }
+                  }} style={{
                     display: 'flex', alignItems: 'center', gap: 10,
                     padding: '9px 10px',
                     background: isActive ? 'color-mix(in srgb, var(--ac) 10%, transparent)' : 'transparent',
@@ -157,9 +180,14 @@ export default function Sidebar({ plan, locale }: Props) {
                     <span className="sidebar-label" style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 1.5, color: isActive ? 'var(--ac)' : inactiveColor, fontWeight: isActive ? 700 : 400, flex: 1 }}>
                       {label}
                     </span>
-                    {item.badge && (
-                      <span className="sidebar-label" style={{ fontFamily: HUD, fontSize: 6, letterSpacing: 1, background: 'var(--ac2)', color: '#020408', borderRadius: 3, padding: '2px 5px', fontWeight: 700 }}>
-                        {item.badge}
+                    {(item.key === 'chart' ? chartBadge : item.badge) && (
+                      <span className="sidebar-label" style={{
+                        fontFamily: HUD, fontSize: 6, letterSpacing: 1,
+                        background: item.key === 'chart' ? '#00FFB2' : 'var(--ac2)',
+                        color: '#020408', borderRadius: 3, padding: '2px 5px', fontWeight: 700,
+                        animation: item.key === 'chart' && chartBadge ? 'px-pulse 2s ease-in-out infinite' : undefined,
+                      }}>
+                        {item.key === 'chart' ? 'NEW' : item.badge}
                       </span>
                     )}
                   </a>
