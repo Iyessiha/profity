@@ -86,9 +86,9 @@ export default function LandingPage() {
       {/* ── NAVBAR ────────────────────────────────────────────── */}
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(0,255,178,0.07)', background: 'rgba(2,4,8,0.95)', backdropFilter: 'blur(16px)', padding: '0 1.5rem', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-        {/* Brand — texte seul, pas de logo */}
+        {/* Brand — logo */}
         <a href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
-          
+          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
         </a>
 
         {/* Liens desktop */}
@@ -412,11 +412,10 @@ export default function LandingPage() {
       {/* ── FOOTER ────────────────────────────────────────────── */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '2.5rem 2rem', maxWidth: 1100, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="/logo.png" alt="ProfityX" style={{ height: 28, objectFit: 'contain' }} />
-          <div>
-            <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:32, width:'auto', objectFit:'contain' }} />
-            <div style={{ fontFamily: BODY, fontSize: 11, color: 'rgba(240,248,255,0.25)' }}>By MonWe Infinity LLC</div>
-          </div>
+          <a href="/" style={{ textDecoration:'none' }}>
+            <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:36, width:'auto', objectFit:'contain' }} />
+          </a>
+          <div style={{ fontFamily: BODY, fontSize: 11, color: 'rgba(240,248,255,0.25)' }}>By MonWe Infinity LLC</div>
         </div>
         <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
           {[['#pricing','Tarifs'],['#how','Comment'],['#features','Features'],['/results','Résultats'],['/blog','Blog'],['/legal/cgu','CGU'],['/legal/confidentialite','Confidentialité']].map(([href,label]) => (
