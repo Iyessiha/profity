@@ -50,24 +50,23 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
       justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50,
       transition: 'background .3s, border-color .3s', gap: 8,
     }}>
-      {/* Gauche : hamburger + horloge */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+      {/* Gauche : hamburger + logo + horloge */}
+      <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
         {/* Hamburger */}
         <button
           className="hamburger-btn"
           onClick={toggle}
           aria-label="Menu"
-          style={{
-            position: 'static',
-            flexShrink: 0,
-          }}
+          style={{ position: 'static', flexShrink: 0 }}
         >
           <i className="ti ti-menu-2" style={{ fontSize: 18 }} aria-hidden="true" />
         </button>
 
         {/* Logo */}
         <a href="/" style={{ textDecoration:'none', flexShrink:0, display:'flex', alignItems:'center' }}>
-          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:28, width:'auto', objectFit:'contain' }} />
+          <img src="/logos/profityx-logo.png" alt="ProfityX"
+            className="topbar-logo"
+            style={{ height:28, width:'auto', objectFit:'contain' }} />
         </a>
 
         {/* Horloge */}
@@ -77,7 +76,7 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
       </div>
 
       {/* Droite : devise + toggle thème + profil */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+      <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         {/* Marché ouvert (caché sur mobile) */}
         <div className="topbar-hide" style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 3, padding: '4px 8px' }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ok)' }} />
@@ -165,20 +164,20 @@ export function QuotaBar({ token, plan, locale }: CreditBarProps) {
   const color        = isEmpty ? 'var(--red)' : isLow ? 'var(--ora)' : 'var(--ac)'
 
   return (
-    <div style={{ display:'flex', alignItems:'center', gap:12, padding:'6px 1rem', background:'color-mix(in srgb, var(--ac) 2%, transparent)', borderBottom:'1px solid var(--bd)', flexWrap:'wrap' }}>
-      <div style={{ display:'flex', alignItems:'center', gap:8, flex:1, minWidth:180 }}>
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+    <div className="quota-bar" style={{ display:'flex', alignItems:'center', gap:12, padding:'6px 1rem', background:'color-mix(in srgb, var(--ac) 2%, transparent)', borderBottom:'1px solid var(--bd)', flexWrap:'wrap' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:8, flex:1, minWidth:0 }}>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink:0 }}>
           <circle cx="8" cy="8" r="7" fill={color} fillOpacity="0.2" stroke={color} strokeWidth="1.2"/>
           <path d="M8 4v4l2.5 2.5" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
         </svg>
-        <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', whiteSpace:'nowrap' }}>CRÉDITS</span>
-        <div style={{ flex:1, height:3, background:'var(--bd)', borderRadius:2, overflow:'hidden' }}>
+        <span className="topbar-hide" style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', whiteSpace:'nowrap' }}>CRÉDITS</span>
+        <div style={{ flex:1, height:3, background:'var(--bd)', borderRadius:2, overflow:'hidden', minWidth:40 }}>
           <div style={{ height:'100%', borderRadius:2, width:`${pct}%`, background:`linear-gradient(90deg, var(--ac), ${color})`, transition:'width .6s ease' }} />
         </div>
         <span style={{ fontFamily:HUD, fontSize:9, fontWeight:700, color, whiteSpace:'nowrap', minWidth:28 }}>
           {remaining}
         </span>
-        <span style={{ fontFamily:BODY, fontSize:10, color:'var(--tx3)', whiteSpace:'nowrap' }}>
+        <span className="topbar-hide" style={{ fontFamily:BODY, fontSize:10, color:'var(--tx3)', whiteSpace:'nowrap' }}>
           {isEmpty ? '— rechargez' : isLow ? '— solde bas' : `restant${remaining > 1 ? 's' : ''}`}
         </span>
       </div>
