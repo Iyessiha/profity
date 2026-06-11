@@ -17,13 +17,13 @@ const PLANS = [
     cta: 'START FOR FREE', highlight: false,
   },
   {
-    key: 'pro', name: 'PRO', price: '$28', sub: '/month',
+    key: 'pro', name: 'PRO', price: '$28', priceYear: '$240', sub: '/month', subYear: '/year',
     color: '#00FFB2',  credits: '150 credits', analyses: 'Unlimited analyses',
     features: ['Everything in Free', 'Order Block + FVG', 'BOS / CHoCH / Liquidity', 'Annotated chart', 'NFP/CPI anticipatory signals'],
     cta: 'GO PRO', highlight: true,
   },
   {
-    key: 'elite', name: 'ELITE', price: '$56', sub: '/month',
+    key: 'elite', name: 'ELITE', price: '$56', priceYear: '$480', sub: '/month', subYear: '/year',
     color: '#C9A84C', credits: '600 credits', analyses: 'Unlimited analyses',
     features: ['Everything in Pro', 'Scalping Mode', 'Live News Signals', 'Priority support', 'Early access to new features'],
     cta: 'GO ELITE', highlight: false,
@@ -62,6 +62,7 @@ export default function LandingEN() {
   const [analyses,  setAnalyses]  = useState(26)
   const [users,     setUsers]     = useState(11)
   const [menuOpen,  setMenuOpen]  = useState(false)
+  const [billing,   setBilling]   = useState<'monthly'|'annual'>('monthly')
   const [toast,     setToast]     = useState<{msg:string;sub:string} | null>(null)
   const [online,    setOnline]    = useState(0)
   const [urgency,   setUrgency]   = useState('')
@@ -302,9 +303,31 @@ export default function LandingEN() {
       {/* ── PRICING ─────────────────────────────────────────── */}
       <section id="pricing" className="reveal" style={{ position:'relative', zIndex:1, padding:'clamp(4rem,7vw,6rem) 2rem', background:'rgba(8,17,31,0.5)' }}>
         <div style={{ maxWidth:1000, margin:'0 auto' }}>
-          <div style={{ textAlign:'center', marginBottom:'3.5rem' }}>
+          <div style={{ textAlign:'center', marginBottom:'2rem' }}>
             <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>PRICING</div>
             <h2 style={{ fontFamily:HUD, fontSize:'clamp(24px,3.5vw,40px)', fontWeight:900 }}>Choose your plan</h2>
+          </div>
+
+          {/* Billing toggle */}
+          <div style={{ display:'flex', justifyContent:'center', marginBottom:32 }}>
+            <div style={{ display:'inline-flex', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:4, gap:4 }}>
+              {(['monthly','annual'] as const).map(b => (
+                <button key={b} onClick={() => setBilling(b)} style={{
+                  fontFamily:HUD, fontSize:8, letterSpacing:2, padding:'8px 16px', borderRadius:6,
+                  border:'none', cursor:'pointer', transition:'all .2s',
+                  background: billing === b ? '#00D4FF' : 'transparent',
+                  color: billing === b ? '#020408' : 'rgba(240,248,255,0.5)',
+                  fontWeight: billing === b ? 700 : 400,
+                }}>
+                  {b === 'monthly' ? 'MONTHLY' : (
+                    <span style={{ display:'flex', alignItems:'center', gap:5 }}>
+                      ANNUAL
+                      <span style={{ fontSize:6, background:'rgba(0,212,255,0.15)', color:'#00D4FF', padding:'2px 6px', borderRadius:3 }}>2 MONTHS FREE</span>
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:20, alignItems:'start' }}>
             {PLANS.map(plan => (
@@ -316,9 +339,10 @@ export default function LandingEN() {
                 )}
                 <div style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:plan.color, marginBottom:8 }}>{plan.name}</div>
                 <div style={{ display:'flex', alignItems:'baseline', gap:6, marginBottom:4 }}>
-                  <span style={{ fontFamily:HUD, fontSize:30, fontWeight:900, color:'#F0F8FF' }}>{plan.price}</span>
-                  <span style={{ fontFamily:BODY, fontSize:13, color:'rgba(240,248,255,0.4)' }}>{plan.sub}</span>
+                  <span style={{ fontFamily:HUD, fontSize:30, fontWeight:900, color:'#F0F8FF' }}>{billing === 'annual' && (plan as any).priceYear ? (plan as any).priceYear : plan.price}</span>
+                  <span style={{ fontFamily:BODY, fontSize:13, color:'rgba(240,248,255,0.4)' }}>{billing === 'annual' && (plan as any).subYear ? (plan as any).subYear : plan.sub}</span>
                 </div>
+                {billing === 'annual' && plan.key !== 'free' && <div style={{ fontFamily:'Rajdhani,sans-serif', fontSize:11, color:'#00D4FF', marginBottom:6 }}>{plan.key === 'pro' ? 'Save $56/year' : 'Save $112/year'}</div>}
                 <div style={{ fontFamily:BODY, fontSize:13, color:plan.color, marginBottom:24 }}>{plan.credits} · {plan.analyses}</div>
                 <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:28 }}>
                   {plan.features.map(f => (

@@ -19,7 +19,7 @@ const PLANS = [
     highlight: false,
   },
   {
-    key: 'pro', name: 'PRO', price: '17 500', currency: 'FCFA/mois',
+    key: 'pro', name: 'PRO', price: '17 500', priceYear: '150 000', currency: 'FCFA/mois', currencyYear: 'FCFA/an',
     color: '#00FFB2', bg: 'rgba(0,255,178,0.05)',
     credits: '150 crédits', analyses: 'Analyses illimitées',
     features: ['Tout Free +', 'Order Block + FVG', 'BOS / CHoCH / Liquidité', 'Chart annoté', 'Signaux anticipatoires NFP/CPI'],
@@ -27,7 +27,7 @@ const PLANS = [
     highlight: true,
   },
   {
-    key: 'elite', name: 'ELITE', price: '35 000', currency: 'FCFA/mois',
+    key: 'elite', name: 'ELITE', price: '35 000', priceYear: '300 000', currency: 'FCFA/mois', currencyYear: 'FCFA/an',
     color: '#C9A84C', bg: 'rgba(201,168,76,0.05)',
     credits: '600 crédits', analyses: 'Analyses illimitées',
     features: ['Tout Pro +', 'Mode Scalping', 'Signaux News temps réel', 'Support prioritaire', 'Accès anticipé nouvelles features'],
@@ -69,6 +69,7 @@ export default function LandingPage() {
   const [analyses, setAnalyses] = useState(26)
   const [users,    setUsers]    = useState(7)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [billing,  setBilling]  = useState<'monthly'|'annual'>('monthly')
 
   useEffect(() => {
     // Mémoriser la langue FR
@@ -297,10 +298,33 @@ export default function LandingPage() {
       {/* ── PRICING ───────────────────────────────────────────── */}
       <section id="pricing" style={{ padding: 'clamp(4rem,7vw,6rem) 2rem', background: 'rgba(8,17,31,0.5)' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>TARIFS</div>
             <h2 style={{ fontFamily: HUD, fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 900 }}>Choisissez votre plan</h2>
           </div>
+
+          {/* Toggle mensuel / annuel */}
+          <div style={{ display:'flex', justifyContent:'center', marginBottom:32 }}>
+            <div style={{ display:'inline-flex', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:4, gap:4 }}>
+              {(['monthly','annual'] as const).map(b => (
+                <button key={b} onClick={() => setBilling(b)} style={{
+                  fontFamily:HUD, fontSize:8, letterSpacing:2, padding:'8px 16px', borderRadius:6,
+                  border:'none', cursor:'pointer', transition:'all .2s',
+                  background: billing === b ? '#00FFB2' : 'transparent',
+                  color: billing === b ? '#020408' : 'rgba(240,248,255,0.5)',
+                  fontWeight: billing === b ? 700 : 400,
+                }}>
+                  {b === 'monthly' ? 'MENSUEL' : (
+                    <span style={{ display:'flex', alignItems:'center', gap:5 }}>
+                      ANNUEL
+                      <span style={{ fontSize:6, background:'rgba(0,255,178,0.15)', color:'#00FFB2', padding:'2px 6px', borderRadius:3 }}>-2 MOIS</span>
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 20, alignItems: 'start' }}>
             {PLANS.map(plan => (
               <div key={plan.key} style={{
@@ -316,7 +340,7 @@ export default function LandingPage() {
                 <div style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: plan.color, marginBottom: 8 }}>{plan.name}</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
                   <span style={{ fontFamily: HUD, fontSize: 30, fontWeight: 900, color: '#F0F8FF' }}>{plan.price}</span>
-                  <span style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(240,248,255,0.4)' }}>{plan.currency}</span>
+                  <span style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(240,248,255,0.4)' }}>{billing === 'annual' && (plan as any).currencyYear ? (plan as any).currencyYear : plan.currency}</span>
                 </div>
                 <div style={{ fontFamily: BODY, fontSize: 13, color: plan.color, marginBottom: 24 }}>{plan.credits} · {plan.analyses}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
