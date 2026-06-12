@@ -153,7 +153,31 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Stats rapides */}
+          {/* ── Bannière activation fantôme — 0 analyse ── */}
+          {!loading && aUsed === 0 && !showOnboarding && (
+            <a href="/analysis" style={{ textDecoration:'none', display:'block', marginBottom:'1.25rem' }}>
+              <div style={{
+                background:'linear-gradient(135deg, rgba(0,255,178,0.07), rgba(0,212,255,0.04))',
+                border:'1px solid rgba(0,255,178,0.2)',
+                borderRadius:12, padding:'14px 18px',
+                display:'flex', alignItems:'center', gap:14,
+                cursor:'pointer', transition:'all .2s',
+              }}>
+                <div style={{ fontSize:32, flexShrink:0 }}>🎯</div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#00FFB2', marginBottom:3 }}>
+                    VOTRE PREMIER SIGNAL VOUS ATTEND
+                  </div>
+                  <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.55)', lineHeight:1.5 }}>
+                    Uploadez un screenshot de chart → recevez Entrée · Stop Loss · TP1/2/3 en 10 secondes
+                  </div>
+                </div>
+                <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'9px 16px', borderRadius:6, flexShrink:0, fontWeight:700 }}>
+                  {locale === 'fr' ? 'ANALYSER →' : 'ANALYZE →'}
+                </div>
+              </div>
+            </a>
+          )}
           <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: '1.25rem' }}>
             {[
               { icon: 'ti-chart-candle', label: locale === 'fr' ? 'ANALYSES' : 'ANALYSES', value: aLeft, color: 'var(--ac)',  sub: locale==='fr'?'restantes':'left' },

@@ -1,5 +1,8 @@
 // ============================================================
-// PROFITYX — Onboarding guidé (premier login)
+// PROFITYX — Onboarding actif v2
+// Étape 1 : Profil trader (actif favori + broker)
+// Étape 2 : Comment ça marche (démo visuelle animée)
+// Étape 3 : Premier chart — CTA direct vers /analysis
 // ============================================================
 'use client'
 import { useState } from 'react'
@@ -10,131 +13,129 @@ const BODY = "'Rajdhani', sans-serif"
 
 interface Props { userId: string; name?: string; credits?: number; onDone: () => void }
 
-const STEPS = [
-  {
-    icon: '🎉',
-    title: 'Bienvenue sur ProfityX !',
-    color: '#00FFB2',
-    content: (name: string, credits: number) => (
-      <div>
-        <p style={{ fontFamily:BODY, fontSize:16, color:'rgba(232,244,248,0.75)', lineHeight:1.7, marginBottom:16 }}>
-          Bonjour <strong style={{ color:'#00FFB2' }}>{name}</strong> ! Votre compte est prêt.
-          Vous avez <strong style={{ color:'#00FFB2' }}>{credits} crédits</strong> offerts pour commencer.
-        </p>
+// ── Étape 1 : Profil ─────────────────────────────────────────
+const ASSETS = [
+  { id:'boom_1000',  label:'Boom 1000',   emoji:'📈', color:'#00FFB2' },
+  { id:'crash_500',  label:'Crash 500',   emoji:'📉', color:'#FF3A5C' },
+  { id:'gainx_600',  label:'GainX 600',   emoji:'⚡', color:'#C9A84C' },
+  { id:'xauusd',     label:'Gold XAU/USD',emoji:'🥇', color:'#FFD700' },
+  { id:'eurusd',     label:'EUR/USD',      emoji:'💶', color:'#00D4FF' },
+  { id:'btcusd',     label:'BTC/USD',      emoji:'₿',  color:'#F7931A' },
+]
+const BROKERS = ['Deriv','TradingView','MetaTrader 4','MetaTrader 5','Autre']
+const TIMEFRAMES = ['M1','M5','M15','H1','H4','D1']
+
+// ── Étape 2 : Démo visuelle ───────────────────────────────────
+function DemoStep() {
+  const [active, setActive] = useState(0)
+  const steps = [
+    { n:'01', icon:'📸', title:'Capturez votre chart', desc:'Screenshot plein écran sur TradingView ou Deriv — thème sombre, timeframe H1 ou H4 pour de meilleurs résultats.', color:'#00FFB2' },
+    { n:'02', icon:'⬆️', title:'Uploadez-le',          desc:'Glissez ou sélectionnez l\'image sur la page Analyse IA. L\'IA détecte automatiquement la paire et le timeframe.', color:'#00D4FF' },
+    { n:'03', icon:'🎯', title:'Recevez votre signal', desc:'En 10 secondes : Entrée · Stop Loss · TP1 / TP2 / TP3 et un chart annoté avec les zones Order Block et FVG.', color:'#C9A84C' },
+  ]
+  return (
+    <div>
+      <div style={{ display:'flex', gap:8, marginBottom:16 }}>
+        {steps.map((s,i) => (
+          <button key={i} onClick={() => setActive(i)} style={{
+            flex:1, padding:'10px 6px', borderRadius:8, cursor:'pointer', transition:'all .2s',
+            background: active===i ? `${s.color}15` : 'rgba(255,255,255,0.03)',
+            border: `1px solid ${active===i ? s.color+'40' : 'rgba(255,255,255,0.06)'}`,
+          }}>
+            <div style={{ fontSize:18, marginBottom:4 }}>{s.icon}</div>
+            <div style={{ fontFamily:HUD, fontSize:7, color: active===i ? s.color : 'rgba(232,244,248,0.35)', letterSpacing:1 }}>{s.n}</div>
+          </button>
+        ))}
+      </div>
+      <div style={{ background:`${steps[active].color}08`, border:`1px solid ${steps[active].color}20`, borderRadius:10, padding:'14px 16px', minHeight:90, transition:'all .25s' }}>
+        <div style={{ fontFamily:HUD, fontSize:12, color:steps[active].color, marginBottom:6 }}>{steps[active].title}</div>
+        <div style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.7)', lineHeight:1.65 }}>{steps[active].desc}</div>
+      </div>
+      <div style={{ marginTop:12, display:'flex', gap:8 }}>
+        {[
+          { icon:'💡', text:'Capture plein écran = tracés plus précis', color:'#C9A84C' },
+          { icon:'⚡', text:'Résultat en moins de 10 secondes', color:'#00FFB2' },
+        ].map(t => (
+          <div key={t.text} style={{ flex:1, background:`${t.color}08`, border:`1px solid ${t.color}18`, borderRadius:7, padding:'8px 10px', display:'flex', gap:6, alignItems:'flex-start' }}>
+            <span style={{ fontSize:13 }}>{t.icon}</span>
+            <span style={{ fontFamily:BODY, fontSize:11, color:`${t.color}CC`, lineHeight:1.5 }}>{t.text}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Étape 3 : Premier chart ───────────────────────────────────
+function FirstChartStep({ credits }: { credits: number }) {
+  return (
+    <div>
+      <div style={{ background:'linear-gradient(135deg, rgba(0,255,178,0.08), rgba(0,212,255,0.05))', border:'1px solid rgba(0,255,178,0.15)', borderRadius:12, padding:'16px 18px', marginBottom:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
+          <span style={{ fontSize:28 }}>🎯</span>
+          <div>
+            <div style={{ fontFamily:HUD, fontSize:11, color:'#00FFB2', marginBottom:2 }}>PRÊT À TRADER ?</div>
+            <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.6)' }}>Votre premier signal vous attend</div>
+          </div>
+        </div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
           {[
-            { icon:'📊', label:'1 crédit', sub:'= 1 analyse chart' },
-            { icon:'📰', label:'1 crédit', sub:'= 1 signal annonce' },
-            { icon:'🎁', label:'+10 crédits', sub:'si quelqu\'un vous parraine' },
-            { icon:'💰', label:'+20 crédits', sub:'par ami parrainé' },
+            { icon:'🪙', label:`${credits} crédits`, sub:'disponibles maintenant' },
+            { icon:'⏱️', label:'10 secondes', sub:'pour un signal complet' },
+            { icon:'📊', label:'Chart annoté', sub:'Order Blocks + FVG' },
+            { icon:'🎁', label:'+20 crédits', sub:'par ami parrainé' },
           ].map(c => (
-            <div key={c.label+c.sub} style={{ background:'rgba(0,255,178,0.05)', border:'1px solid rgba(0,255,178,0.1)', borderRadius:8, padding:'10px 12px' }}>
-              <div style={{ fontSize:20, marginBottom:4 }}>{c.icon}</div>
-              <div style={{ fontFamily:HUD, fontSize:10, color:'#00FFB2', marginBottom:2 }}>{c.label}</div>
-              <div style={{ fontFamily:BODY, fontSize:11, color:'rgba(232,244,248,0.45)' }}>{c.sub}</div>
+            <div key={c.label} style={{ background:'rgba(0,255,178,0.04)', border:'1px solid rgba(0,255,178,0.08)', borderRadius:7, padding:'8px 10px' }}>
+              <div style={{ fontSize:16, marginBottom:3 }}>{c.icon}</div>
+              <div style={{ fontFamily:HUD, fontSize:9, color:'#00FFB2', marginBottom:1 }}>{c.label}</div>
+              <div style={{ fontFamily:BODY, fontSize:10, color:'rgba(232,244,248,0.4)' }}>{c.sub}</div>
             </div>
           ))}
         </div>
       </div>
-    ),
-  },
-  {
-    icon: '📊',
-    title: 'Analysez votre chart en 3 sec',
-    color: '#00D4FF',
-    content: () => (
-      <div>
-        <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(232,244,248,0.75)', lineHeight:1.7, marginBottom:16 }}>
-          Uploadez n'importe quel screenshot de chart — l'IA détecte la paire, le timeframe et génère votre signal SMC.
-        </p>
-        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-          {[
-            { n:'1', t:'Prenez un screenshot de votre chart', icon:'📸' },
-            { n:'2', t:'Uploadez-le sur la page Analyse IA',  icon:'⬆️' },
-            { n:'3', t:'Recevez : Entrée · Stop · TP1/2/3',   icon:'🎯' },
-          ].map(s => (
-            <div key={s.n} style={{ display:'flex', alignItems:'center', gap:12, background:'rgba(0,212,255,0.04)', border:'1px solid rgba(0,212,255,0.1)', borderRadius:8, padding:'10px 14px' }}>
-              <div style={{ width:28, height:28, borderRadius:'50%', background:'rgba(0,212,255,0.15)', border:'1px solid rgba(0,212,255,0.25)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:HUD, fontSize:11, color:'#00D4FF', flexShrink:0 }}>{s.n}</div>
-              <span style={{ fontSize:18 }}>{s.icon}</span>
-              <span style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.7)' }}>{s.t}</span>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop:12, background:'rgba(201,168,76,0.08)', border:'1px solid rgba(201,168,76,0.2)', borderRadius:6, padding:'8px 12px', fontFamily:BODY, fontSize:12, color:'rgba(201,168,76,0.8)' }}>
-          💡 Conseil : prenez le chart sur TradingView en thème sombre, timeframe H1 ou H4.
-        </div>
+      <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.5)', lineHeight:1.6, textAlign:'center' }}>
+        Cliquez sur <strong style={{ color:'#00FFB2' }}>C'EST PARTI !</strong> pour uploader votre premier chart et recevoir votre signal SMC.
       </div>
-    ),
-  },
-  {
-    icon: '📰',
-    title: 'Suivez les annonces macro',
-    color: '#C9A84C',
-    content: () => (
-      <div>
-        <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(232,244,248,0.75)', lineHeight:1.7, marginBottom:16 }}>
-          NFP, CPI, FOMC — les grandes annonces font bouger les marchés de 100 à 300 pips en quelques minutes.
-        </p>
-        <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:14 }}>
-          {[
-            { event:'NFP',  desc:'Créations d\'emplois USA',   impact:'🔴 Très fort', pair:'XAU/USD · EUR/USD' },
-            { event:'CPI',  desc:'Inflation USA',              impact:'🔴 Très fort', pair:'EUR/USD · GBP/USD' },
-            { event:'FOMC', desc:'Décision taux Fed',          impact:'🔴 Extrême',   pair:'Toutes devises USD' },
-          ].map(e => (
-            <div key={e.event} style={{ display:'flex', alignItems:'center', gap:10, background:'rgba(201,168,76,0.05)', border:'1px solid rgba(201,168,76,0.12)', borderRadius:7, padding:'9px 12px' }}>
-              <span style={{ fontFamily:HUD, fontSize:11, color:'#C9A84C', minWidth:40 }}>{e.event}</span>
-              <div style={{ flex:1 }}>
-                <div style={{ fontFamily:BODY, fontSize:12, color:'rgba(232,244,248,0.65)' }}>{e.desc} · {e.impact}</div>
-                <div style={{ fontFamily:BODY, fontSize:11, color:'rgba(232,244,248,0.35)' }}>{e.pair}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ background:'rgba(0,212,255,0.06)', border:'1px solid rgba(0,212,255,0.15)', borderRadius:6, padding:'8px 12px', fontFamily:BODY, fontSize:12, color:'rgba(0,212,255,0.8)' }}>
-          📅 Les membres Pro reçoivent le signal <strong>30 min avant</strong> chaque annonce.
-        </div>
-      </div>
-    ),
-  },
-  {
-    icon: '🚀',
-    title: 'Vous êtes prêt !',
-    color: '#00FFB2',
-    content: () => (
-      <div>
-        <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(232,244,248,0.75)', lineHeight:1.7, marginBottom:20 }}>
-          Tout est configuré. Voici votre plan d'action pour vos premières 24h :
-        </p>
-        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-          {[
-            { done:false, t:'Faire votre première analyse chart', link:'/analysis',  cta:'ANALYSER →',   color:'#00FFB2' },
-            { done:false, t:'Voir les annonces macro à venir',    link:'/news',      cta:'VOIR →',       color:'#C9A84C' },
-            { done:false, t:'Parrainer un ami (+20 crédits)',     link:'/referral',  cta:'PARRAINER →',  color:'#00D4FF' },
-          ].map(a => (
-            <div key={a.t} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:10, background:'rgba(0,0,0,0.2)', border:`1px solid ${a.color}20`, borderRadius:8, padding:'10px 14px' }}>
-              <span style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.65)', flex:1 }}>{a.t}</span>
-              <a href={a.link} style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:a.color, background:`${a.color}15`, border:`1px solid ${a.color}30`, borderRadius:4, padding:'5px 10px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0 }}>
-                {a.cta}
-              </a>
-            </div>
-          ))}
-        </div>
-      </div>
-    ),
-  },
-]
+    </div>
+  )
+}
 
+// ── Composant principal ────────────────────────────────────────
 export default function Onboarding({ userId, name = 'Trader', credits = 10, onDone }: Props) {
-  const [step, setStep]       = useState(0)
-  const [leaving, setLeaving] = useState(false)
+  const [step,        setStep]        = useState(0)
+  const [leaving,     setLeaving]     = useState(false)
+  const [saving,      setSaving]      = useState(false)
+  // Étape 1 : sélections profil
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([])
+  const [broker,          setBroker]         = useState('')
+  const [timeframe,       setTimeframe]       = useState('')
 
+  const STEPS = [
+    { icon:'⚙️', title:`Configurez votre profil, ${name}`, color:'#00FFB2' },
+    { icon:'📊', title:'Comment ça marche',                 color:'#00D4FF' },
+    { icon:'🚀', title:'Lancez votre première analyse',     color:'#C9A84C' },
+  ]
   const current = STEPS[step]
   const isLast  = step === STEPS.length - 1
 
+  const toggleAsset = (id: string) => {
+    setSelectedAssets(prev =>
+      prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
+    )
+  }
+
   const complete = async () => {
+    setSaving(true)
+    // Sauvegarder le profil trader
+    const update: Record<string, unknown> = { onboarding_done: true }
+    if (selectedAssets.length)   update.fav_assets        = selectedAssets
+    if (broker)                  update.preferred_broker  = broker
+    if (timeframe)               update.preferred_pairs   = [timeframe]
+    await supabasePublic.from('profiles').update(update).eq('id', userId)
     setLeaving(true)
-    await supabasePublic.from('profiles').update({ onboarding_done: true }).eq('id', userId)
-    setTimeout(onDone, 400)
+    setTimeout(() => {
+      window.location.href = '/analysis'  // Rediriger directement vers l'analyse
+    }, 350)
   }
 
   const next = () => {
@@ -142,23 +143,29 @@ export default function Onboarding({ userId, name = 'Trader', credits = 10, onDo
     else setStep(s => s + 1)
   }
 
+  const skip = async () => {
+    await supabasePublic.from('profiles').update({ onboarding_done: true }).eq('id', userId)
+    setLeaving(true)
+    setTimeout(onDone, 350)
+  }
+
   return (
     <div style={{
       position:'fixed', inset:0, zIndex:1000,
-      background:'rgba(2,4,8,0.88)',
+      background:'rgba(2,4,8,0.92)',
       display:'flex', alignItems:'center', justifyContent:'center',
       padding:'1rem',
-      backdropFilter:'blur(6px)',
+      backdropFilter:'blur(8px)',
       opacity: leaving ? 0 : 1,
-      transition:'opacity .4s ease',
+      transition:'opacity .35s ease',
     }}>
       <div style={{
         width:'100%', maxWidth:460,
         background:'linear-gradient(160deg,#0A1628,#060B14)',
-        border:`1px solid ${current.color}30`,
+        border:`1px solid ${current.color}25`,
         borderRadius:16,
         overflow:'hidden',
-        boxShadow:`0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px ${current.color}10`,
+        boxShadow:`0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px ${current.color}08`,
         animation:'onboardIn .35s cubic-bezier(0.34,1.56,0.64,1)',
       }}>
         {/* Barre de progression */}
@@ -169,42 +176,102 @@ export default function Onboarding({ userId, name = 'Trader', credits = 10, onDo
         <div style={{ padding:'1.5rem' }}>
           {/* Header */}
           <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:'1.25rem' }}>
-            <div style={{ width:52, height:52, borderRadius:14, background:`${current.color}15`, border:`1px solid ${current.color}30`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>
+            <div style={{ width:52, height:52, borderRadius:14, background:`${current.color}12`, border:`1px solid ${current.color}25`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>
               {current.icon}
             </div>
             <div style={{ flex:1 }}>
               <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.3)', marginBottom:4 }}>
                 ÉTAPE {step+1} / {STEPS.length}
               </div>
-              <h2 style={{ fontFamily:HUD, fontSize:15, fontWeight:900, color:'#E8F4F8', lineHeight:1.2, margin:0 }}>
+              <h2 style={{ fontFamily:HUD, fontSize:13, fontWeight:900, color:'#E8F4F8', lineHeight:1.25, margin:0 }}>
                 {current.title}
               </h2>
             </div>
           </div>
 
-          {/* Contenu de l'étape */}
-          <div style={{ minHeight:200 }}>
-            {current.content(name, credits)}
+          {/* Contenu */}
+          <div style={{ minHeight:220 }}>
+
+            {/* ÉTAPE 1 — Profil */}
+            {step === 0 && (
+              <div>
+                <p style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.6)', lineHeight:1.6, marginBottom:14, marginTop:0 }}>
+                  Quels actifs tradez-vous ? <span style={{ color:'rgba(232,244,248,0.35)' }}>(sélectionnez tout ce qui vous concerne)</span>
+                </p>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:7, marginBottom:16 }}>
+                  {ASSETS.map(a => {
+                    const sel = selectedAssets.includes(a.id)
+                    return (
+                      <button key={a.id} onClick={() => toggleAsset(a.id)} style={{
+                        padding:'10px 6px', borderRadius:9, cursor:'pointer', transition:'all .18s',
+                        background: sel ? `${a.color}18` : 'rgba(255,255,255,0.03)',
+                        border: `1px solid ${sel ? a.color+'50' : 'rgba(255,255,255,0.07)'}`,
+                        display:'flex', flexDirection:'column', alignItems:'center', gap:4,
+                      }}>
+                        <span style={{ fontSize:20 }}>{a.emoji}</span>
+                        <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:.5, color: sel ? a.color : 'rgba(232,244,248,0.4)' }}>{a.label}</span>
+                        {sel && <span style={{ fontSize:8 }}>✓</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                  <div>
+                    <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'rgba(232,244,248,0.35)', marginBottom:6 }}>BROKER</div>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+                      {BROKERS.map(b => (
+                        <button key={b} onClick={() => setBroker(b)} style={{
+                          padding:'5px 9px', borderRadius:5, cursor:'pointer', transition:'all .15s',
+                          background: broker===b ? 'rgba(0,255,178,0.15)' : 'rgba(255,255,255,0.04)',
+                          border: `1px solid ${broker===b ? 'rgba(0,255,178,0.4)' : 'rgba(255,255,255,0.07)'}`,
+                          fontFamily:BODY, fontSize:11, color: broker===b ? '#00FFB2' : 'rgba(232,244,248,0.45)',
+                        }}>{b}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'rgba(232,244,248,0.35)', marginBottom:6 }}>TIMEFRAME PRÉFÉRÉ</div>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+                      {TIMEFRAMES.map(tf => (
+                        <button key={tf} onClick={() => setTimeframe(tf)} style={{
+                          padding:'5px 9px', borderRadius:5, cursor:'pointer', transition:'all .15s',
+                          background: timeframe===tf ? 'rgba(201,168,76,0.15)' : 'rgba(255,255,255,0.04)',
+                          border: `1px solid ${timeframe===tf ? 'rgba(201,168,76,0.4)' : 'rgba(255,255,255,0.07)'}`,
+                          fontFamily:HUD, fontSize:8, color: timeframe===tf ? '#C9A84C' : 'rgba(232,244,248,0.45)',
+                        }}>{tf}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ÉTAPE 2 — Démo */}
+            {step === 1 && <DemoStep />}
+
+            {/* ÉTAPE 3 — Premier chart */}
+            {step === 2 && <FirstChartStep credits={credits} />}
+
           </div>
 
           {/* Actions */}
-          <div style={{ marginTop:'1.5rem', display:'flex', gap:10, alignItems:'center' }}>
-            <button onClick={complete}
-              style={{ background:'transparent', border:'none', color:'rgba(232,244,248,0.3)', fontFamily:HUD, fontSize:8, letterSpacing:1, cursor:'pointer', padding:'6px 0', flexShrink:0 }}>
+          <div style={{ marginTop:'1.25rem', display:'flex', gap:10, alignItems:'center' }}>
+            <button onClick={skip} style={{ background:'transparent', border:'none', color:'rgba(232,244,248,0.25)', fontFamily:HUD, fontSize:8, letterSpacing:1, cursor:'pointer', padding:'6px 0', flexShrink:0 }}>
               PASSER
             </button>
-
-            {/* Dots */}
             <div style={{ flex:1, display:'flex', justifyContent:'center', gap:6 }}>
               {STEPS.map((_, i) => (
-                <div key={i} style={{ width: i===step ? 18 : 6, height:6, borderRadius:3, background: i===step ? current.color : 'rgba(255,255,255,0.12)', transition:'all .3s ease', cursor:'pointer' }}
-                  onClick={() => setStep(i)} />
+                <div key={i} style={{ width: i===step ? 18 : 6, height:6, borderRadius:3, background: i<=step ? current.color : 'rgba(255,255,255,0.1)', transition:'all .3s ease', opacity: i<step ? 0.5 : 1 }} />
               ))}
             </div>
-
-            <button onClick={next}
-              style={{ background:`linear-gradient(135deg, ${current.color}, ${current.color}CC)`, border:'none', borderRadius:7, padding:'11px 22px', color:'#020408', fontFamily:HUD, fontSize:10, letterSpacing:2, fontWeight:900, cursor:'pointer', flexShrink:0, boxShadow:`0 4px 16px ${current.color}30` }}>
-              {isLast ? 'C\'EST PARTI !' : 'SUIVANT →'}
+            <button onClick={next} disabled={saving} style={{
+              background:`linear-gradient(135deg, ${current.color}, ${current.color}CC)`,
+              border:'none', borderRadius:7, padding:'11px 22px', color:'#020408',
+              fontFamily:HUD, fontSize:10, letterSpacing:2, fontWeight:900, cursor: saving ? 'wait' : 'pointer',
+              flexShrink:0, boxShadow:`0 4px 16px ${current.color}30`,
+              opacity: saving ? 0.7 : 1, transition:'opacity .2s',
+            }}>
+              {saving ? '...' : isLast ? "C'EST PARTI !" : 'SUIVANT →'}
             </button>
           </div>
         </div>

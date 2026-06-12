@@ -88,6 +88,12 @@ export default function LoginPage() {
   const handleSignup = async () => {
     if (!email || !password) { setError(lang === 'en' ? 'Email and password required' : 'Email et mot de passe requis'); return }
     if (password.length < 8) { setError(lang === 'en' ? 'Password: minimum 8 characters' : 'Mot de passe : minimum 8 caractères'); return }
+
+    // Bloquer les emails jetables
+    const { validateEmail } = await import('@/lib/email-validator')
+    const emailError = validateEmail(email)
+    if (emailError) { setError(emailError); return }
+
     setLoading(true)
     setError(null)
 
