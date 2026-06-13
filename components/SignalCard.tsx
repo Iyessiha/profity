@@ -5,7 +5,151 @@
 import type { ChartSignal, NewsSignal, OrderType } from '@/types'
 import dynamic from 'next/dynamic'
 
-// ChartAnnotation chargé dynamiquement (canvas côté client uniquement)
+// ============================================================
+// PROFITYX — SignalCard v3 (SMC complet)
+// ============================================================
+'use client'
+import { useState, useRef, useEffect } from 'react'
+import type { ChartSignal, NewsSignal, OrderType } from '@/types'
+import dynamic from 'next/dynamic'
+
+// ── Composant de partage multi-réseaux ───────────────────────
+interface ShareMenuProps {
+  pair: string; dir: string; tf?: string | null
+  cs?: Partial<ChartSignal> | null; locale: string
+}
+function ShareMenu({ pair, dir, tf, cs, locale }: ShareMenuProps) {
+  const [open, setOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const HUD = "'Orbitron', monospace"
+
+  // Fermer si clic extérieur
+  useEffect(() => {
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const emoji = dir === 'LONG' ? '🟢' : dir === 'SHORT' ? '🔴' : '🟡'
+  const entry = cs?.entry ?? 0
+  const sl    = cs?.stop_loss ?? 0
+  const t1    = cs?.tp1 ?? 0
+  const t2    = cs?.tp2 ?? 0
+  const t3    = cs?.tp3 ?? 0
+  const rr    = cs?.rr_ratio ?? 0
+  const url   = 'https://profity-x.com'
+
+  const text =
+    `${emoji} Signal ProfityX — ${pair}\n` +
+    `📊 ${dir}${tf ? ` | ${tf}` : ''}\n` +
+    `🎯 Entrée : ${entry}\n` +
+    `🛑 Stop : ${sl}\n` +
+    `✅ TP1 : ${t1}${t2 ? ` | TP2 : ${t2}` : ''}${t3 ? ` | TP3 : ${t3}` : ''}\n` +
+    (rr ? `📐 R/R : 1:${rr}\n` : '') +
+    `\n🤖 Généré par ProfityX — ${url}`
+
+  const textWa = text.replace(/\n/g, '\n') // WhatsApp accepte \n natif
+  const textTw = `${emoji} Signal ${pair} ${dir}${tf ? ` ${tf}` : ''} | Entrée ${entry} · SL ${sl} · TP ${t1}${t2 ? `/${t2}` : ''} | via @ProfityX ${url}`
+
+  const CHANNELS = [
+    {
+      id: 'whatsapp', label: 'WhatsApp', color: '#25D366',
+      bg: 'rgba(37,211,102,0.1)', border: 'rgba(37,211,102,0.3)',
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.554 4.122 1.527 5.857L0 24l6.335-1.509A11.934 11.934 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.007-1.372l-.36-.213-3.728.888.906-3.624-.233-.372A9.818 9.818 0 0 1 2.182 12c0-5.42 4.398-9.818 9.818-9.818s9.818 4.398 9.818 9.818-4.398 9.818-9.818 9.818z"/>
+        </svg>
+      ),
+      action: () => window.open(`https://wa.me/?text=${encodeURIComponent(textWa)}`, '_blank'),
+    },
+    {
+      id: 'telegram', label: 'Telegram', color: '#2AABEE',
+      bg: 'rgba(42,171,238,0.1)', border: 'rgba(42,171,238,0.3)',
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#2AABEE">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.67l-2.94-.918c-.64-.203-.658-.64.135-.954l11.57-4.461c.537-.194 1.006.131.959.884z"/>
+        </svg>
+      ),
+      action: () => window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank'),
+    },
+    {
+      id: 'twitter', label: 'X (Twitter)', color: '#E7E9EA',
+      bg: 'rgba(231,233,234,0.08)', border: 'rgba(231,233,234,0.2)',
+      icon: (
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#E7E9EA">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      ),
+      action: () => window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(textTw)}`, '_blank'),
+    },
+    {
+      id: 'facebook', label: 'Facebook', color: '#1877F2',
+      bg: 'rgba(24,119,242,0.1)', border: 'rgba(24,119,242,0.3)',
+      icon: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2">
+          <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+        </svg>
+      ),
+      action: () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`, '_blank'),
+    },
+    {
+      id: 'copy', label: copied ? '✓ Copié !' : 'Copier', color: copied ? '#00FFB2' : 'rgba(232,244,248,0.5)',
+      bg: copied ? 'rgba(0,255,178,0.1)' : 'rgba(255,255,255,0.04)', border: copied ? 'rgba(0,255,178,0.3)' : 'rgba(255,255,255,0.1)',
+      icon: <span style={{ fontSize:13 }}>{copied ? '✓' : '📋'}</span>,
+      action: async () => {
+        try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000) } catch {}
+      },
+    },
+  ]
+
+  // Partage natif (mobile)
+  const nativeShare = async () => {
+    if (navigator.share) {
+      try { await navigator.share({ title: `Signal ${pair} — ProfityX`, text, url }) } catch {}
+    } else setOpen(v => !v)
+  }
+
+  return (
+    <div ref={ref} style={{ position:'relative' }}>
+      <button onClick={nativeShare} style={{
+        display:'flex', alignItems:'center', gap:7,
+        background:'rgba(0,255,178,0.08)', border:'1px solid rgba(0,255,178,0.2)',
+        borderRadius:6, padding:'7px 14px', cursor:'pointer',
+        fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#00FFB2',
+      }}>
+        <span style={{ fontSize:14 }}>📤</span>
+        {locale === 'fr' ? 'PARTAGER' : 'SHARE'}
+        <span style={{ fontSize:10, opacity:.6 }}>▾</span>
+      </button>
+
+      {open && (
+        <div style={{
+          position:'absolute', bottom:'calc(100% + 8px)', left:0, zIndex:100,
+          background:'#0D1628', border:'1px solid rgba(0,255,178,0.15)',
+          borderRadius:10, padding:8, minWidth:180,
+          boxShadow:'0 8px 32px rgba(0,0,0,0.6)',
+          animation:'onboardIn .2s ease',
+        }}>
+          <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.3)', padding:'4px 8px 8px' }}>
+            PARTAGER CE SIGNAL
+          </div>
+          {CHANNELS.map(ch => (
+            <button key={ch.id} onClick={() => { ch.action(); if (ch.id !== 'copy') setOpen(false) }} style={{
+              width:'100%', display:'flex', alignItems:'center', gap:10,
+              background: open ? ch.bg : 'transparent', border:`1px solid ${ch.border}`,
+              borderRadius:7, padding:'9px 12px', cursor:'pointer', marginBottom:5,
+              transition:'all .15s',
+            }}>
+              {ch.icon}
+              <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:ch.color }}>{ch.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 const ChartAnnotation = dynamic(() => import('@/components/ChartAnnotation'), { ssr: false })
 
 const HUD  = "'Orbitron', monospace"
@@ -410,38 +554,11 @@ export default function SignalCard({ signal, type = 'chart', locale = 'fr', imag
         </div>
       </div>
 
-      {/* Actions — Partage WhatsApp + Track record */}
+      {/* Actions — Partage multi-réseaux + Track record */}
       <div style={{ padding:'12px 16px', borderTop:'1px solid rgba(255,255,255,0.05)', display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-        {/* Bouton WhatsApp */}
-        <button
-          onClick={() => {
-            const emoji = dir === 'LONG' ? '🟢' : dir === 'SHORT' ? '🔴' : '🟡'
-            const entry = cs?.entry ?? 0
-            const sl    = cs?.stop_loss ?? 0
-            const t1    = cs?.tp1 ?? 0
-            const t2    = cs?.tp2 ?? 0
-            const rr    = cs?.rr_ratio ?? 0
-            const msg   = `${emoji} *Signal ProfityX* — ${pair}\n` +
-              `📊 ${dir} | ${tf ?? ''}\n` +
-              `🎯 Entrée : ${entry}\n` +
-              `🛑 Stop : ${sl}\n` +
-              `✅ TP1 : ${t1}${t2 ? ` | TP2 : ${t2}` : ''}\n` +
-              (rr ? `📐 R/R : 1:${rr}\n` : '') +
-              `\n🤖 Généré par ProfityX — profity-x.com/results`
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
-          }}
-          style={{
-            display:'flex', alignItems:'center', gap:6,
-            background:'rgba(37,211,102,0.1)', border:'1px solid rgba(37,211,102,0.25)',
-            borderRadius:6, padding:'7px 14px', cursor:'pointer',
-            fontFamily:HUD, fontSize:8, letterSpacing:1, color:'#25D366',
-          }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.554 4.122 1.527 5.857L0 24l6.335-1.509A11.934 11.934 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.007-1.372l-.36-.213-3.728.888.906-3.624-.233-.372A9.818 9.818 0 0 1 2.182 12c0-5.42 4.398-9.818 9.818-9.818s9.818 4.398 9.818 9.818-4.398 9.818-9.818 9.818z"/>
-          </svg>
-          PARTAGER
-        </button>
+
+        {/* Bouton partage — menu déroulant */}
+        <ShareMenu pair={pair} dir={dir} tf={tf} cs={cs} locale={locale} />
 
         {/* Lien track record */}
         <a href="/results" target="_blank" style={{
