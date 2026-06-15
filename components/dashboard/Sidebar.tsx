@@ -113,6 +113,8 @@ export default function Sidebar({ plan, locale }: Props) {
           position: 'sticky',
           top: 0,
           height: '100vh',
+          minHeight: '100%',
+          alignSelf: 'stretch',
           overflowY: 'auto',
           overflowX: 'hidden',
           transition: 'background .3s, border-color .3s, transform .28s cubic-bezier(.4,0,.2,1)',
