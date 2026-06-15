@@ -232,6 +232,54 @@ Analyze this chart. READ the visible timeframe (top-left corner or title), exact
     annotations:        signal.annotations ?? null,
   })
 
+  // ── Lier l'analyse au compte Prop Firm actif ───────────────
+  try {
+    const { data: activePF } = await admin
+      .from('propfirm_tools')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (activePF) {
+      // Calculer le risque en % basé sur entry/stop_loss
+      let riskPct = 1 // défaut 1% si pas de données
+      if (signal.entry && signal.stop_loss && signal.entry > 0) {
+        riskPct = Math.abs((signal.entry - signal.stop_loss) / signal.entry) * 100
+        riskPct = Math.min(riskPct, activePF.daily_loss) // jamais > daily_loss max
+      }
+
+      const newDailyLoss = Number((activePF.daily_loss_used + riskPct).toFixed(2))
+      const newDrawdown  = Math.max(activePF.current_drawdown, newDailyLoss)
+
+      await admin.from('propfirm_tools').update({
+        daily_loss_used:  newDailyLoss,
+        current_drawdown: newDrawdown,
+        updated_at: new Date().toISOString(),
+      }).eq('id', activePF.id)
+
+      // Alerte si proche de la limite journalière (80%)
+      if (newDailyLoss >= activePF.daily_loss * 0.8) {
+        const isDanger = newDailyLoss >= activePF.daily_loss
+        await admin.from('notifications').insert({
+          user_id: user.id,
+          type: 'propfirm_alert',
+          priority: isDanger ? 'urgent' : 'high',
+          title: isDanger
+            ? `🚨 PROP FIRM — Limite journalière atteinte (${activePF.firm_name})`
+            : `⚠️ PROP FIRM — 80% de la perte journalière (${activePF.firm_name})`,
+          message: isDanger
+            ? `Vous avez utilisé ${newDailyLoss.toFixed(2)}% sur ${activePF.daily_loss}% autorisés. Arrêtez de trader aujourd'hui.`
+            : `Vous avez utilisé ${newDailyLoss.toFixed(2)}% sur ${activePF.daily_loss}% autorisés. Soyez prudent.`,
+          action_url: '/propfirm',
+          action_label: 'Voir mon compte',
+        })
+      }
+    }
+  } catch (_) { /* silencieux — ne bloque pas la réponse */ }
+
   // Notifier si solde bas après déduction
   const { data:newBal } = await admin.from('credits').select('balance').eq('user_id', user.id).single()
   if ((newBal?.balance ?? 0) <= 5 && (newBal?.balance ?? 0) > 0) {

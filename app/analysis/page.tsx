@@ -59,6 +59,7 @@ export default function AnalysisPage() {
   const [smcRated, setSmcRated]         = useState(false)
   const [smcBonus, setSmcBonus]         = useState(0)
   const [needsRating, setNeedsRating]   = useState(false)
+  const [activePropFirm, setActivePropFirm] = useState<{firm_name:string;daily_loss:number;daily_loss_used:number;max_drawdown:number;current_drawdown:number;account_size:number}|null>(null)
 
   const fileRef  = useRef<HTMLInputElement>(null)
   const [preview, setPreview]   = useState<string|null>(null)
@@ -93,6 +94,9 @@ export default function AnalysisPage() {
         setLocale((p.locale as string) || (typeof localStorage !== 'undefined' ? localStorage.getItem('pxLang') : null) || 'fr')
         if (!p.onboarding_done) setOnboarding(true)
       }
+      // Charger le compte prop firm actif
+      const { data: pf } = await supabasePublic.from('propfirm_tools').select('firm_name,daily_loss,daily_loss_used,max_drawdown,current_drawdown,account_size').eq('user_id', session.user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).single()
+      if (pf) setActivePropFirm(pf as any)
     })()
   }, [])
 
@@ -181,6 +185,34 @@ export default function AnalysisPage() {
       <div className="app-main" style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'var(--bg0)', width:'100%', overflow:'hidden' }}>
         <TopBar locale={locale} profile={profile} />
         <QuotaBar token={token} locale={locale} plan={plan} />
+
+        {/* Bandeau compte Prop Firm actif */}
+        {activePropFirm && (() => {
+          const dlPct    = activePropFirm.daily_loss_used
+          const dlMax    = activePropFirm.daily_loss
+          const dlRatio  = dlPct / dlMax
+          const danger   = dlRatio >= 1
+          const warning  = dlRatio >= 0.8
+          const color    = danger ? '#FF3A5C' : warning ? '#C9A84C' : '#00FFB2'
+          return (
+            <a href="/propfirm" style={{ textDecoration:'none', display:'block', margin:'0 1.5rem 0' }}>
+              <div style={{ background:`${color}08`, border:`1px solid ${color}20`, borderRadius:8, padding:'8px 14px', display:'flex', alignItems:'center', gap:12, flexWrap:'wrap' }}>
+                <span style={{ fontFamily:'Orbitron,monospace', fontSize:8, letterSpacing:1, color, whiteSpace:'nowrap' }}>
+                  {danger ? '🚨' : warning ? '⚠️' : '🏦'} {activePropFirm.firm_name}
+                </span>
+                <div style={{ flex:1, minWidth:120 }}>
+                  <div style={{ height:3, background:'rgba(255,255,255,0.06)', borderRadius:2 }}>
+                    <div style={{ height:'100%', width:`${Math.min(100, dlRatio*100)}%`, background:color, borderRadius:2, transition:'width .4s' }} />
+                  </div>
+                </div>
+                <span style={{ fontFamily:'Orbitron,monospace', fontSize:8, color, whiteSpace:'nowrap' }}>
+                  {locale === 'en' ? `Daily: ${dlPct.toFixed(2)}/${dlMax}%` : `Journalier: ${dlPct.toFixed(2)}/${dlMax}%`}
+                  {danger ? (locale==='en'?' ⛔ STOP':' ⛔ ARRÊT') : ''}
+                </span>
+              </div>
+            </a>
+          )
+        })()}
 
         <div className="resp-pad" style={{ padding:'1.25rem 1.5rem', flex:1, width:'100%', overflowX:'hidden' }}>
           {/* Header */}

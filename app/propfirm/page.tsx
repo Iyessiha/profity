@@ -37,6 +37,8 @@ export default function PropFirmPage() {
   const [tools,   setTools]   = useState<Tool[]>([])
   const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
+  const [recentAnalyses, setRecentAnalyses] = useState<Array<{id:string;pair:string;direction:string;entry:number;stop_loss:number;rr_ratio:number;created_at:string}>>([])
+
 
   // Formulaire nouveau compte
   const [firmId,   setFirmId]   = useState('ftmo')
@@ -54,8 +56,12 @@ export default function PropFirmPage() {
       setToken(session.access_token)
       const { data: p } = await supabasePublic.from('profiles').select('*').eq('id', session.user.id).single()
       if (p) { setProfile(p); setPlan(p.user_plan as string || 'free'); setLocale(p.locale as string || 'fr') }
-      const { data: t } = await supabasePublic.from('propfirm_tools').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false })
+      const [{ data: t }, { data: analyses }] = await Promise.all([
+        supabasePublic.from('propfirm_tools').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }),
+        supabasePublic.from('chart_analyses').select('id,pair,direction,entry,stop_loss,rr_ratio,created_at').eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(10),
+      ])
       if (t) setTools(t as Tool[])
+      if (analyses) setRecentAnalyses(analyses as any)
       setLoading(false)
     })()
   }, [])
@@ -243,6 +249,44 @@ export default function PropFirmPage() {
                       locale={locale} T={T} onUpdate={updateBalance} />
                   )
                 })}
+              </div>
+            )}
+
+            {/* Analyses récentes liées au compte actif */}
+            {recentAnalyses.length > 0 && (
+              <div style={{ marginTop:'2rem', marginBottom:'1.5rem' }}>
+                <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'var(--tx3)', marginBottom:'1rem' }}>
+                  {locale === 'en' ? 'RECENT ANALYSES → RISK TRACKING' : 'ANALYSES RÉCENTES → SUIVI DU RISQUE'}
+                </div>
+                <div style={{ background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:10, overflow:'hidden' }}>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr 1fr', padding:'8px 14px', borderBottom:'1px solid var(--bd)', background:'rgba(255,255,255,0.02)' }}>
+                    {['PAIRE','DIRECTION','ENTRÉE','RISQUE EST.','DATE'].map(h => (
+                      <div key={h} style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'var(--tx3)' }}>{h}</div>
+                    ))}
+                  </div>
+                  {recentAnalyses.map(a => {
+                    const riskPct = a.entry && a.stop_loss
+                      ? Math.abs((a.entry - a.stop_loss) / a.entry * 100).toFixed(2)
+                      : '~1.00'
+                    const dirColor = a.direction?.includes('LONG') || a.direction?.includes('BUY') ? '#00FFB2' : '#FF3A5C'
+                    return (
+                      <div key={a.id} style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr 1fr', padding:'10px 14px', borderBottom:'1px solid rgba(255,255,255,0.03)', alignItems:'center' }}>
+                        <div style={{ fontFamily:HUD, fontSize:9, color:'var(--tx0)' }}>{a.pair}</div>
+                        <div style={{ fontFamily:HUD, fontSize:8, color:dirColor }}>{a.direction?.split(' ')[0]}</div>
+                        <div style={{ fontFamily:HUD, fontSize:8, color:'var(--tx2)' }}>{a.entry}</div>
+                        <div style={{ fontFamily:HUD, fontSize:8, color:'#C9A84C' }}>~{riskPct}%</div>
+                        <div style={{ fontFamily:BODY, fontSize:10, color:'var(--tx3)' }}>
+                          {new Date(a.created_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'fr-FR', { day:'2-digit', month:'short' })}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginTop:6, padding:'0 2px' }}>
+                  {locale === 'en'
+                    ? '* Estimated risk based on entry/stop loss distance. Updated automatically with each new analysis.'
+                    : '* Risque estimé basé sur la distance entrée/stop loss. Mis à jour automatiquement à chaque nouvelle analyse.'}
+                </div>
               </div>
             )}
 
