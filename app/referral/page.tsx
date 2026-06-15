@@ -27,6 +27,18 @@ function QRPlaceholder({ code }: { code: string }) {
     if ((x < 3 && y < 3) || (x >= 6 && y < 3) || (x < 3 && y >= 6)) return true
     return ((seed * (i + 7) * 13) % 17) > 8
   })
+
+  const handleLangChange = async (lang: 'fr' | 'en') => {
+    setLocale(lang)
+    try {
+      localStorage.setItem('pxLang', lang)
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session) {
+        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+      }
+    } catch {}
+  }
+
   return (
     <div style={{ background:'#fff', borderRadius:10, padding:10, display:'inline-block', boxShadow:'0 4px 20px rgba(0,0,0,0.3)' }}>
       <div style={{ display:'grid', gridTemplateColumns:`repeat(${cells}, 14px)`, gap:1 }}>
@@ -70,19 +82,6 @@ export default function ReferralPage() {
   const [copied,  setCopied]  = useState(false)
   const [toast,   setToast]   = useState<string | null>(null)
 
-  const handleLangChange = async (lang: 'fr' | 'en') => {
-    setLocale(lang)
-    try {
-      localStorage.setItem('pxLang', lang)
-      const { data: { session } } = await supabasePublic.auth.getSession()
-      if (session) {
-        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
-      }
-    } catch {}
-    if (lang === 'en' && typeof window !== 'undefined' && !window.location.pathname.startsWith('/en')) {
-      // Reste sur la même page mais met à jour la langue
-    }
-  }
 
   useEffect(() => {
     ;(async () => {

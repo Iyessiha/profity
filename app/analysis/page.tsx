@@ -76,19 +76,6 @@ export default function AnalysisPage() {
   const [derivSymbol, setDerivSymbol]   = useState<string>('')   // actif Deriv sélectionné
   const tvRef = useRef<HTMLDivElement>(null)
 
-  const handleLangChange = async (lang: 'fr' | 'en') => {
-    setLocale(lang)
-    try {
-      localStorage.setItem('pxLang', lang)
-      const { data: { session } } = await supabasePublic.auth.getSession()
-      if (session) {
-        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
-      }
-    } catch {}
-    if (lang === 'en' && typeof window !== 'undefined' && !window.location.pathname.startsWith('/en')) {
-      // Reste sur la même page mais met à jour la langue
-    }
-  }
 
   useEffect(() => {
     ;(async () => {
@@ -183,6 +170,18 @@ export default function AnalysisPage() {
   const suggestedAssets = ASSET_MAP[tradingType] ?? ASSET_MAP.forex
   const analysesLeft = plan === 'free' ? Math.max(0, 3 - ((profile?.analyses_used as number) ?? 0)) : undefined
   const isPremium = plan === 'pro' || plan === 'elite'
+
+
+  const handleLangChange = async (lang: 'fr' | 'en') => {
+    setLocale(lang)
+    try {
+      localStorage.setItem('pxLang', lang)
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session) {
+        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+      }
+    } catch {}
+  }
 
   return (
     <>

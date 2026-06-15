@@ -46,19 +46,6 @@ export default function DashboardPage() {
     },
   })
 
-  const handleLangChange = async (lang: 'fr' | 'en') => {
-    setLocale(lang)
-    try {
-      localStorage.setItem('pxLang', lang)
-      const { data: { session } } = await supabasePublic.auth.getSession()
-      if (session) {
-        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
-      }
-    } catch {}
-    if (lang === 'en' && typeof window !== 'undefined' && !window.location.pathname.startsWith('/en')) {
-      // Reste sur la même page mais met à jour la langue
-    }
-  }
 
   useEffect(() => {
     ;(async () => {
@@ -122,6 +109,18 @@ export default function DashboardPage() {
     { href: '/news',     icon: 'ti-news',          color: 'var(--ac2)', title: locale === 'fr' ? 'ANNONCES MACRO' : 'MACRO NEWS',   desc: locale === 'fr' ? 'NFP, CPI, FOMC · Coaching psychologique pour Pro/Elite' : 'NFP, CPI, FOMC · Psychological coaching for Pro/Elite', badge: plan === 'pro' || plan === 'elite' ? 'COACH' : null },
     { href: '/history',  icon: 'ti-history',       color: 'var(--ac3)', title: locale === 'fr' ? 'HISTORIQUE' : 'HISTORY',          desc: locale === 'fr' ? 'Vos analyses passées et signaux générés' : 'Your past analyses and generated signals', badge: null },
   ]
+
+
+  const handleLangChange = async (lang: 'fr' | 'en') => {
+    setLocale(lang)
+    try {
+      localStorage.setItem('pxLang', lang)
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session) {
+        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+      }
+    } catch {}
+  }
 
   return (
     <div className="app-shell">

@@ -98,19 +98,6 @@ export default function CalculatorPage() {
   const [profile, setProfile] = useState<Record<string,unknown>|null>(null)
   const [locale,  setLocale]  = useState('fr')
 
-  const handleLangChange = async (lang: 'fr' | 'en') => {
-    setLocale(lang)
-    try {
-      localStorage.setItem('pxLang', lang)
-      const { data: { session } } = await supabasePublic.auth.getSession()
-      if (session) {
-        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
-      }
-    } catch {}
-    if (lang === 'en' && typeof window !== 'undefined' && !window.location.pathname.startsWith('/en')) {
-      // Reste sur la même page mais met à jour la langue
-    }
-  }
 
   useEffect(() => {
     supabasePublic.auth.getSession().then(({ data: { session } }) => {
@@ -169,6 +156,18 @@ export default function CalculatorPage() {
   const isValid = result.lotSize > 0 && isFinite(result.lotSize)
 
   const groups = [...new Set(PAIRS.map(p => p.group))]
+
+
+  const handleLangChange = async (lang: 'fr' | 'en') => {
+    setLocale(lang)
+    try {
+      localStorage.setItem('pxLang', lang)
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session) {
+        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+      }
+    } catch {}
+  }
 
   return (
     <div style={{ display:'flex', minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY }}>

@@ -54,6 +54,18 @@ function PnLChart({ trades }: { trades: Trade[] }) {
   const fill = path + ` L${x(pts.length-1).toFixed(1)},${H} L${PAD},${H} Z`
   const zeroY = y(0)
 
+
+  const handleLangChange = async (lang: 'fr' | 'en') => {
+    setLocale(lang)
+    try {
+      localStorage.setItem('pxLang', lang)
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session) {
+        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+      }
+    } catch {}
+  }
+
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display:'block' }}>
       <defs>
@@ -296,19 +308,6 @@ export default function JournalPage() {
     del:        locale === 'en' ? 'DELETE'            : 'SUPPRIMER',
   }
 
-  const handleLangChange = async (lang: 'fr' | 'en') => {
-    setLocale(lang)
-    try {
-      localStorage.setItem('pxLang', lang)
-      const { data: { session } } = await supabasePublic.auth.getSession()
-      if (session) {
-        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
-      }
-    } catch {}
-    if (lang === 'en' && typeof window !== 'undefined' && !window.location.pathname.startsWith('/en')) {
-      // Reste sur la même page mais met à jour la langue
-    }
-  }
 
   useEffect(() => {
     ;(async () => {

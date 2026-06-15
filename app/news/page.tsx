@@ -68,19 +68,6 @@ const COACHING: Record<string, string[]> = {
 
 function useCountdown(date: string) {
   const [cd, setCd] = useState({ d:0, h:0, m:0, s:0, passed:false })
-  const handleLangChange = async (lang: 'fr' | 'en') => {
-    setLocale(lang)
-    try {
-      localStorage.setItem('pxLang', lang)
-      const { data: { session } } = await supabasePublic.auth.getSession()
-      if (session) {
-        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
-      }
-    } catch {}
-    if (lang === 'en' && typeof window !== 'undefined' && !window.location.pathname.startsWith('/en')) {
-      // Reste sur la même page mais met à jour la langue
-    }
-  }
 
   useEffect(() => {
     const update = () => {
@@ -102,6 +89,18 @@ function ImpactBadge({ impact }: { impact: string }) {
 
 function SignalBox({ sig, label }: { sig: Signal; label: string }) {
   const dc = sig.direction === 'LONG' ? '#00B890' : sig.direction === 'SHORT' ? 'var(--red)' : '#888'
+
+  const handleLangChange = async (lang: 'fr' | 'en') => {
+    setLocale(lang)
+    try {
+      localStorage.setItem('pxLang', lang)
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session) {
+        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+      }
+    } catch {}
+  }
+
   return (
     <div style={{ background:'var(--bg2)', border:`1px solid ${dc}25`, borderRadius:8, padding:'0.875rem', flex:1 }}>
       <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', marginBottom:6 }}>{label}</div>
