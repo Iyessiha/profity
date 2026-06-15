@@ -433,6 +433,16 @@ export default function SettingsPage() {
                         <option key={l.v} value={l.v} style={{ background:'var(--bg0)' }}>{l.label}</option>
                       ))}
                     </select>
+                    {/* Reset sélecteur de langue au premier atterrissage */}
+                    <button
+                      onClick={() => {
+                        try { localStorage.removeItem('px_lang_chosen') } catch {}
+                        alert(locale === 'en' ? 'Language selector will appear on next visit to profity-x.com' : 'Le sélecteur de langue réapparaîtra à la prochaine visite sur profity-x.com')
+                      }}
+                      style={{ marginTop:8, background:'transparent', border:'1px solid var(--bd)', borderRadius:4, padding:'5px 10px', color:'var(--tx3)', fontFamily:HUD, fontSize:7, letterSpacing:1, cursor:'pointer', width:'100%' }}
+                    >
+                      🌍 {locale === 'en' ? 'RESET LANGUAGE SELECTOR' : 'RÉINITIALISER LE SÉLECTEUR DE LANGUE'}
+                    </button>
                   </div>
                   <div>
                     <label style={labelStyle}>DEVISE PAR DÉFAUT</label>

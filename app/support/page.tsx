@@ -21,7 +21,7 @@ export default function SupportPage() {
           <button onClick={toggleTheme} style={{ width:36,height:36,borderRadius:8,border:'1px solid var(--bd1)',background:'var(--bg2)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',color:theme==='dark'?'#C9A84C':'#0EA5E9' }}>
             <i className={'ti '+(theme==='dark'?'ti-sun':'ti-moon')} style={{ fontSize:16 }} />
           </button>
-          <a href="/dashboard" style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx2)', padding:'0 14px', display:'flex', alignItems:'center', textDecoration:'none', border:'1px solid var(--bd)', borderRadius:4 }}>← RETOUR</a>
+          <a href="/dashboard" style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx2)', padding:'0 14px', display:'flex', alignItems:'center', textDecoration:'none', border:'1px solid var(--bd)', borderRadius:4 }}>{ lang === 'en' ? '← BACK' : '← RETOUR' }</a>
         </div>
       </header>
 
@@ -35,7 +35,7 @@ export default function SupportPage() {
             ASSISTANCE <span style={{ color:'var(--ac)' }}>PROFITYX</span>
           </h1>
           <p style={{ fontSize:16, color:'var(--tx2)', lineHeight:1.7 }}>
-            Notre équipe est disponible pour vous aider à utiliser ProfityX, résoudre vos problèmes techniques, ou répondre à vos questions sur nos abonnements.
+            lang === 'en' ? 'Our team is available to help you use ProfityX, resolve technical issues, or answer questions about your subscription.' : 'Notre équipe est disponible pour vous aider à utiliser ProfityX, résoudre vos problèmes techniques, ou répondre à vos questions sur nos abonnements.'
           </p>
         </div>
 
@@ -50,9 +50,9 @@ export default function SupportPage() {
           <a href="https://wa.me/+2250500446464" target="_blank" rel="noopener noreferrer"
             style={{ display:'inline-flex', alignItems:'center', gap:10, background:'#fff', color:'#25D366', fontFamily:HUD, fontSize:11, letterSpacing:2, fontWeight:700, padding:'14px 28px', borderRadius:8, textDecoration:'none', boxShadow:'0 4px 20px rgba(0,0,0,0.2)' }}>
             <i className="ti ti-brand-whatsapp" style={{ fontSize:20 }} />
-            CONTACTER SUR WHATSAPP
+            lang === 'en' ? 'CONTACT ON WHATSAPP' : 'CONTACTER SUR WHATSAPP'
           </a>
-          <p style={{ fontSize:12, color:'rgba(255,255,255,0.6)', marginTop:12 }}>+225 0500 44 64 64 · Lun–Sam 8h–20h GMT</p>
+          <p style={{ fontSize:12, color:'rgba(255,255,255,0.6)', marginTop:12 }}>+225 0500 44 64 64 · lang === 'en' ? 'Mon–Sat 8am–8pm GMT' : 'Lun–Sam 8h–20h GMT'</p>
         </div>
 
         {/* Autres options */}

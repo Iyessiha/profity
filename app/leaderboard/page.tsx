@@ -20,20 +20,36 @@ export default function LeaderboardPage() {
   const [leaders, setLeaders] = useState<Leader[]>([])
   const [loading, setLoading] = useState(true)
   const [period, setPeriod]   = useState<'all'|'month'>('month')
+  const [lang,   setLang]     = useState('fr')
 
   useEffect(() => {
+    try { setLang(localStorage.getItem('pxLang') || 'fr') } catch {}
     setLoading(true)
     fetch(`/api/leaderboard?period=${period}`)
       .then(r => r.json()).then(d => { setLeaders(d.leaders ?? []); setLoading(false) })
       .catch(() => setLoading(false))
   }, [period])
 
+  const T = {
+    title:    lang === 'en' ? 'LEADERBOARD'    : 'CLASSEMENT',
+    month:    lang === 'en' ? 'THIS MONTH'     : 'CE MOIS',
+    allTime:  lang === 'en' ? 'ALL TIME'       : 'TOUT TEMPS',
+    rank:     lang === 'en' ? 'RANK'           : 'RANG',
+    trader:   lang === 'en' ? 'TRADER'         : 'TRADER',
+    winrate:  lang === 'en' ? 'WIN RATE'       : 'WIN RATE',
+    trades:   lang === 'en' ? 'TRADES'         : 'TRADES',
+    join:     lang === 'en' ? 'JOIN NOW'       : 'REJOINDRE',
+    empty:    lang === 'en' ? 'No traders ranked yet — rate your trades to appear here!' : 'Aucun trader classé — notez vos trades pour apparaître ici !',
+    loading:  lang === 'en' ? 'LOADING...'     : 'CHARGEMENT...',
+    cta:      lang === 'en' ? 'Rate your trades in the Trading Journal to appear in the ranking.' : 'Notez vos trades dans le Journal pour apparaître au classement.',
+  }
+
   const MEDALS = ['🥇','🥈','🥉']
   const PLAN_COLOR: Record<string, string> = { elite:'#C9A84C', pro:'#00FFB2', free:'#888' }
 
   return (
-    <div style={{ minHeight:'100vh', background:'#020408', color:'#F0F8FF', fontFamily:BODY }}>
-      <nav style={{ position:'sticky', top:0, zIndex:100, background:'rgba(2,4,8,0.95)', backdropFilter:'blur(16px)', borderBottom:'1px solid rgba(0,255,178,0.07)', padding:'0 1.5rem', height:56, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+    <div style={{ minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY }}>
+      <nav style={{ position:'sticky', top:0, zIndex:100, background:'var(--bg1)', backdropFilter:'blur(16px)', borderBottom:'1px solid var(--bd)', padding:'0 1.5rem', height:56, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <Link href="/" style={{ textDecoration:'none' }}>
           <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:32, objectFit:'contain' }} />
         </Link>
@@ -44,7 +60,7 @@ export default function LeaderboardPage() {
 
       <div style={{ maxWidth:720, margin:'0 auto', padding:'2.5rem 1.5rem' }}>
         <div style={{ textAlign:'center', marginBottom:32 }}>
-          <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>CLASSEMENT</div>
+          <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>{ T.title }</div>
           <h1 style={{ fontFamily:HUD, fontSize:'clamp(24px,4vw,40px)', fontWeight:900, marginBottom:8 }}>
             🏆 TOP TRADERS
           </h1>
