@@ -19,6 +19,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://profity-x.com'),
   title: 'ProfityX — Signaux de Trading IA',
   description: 'Analysez vos graphiques et les annonces économiques avec l\'IA. Entrée, Stop Loss, Take Profit en quelques secondes.',
   manifest: '/manifest.json',
