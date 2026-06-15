@@ -383,6 +383,42 @@ export default function LandingEN() {
         </div>
       </section>
 
+      {/* ── TRACK RECORD ────────────────────────────────────── */}
+      <section style={{ position:'relative', zIndex:1, padding:'clamp(3rem,6vw,5rem) 2rem', maxWidth:800, margin:'0 auto', textAlign:'center' }}>
+        <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>FULL TRANSPARENCY</div>
+        <h2 style={{ fontFamily:HUD, fontSize:'clamp(22px,3vw,36px)', fontWeight:900, marginBottom:16 }}>Our live track record</h2>
+        <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(240,248,255,0.5)', marginBottom:32 }}>
+          Win rate, average R/R, every WIN and LOSS signal displayed. No filter.
+        </p>
+        <a href="/results" style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'14px 32px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+          VIEW LIVE TRACK RECORD →
+        </a>
+      </section>
+
+      {/* ── PAYMENT METHODS ─────────────────────────────────── */}
+      <section style={{ position:'relative', zIndex:1, padding:'3rem 2rem', maxWidth:800, margin:'0 auto', textAlign:'center' }}>
+        <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(240,248,255,0.3)', marginBottom:24 }}>PAY YOUR WAY</div>
+        <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
+          {[
+            { src:'/logos/wave.png',         alt:'Wave',         bg:'rgba(13,197,255,0.06)',  bd:'rgba(13,197,255,0.2)'  },
+            { src:'/logos/orange_money.png', alt:'Orange Money', bg:'#1A0A00',                bd:'rgba(255,140,0,0.3)'   },
+            { src:'/logos/mtn.png',          alt:'MTN',          bg:'#FFCC00',                bd:'rgba(255,180,0,0.5)'   },
+            { src:'/logos/visa.png',         alt:'Visa',         bg:'rgba(255,255,255,0.95)', bd:'rgba(0,0,0,0.1)'       },
+            { src:'/logos/mastercard.png',   alt:'Mastercard',   bg:'rgba(255,255,255,0.95)', bd:'rgba(0,0,0,0.1)'       },
+            { src:'/logos/geniuspay.png',    alt:'GeniusPay',    bg:'#FFFFFF',                bd:'rgba(0,0,0,0.1)'       },
+          ].map(l => (
+            <div key={l.alt} style={{ background:l.bg, border:`1px solid ${l.bd}`, borderRadius:8, padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'center', minWidth:100, height:50 }}>
+              <img src={l.src} alt={l.alt} style={{ height:30, maxWidth:110, objectFit:'contain' }} />
+            </div>
+          ))}
+        </div>
+        <div style={{ display:'flex', gap:16, justifyContent:'center', flexWrap:'wrap', marginTop:20 }}>
+          {['🔒 SSL 256-bit','🏦 No data stored','↩️ Cancel anytime','✓ No commitment'].map(b => (
+            <span key={b} style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.35)' }}>{b}</span>
+          ))}
+        </div>
+      </section>
+
       {/* ── FAQ ─────────────────────────────────────────────── */}
       <section style={{ position:'relative', zIndex:1, padding:'clamp(3rem,6vw,5rem) 2rem', maxWidth:700, margin:'0 auto' }}>
         <div style={{ textAlign:'center', marginBottom:'3rem' }}>

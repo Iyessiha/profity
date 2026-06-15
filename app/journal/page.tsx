@@ -260,6 +260,33 @@ export default function JournalPage() {
   const [profile, setProfile] = useState<Record<string,unknown>|null>(null)
   const [plan,    setPlan]    = useState('free')
   const [locale,  setLocale]  = useState('fr')
+
+  // Dictionnaire i18n
+  const T = {
+    title:      locale === 'en' ? 'TRADING JOURNAL'     : T.title,
+    trades:     locale === 'en' ? 'trades recorded'     : '{T.trades}',
+    add:        locale === 'en' ? 'ADD A TRADE'         : T.add,
+    export:     locale === 'en' ? 'EXPORT CSV'          : T.export,
+    list:       locale === 'en' ? 'LIST'                : 'LISTE',
+    stats:      locale === 'en' ? 'STATS'               : 'STATS',
+    analysis:   locale === 'en' ? 'ANALYSIS'            : 'ANALYSE',
+    wins:       locale === 'en' ? 'WINS'                : T.wins,
+    losses:     locale === 'en' ? 'LOSSES'              : T.losses,
+    winrate:    locale === 'en' ? T.winrate            : 'WIN RATE',
+    streak:     locale === 'en' ? 'STREAK'              : T.streak,
+    pnl:        locale === 'en' ? 'TOTAL P&L'           : 'P&L TOTAL',
+    empty:      locale === 'en' ? 'No trades recorded. Rate your trades to earn credits!' : 'Aucun trade enregistré. Notez vos trades pour gagner des crédits !',
+    allPairs:   locale === 'en' ? 'ALL PAIRS'           : 'TOUTES PAIRES',
+    allResults: locale === 'en' ? 'ALL RESULTS'         : 'TOUS RÉSULTATS',
+    date:       locale === 'en' ? 'DATE'                : 'DATE',
+    pair:       locale === 'en' ? 'ASSET'               : 'PAIRE',
+    direction:  locale === 'en' ? 'DIRECTION'           : 'DIRECTION',
+    result:     locale === 'en' ? 'RESULT'              : 'RÉSULTAT',
+    emotion:    locale === 'en' ? 'EMOTION'             : 'ÉMOTION',
+    notes:      locale === 'en' ? 'NOTES'               : 'NOTES',
+    edit:       locale === 'en' ? 'EDIT'                : 'MODIFIER',
+    delete:     locale === 'en' ? 'DELETE'              : 'SUPPRIMER',
+  }
   const [trades,  setTrades]  = useState<Trade[]>([])
   const [stats,   setStats]   = useState<Stats>({wins:0,losses:0,winrate:0,total_pnl:0})
   const [loading, setLoading] = useState(true)
@@ -332,13 +359,13 @@ export default function JournalPage() {
               <div>
                 <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'var(--ac2)', marginBottom:4 }}>MODULE</div>
                 <h1 style={{ fontFamily:HUD, fontSize:22, fontWeight:900, color:'var(--tx0)', margin:0 }}>
-                  JOURNAL DE <span style={{ color:'var(--ac2)' }}>TRADING</span>
+                  {T.title.split(' ')[0]} <span style={{ color:'var(--ac2)' }}>{T.title.split(' ').slice(1).join(' ')}</span>
                 </h1>
                 <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)', marginTop:4 }}>{trades.length} trades enregistrés</div>
               </div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
                 <button onClick={exportCSV} style={{ display:'flex', alignItems:'center', gap:6, background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:6, padding:'8px 14px', cursor:'pointer', color:'var(--tx2)', fontFamily:HUD, fontSize:8, letterSpacing:1 }}>
-                  <i className="ti ti-download" style={{ fontSize:13 }} /> EXPORTER CSV
+                  <i className="ti ti-download" style={{ fontSize:13 }} /> {T.export}
                 </button>
                 <button onClick={()=>{ setEditing(null); setShowForm(v=>!v) }}
                   style={{ display:'flex', alignItems:'center', gap:6, background:showForm&&!editing?'var(--ac2)':'var(--bg1)', border:`1px solid ${showForm&&!editing?'var(--ac2)':'var(--bd)'}`, borderRadius:6, padding:'8px 14px', cursor:'pointer', color:showForm&&!editing?'#020408':'var(--ac2)', fontFamily:HUD, fontSize:9, letterSpacing:1, fontWeight:700 }}>

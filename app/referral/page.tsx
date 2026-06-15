@@ -45,6 +45,23 @@ export default function ReferralPage() {
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null)
   const [plan,    setPlan]    = useState('free')
   const [locale,  setLocale]  = useState('fr')
+
+  // i18n
+  const T = {
+    title:        locale === 'en' ? 'REFERRAL'               : '{T.title}',
+    subtitle:     locale === 'en' ? 'Invite friends and earn credits!' : '{T.subtitle}',
+    your_link:    locale === 'en' ? 'YOUR REFERRAL LINK'     : '{T.your_link}',
+    copy:         locale === 'en' ? 'COPY'                   : 'COPIER',
+    copied:       locale === 'en' ? '✓ COPIED!'              : '✓ COPIÉ !',
+    credits:      locale === 'en' ? 'CREDITS EARNED'         : '{T.credits}',
+    friends:      locale === 'en' ? 'FRIENDS INVITED'        : '{T.friends}',
+    apply_code:   locale === 'en' ? 'APPLY A CODE'           : 'APPLIQUER UN CODE',
+    apply_btn:    locale === 'en' ? 'APPLY'                  : 'APPLIQUER',
+    how_it_works: locale === 'en' ? 'HOW IT WORKS'           : '{T.how_it_works}',
+    step1:        locale === 'en' ? 'Share your link with a friend' : 'Partagez votre lien avec un ami',
+    step2:        locale === 'en' ? 'They sign up with your link'   : "Il s'inscrit avec votre lien",
+    step3:        locale === 'en' ? 'You earn +20 credits, they get +10' : 'Vous gagnez +20 crédits, lui +10',
+  }
   const [data,    setData]    = useState<PageData | null>(null)
   const [loading, setLoading] = useState(true)
   const [code,    setCode]    = useState('')
