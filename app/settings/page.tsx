@@ -226,7 +226,7 @@ export default function SettingsPage() {
   }, [swReg, token, pushSubscribed, profile])
 
   if (loading) return (
-    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'#020408' }}>
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:'var(--bg0)' }}>
       <div style={{ fontFamily: HUD, fontSize: 11, color: '#00FFB2', letterSpacing: 4, animation: 'pulse 1.5s infinite' }}>
         CHARGEMENT...
       </div>
@@ -239,8 +239,8 @@ export default function SettingsPage() {
   // ── Styles communs ────────────────────────────────────────
   const inputStyle: React.CSSProperties = {
     width:'100%', padding:'10px 12px',
-    background:'#0A0F1A', border:'1px solid rgba(0,255,178,0.15)',
-    borderRadius:4, color:'#E8F4F8',
+    background:'var(--bg0)', border:'1px solid var(--bd)',
+    borderRadius:4, color:'var(--tx0)',
     fontFamily:BODY, fontSize:14, outline:'none',
   }
   const labelStyle: React.CSSProperties = {
@@ -248,7 +248,7 @@ export default function SettingsPage() {
     color:'rgba(232,244,248,0.4)', display:'block', marginBottom:6,
   }
   const cardStyle: React.CSSProperties = {
-    background:'#06090F', border:'1px solid rgba(0,255,178,0.08)',
+    background:'var(--bg1)', border:'1px solid var(--bd)',
     borderRadius:8, padding:'1.5rem', marginBottom:'1rem',
   }
 
@@ -274,11 +274,11 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div style={{ minHeight:'100vh', background:'#020408', fontFamily:BODY }}>
+    <div style={{ minHeight:'100vh', background:'var(--bg0)', fontFamily:BODY }}>
 
       {/* Header */}
       <div style={{
-        background:'#06090F', borderBottom:'1px solid rgba(0,255,178,0.06)',
+        background:'var(--bg1)', borderBottom:'1px solid var(--bd)',
         padding:'0.875rem 1.25rem', display:'flex', alignItems:'center',
         justifyContent:'space-between', gap:8, position:'sticky', top:0, zIndex:40,
       }}>
@@ -311,7 +311,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Tabs horizontaux sur mobile */}
-      <div style={{ overflowX:'auto', borderBottom:'1px solid rgba(0,255,178,0.06)', background:'#06090F' }}
+      <div style={{ overflowX:'auto', borderBottom:'1px solid var(--bd)', background:'var(--bg1)' }}
         className="settings-tabs-scroll">
         <div style={{ display:'flex', padding:'0 1rem', gap:4, minWidth:'max-content' }}>
           {TABS.map(t => (
@@ -412,7 +412,7 @@ export default function SettingsPage() {
                       value={profile?.country ?? 'CI'}
                       onChange={e => setProfile(p => p ? {...p, country: e.target.value} : p)}>
                       {[['CI','🇨🇮 Côte d\'Ivoire'],['SN','🇸🇳 Sénégal'],['GH','🇬🇭 Ghana'],['NG','🇳🇬 Nigeria'],['CM','🇨🇲 Cameroun'],['MA','🇲🇦 Maroc'],['FR','🇫🇷 France'],['US','🇺🇸 USA']].map(([v,l]) => (
-                        <option key={v} value={v} style={{ background:'#0A0F1A' }}>{l}</option>
+                        <option key={v} value={v} style={{ background:'var(--bg0)' }}>{l}</option>
                       ))}
                     </select>
                   </div>
@@ -430,7 +430,7 @@ export default function SettingsPage() {
                       value={profile?.locale ?? 'fr'}
                       onChange={e => setProfile(p => p ? {...p, locale: e.target.value} : p)}>
                       {LOCALES.map(l => (
-                        <option key={l.v} value={l.v} style={{ background:'#0A0F1A' }}>{l.label}</option>
+                        <option key={l.v} value={l.v} style={{ background:'var(--bg0)' }}>{l.label}</option>
                       ))}
                     </select>
                   </div>
@@ -440,7 +440,7 @@ export default function SettingsPage() {
                       value={profile?.currency ?? 'XOF'}
                       onChange={e => setProfile(p => p ? {...p, currency: e.target.value} : p)}>
                       {CURRENCIES.map(c => (
-                        <option key={c.v} value={c.v} style={{ background:'#0A0F1A' }}>{c.label}</option>
+                        <option key={c.v} value={c.v} style={{ background:'var(--bg0)' }}>{c.label}</option>
                       ))}
                     </select>
                   </div>
@@ -450,7 +450,7 @@ export default function SettingsPage() {
                       value={profile?.timezone ?? 'Africa/Abidjan'}
                       onChange={e => setProfile(p => p ? {...p, timezone: e.target.value} : p)}>
                       {TIMEZONES.map(tz => (
-                        <option key={tz} value={tz} style={{ background:'#0A0F1A' }}>{tz}</option>
+                        <option key={tz} value={tz} style={{ background:'var(--bg0)' }}>{tz}</option>
                       ))}
                     </select>
                   </div>
@@ -598,7 +598,7 @@ export default function SettingsPage() {
                           { t:'5 min avant',  d:'Signal imminent',        c:'#C9A84C' },
                         ].map(a => (
                           <div key={a.t} style={{
-                            background:'rgba(0,255,178,0.03)', border:'1px solid rgba(0,255,178,0.08)',
+                            background:'rgba(0,255,178,0.03)', border:'1px solid var(--bd)',
                             borderRadius:6, padding:'10px 12px',
                           }}>
                             <div style={{ fontFamily:HUD, fontSize:10, color:a.c, marginBottom:4 }}>{a.t}</div>
@@ -618,7 +618,7 @@ export default function SettingsPage() {
                 </div>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <div>
-                    <div style={{ fontFamily:HUD, fontSize:11, color:'#E8F4F8', letterSpacing:1, marginBottom:4 }}>
+                    <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', letterSpacing:1, marginBottom:4 }}>
                       RÉCAPITULATIF HEBDOMADAIRE
                     </div>
                     <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.4)' }}>
@@ -836,7 +836,7 @@ function TelegramConnect({ plan }: { plan: string }) {
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
       {current && (
-        <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.15)', borderRadius:6, padding:'10px 14px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(0,255,178,0.06)', border:'1px solid var(--bd)', borderRadius:6, padding:'10px 14px' }}>
           <span style={{ color:'#00FFB2' }}>✓</span>
           <span style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.7)' }}>
             Connecté — Chat ID : <strong style={{ color:'#F0F8FF' }}>{current}</strong>

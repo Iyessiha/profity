@@ -5,6 +5,7 @@
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useTheme }            from '@/lib/theme'
+import LangModal               from '@/components/LangModal'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -71,9 +72,12 @@ export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [billing,  setBilling]  = useState<'monthly'|'annual'>('monthly')
 
+  const handleLangChoice = (lang: 'fr' | 'en') => {
+    try { localStorage.setItem('pxLang', lang) } catch {}
+    if (lang === 'en') window.location.href = '/en'
+  }
+
   useEffect(() => {
-    // Mémoriser la langue FR
-    if (typeof localStorage !== 'undefined') localStorage.setItem('pxLang', 'fr')
     fetch('/api/stats').then(r => r.json()).then(d => {
       if (d.analyses_24h) setAnalyses(d.analyses_24h)
       if (d.total_users)  setUsers(d.total_users)
@@ -82,6 +86,9 @@ export default function LandingPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#020408', color: '#F0F8FF', fontFamily: BODY, overflowX: 'hidden' }}>
+
+      {/* Sélecteur de langue au premier atterrissage */}
+      <LangModal onChoice={handleLangChoice} />
 
       {/* ── NAVBAR ────────────────────────────────────────────── */}
       <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(0,255,178,0.07)', background: 'rgba(2,4,8,0.95)', backdropFilter: 'blur(16px)', padding: '0 1.5rem', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

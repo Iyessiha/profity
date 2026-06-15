@@ -270,7 +270,7 @@ export default function CalculatorPage() {
             <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color: isValid?'var(--ac)':'var(--tx3)', marginBottom:'1.25rem' }}>RÉSULTAT</div>
 
             {/* Lot Size — valeur principale */}
-            <div style={{ textAlign:'center', marginBottom:'1.5rem', padding:'1rem', background:'rgba(0,0,0,0.2)', borderRadius:8 }}>
+            <div style={{ textAlign:'center', marginBottom:'1.5rem', padding:'1rem', background:'var(--bg1)', borderRadius:8 }}>
               <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx3)', marginBottom:6 }}>TAILLE DE POSITION</div>
               <div style={{ fontFamily:HUD, fontSize:52, fontWeight:900, color: isValid?'var(--ac)':'var(--tx3)', lineHeight:1, letterSpacing:-1 }}>
                 {isValid ? result.lotSize.toFixed(result.lotSize < 0.01 ? 4 : 2) : '—'}
@@ -296,7 +296,7 @@ export default function CalculatorPage() {
                 { label:'GAIN POTENTIEL',  val: isValid && result.potentialGain > 0 ? cur.symbol+fmt(result.potentialGain) : '—', color:'#00FFB2' },
                 { label:'RATIO R/R',       val: isValid && result.rr > 0 ? '1 : '+fmt(result.rr) : '—',            color: result.rr >= 2 ? '#00FFB2' : result.rr >= 1 ? '#C9A84C' : '#FF3A5C' },
               ].map(m=>(
-                <div key={m.label} style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:7, padding:'10px 12px' }}>
+                <div key={m.label} style={{ background:'var(--bg1)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:7, padding:'10px 12px' }}>
                   <div style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'var(--tx3)', marginBottom:4 }}>{m.label}</div>
                   <div style={{ fontFamily:HUD, fontSize:14, fontWeight:700, color:m.color }}>{m.val}</div>
                 </div>
