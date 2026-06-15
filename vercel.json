@@ -1,36 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/cron/calendar",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/check-alerts",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/pre-event-signals",
-      "schedule": "0 12 * * *"
-    },
-    {
-      "path": "/api/cron/monthly-refill",
-      "schedule": "0 0 1 * *"
-    },
-    {
-      "path": "/api/cron/reactivation",
-      "schedule": "0 10 * * 1"
-    },
-    {
       "path": "/api/cron/email-sequences",
       "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/upsell",
-      "schedule": "0 10 * * 1"
-    },
-    {
-      "path": "/api/cron/abandoned-checkout",
-      "schedule": "0 * * * *"
     }
   ]
 }
