@@ -76,6 +76,20 @@ export default function AnalysisPage() {
   const [derivSymbol, setDerivSymbol]   = useState<string>('')   // actif Deriv sélectionné
   const tvRef = useRef<HTMLDivElement>(null)
 
+  const handleLangChange = async (lang: 'fr' | 'en') => {
+    setLocale(lang)
+    try {
+      localStorage.setItem('pxLang', lang)
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session) {
+        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+      }
+    } catch {}
+    if (lang === 'en' && typeof window !== 'undefined' && !window.location.pathname.startsWith('/en')) {
+      // Reste sur la même page mais met à jour la langue
+    }
+  }
+
   useEffect(() => {
     ;(async () => {
       const { data: { session } } = await supabasePublic.auth.getSession()
@@ -177,7 +191,7 @@ export default function AnalysisPage() {
       {showOnboarding && user && <OnboardingModal userId={user.id} locale={locale} onClose={() => { setOnboarding(false); window.location.reload() }} />}
       <Sidebar tab="chart" setTab={() => {}} plan={plan} locale={locale} />
       <div className="app-main" style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'var(--bg0)', width:'100%', overflow:'hidden' }}>
-        <TopBar locale={locale} profile={profile} />
+        <TopBar locale={locale} profile={profile} onLangChange={handleLangChange} />
         <QuotaBar token={token} locale={locale} plan={plan} />
 
         <div className="resp-pad" style={{ padding:'1.25rem 1.5rem', flex:1, width:'100%', overflowX:'hidden' }}>

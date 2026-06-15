@@ -107,6 +107,21 @@ export default function LandingPage() {
 
         {/* CTA desktop + hamburger mobile */}
         <div style={{ display:'flex', gap:10, alignItems:'center', flexShrink:0 }}>
+
+          {/* Sélecteur de langue — visible desktop */}
+          <div className="nav-desktop" style={{ display:'flex', alignItems:'center', gap:3 }}>
+            <a href="/" style={{
+              fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'5px 9px', borderRadius:5,
+              textDecoration:'none', border:'1px solid rgba(0,255,178,0.35)',
+              background:'rgba(0,255,178,0.1)', color:'#00FFB2', fontWeight:700,
+            }}>FR</a>
+            <a href="/en" style={{
+              fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'5px 9px', borderRadius:5,
+              textDecoration:'none', border:'1px solid rgba(255,255,255,0.1)',
+              background:'transparent', color:'rgba(240,248,255,0.4)',
+            }}>EN</a>
+          </div>
+
           <a href="/auth/login" className="nav-desktop" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.5)', textDecoration:'none' }}>CONNEXION</a>
           <a href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'9px 18px', borderRadius:4, textDecoration:'none', fontWeight:700, whiteSpace:'nowrap' }}>ESSAI GRATUIT</a>
 
@@ -128,6 +143,11 @@ export default function LandingPage() {
           <a href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'14px', borderRadius:6, textDecoration:'none', fontWeight:700, textAlign:'center', marginTop:12 }}>
             COMMENCER GRATUITEMENT →
           </a>
+          {/* Sélecteur langue mobile */}
+          <div style={{ display:'flex', gap:8, marginTop:8 }}>
+            <a href="/" style={{ flex:1, fontFamily:HUD, fontSize:9, letterSpacing:2, textAlign:'center', padding:'10px', borderRadius:5, textDecoration:'none', border:'1px solid rgba(0,255,178,0.35)', background:'rgba(0,255,178,0.1)', color:'#00FFB2', fontWeight:700 }}>🇫🇷 FRANÇAIS</a>
+            <a href="/en" style={{ flex:1, fontFamily:HUD, fontSize:9, letterSpacing:2, textAlign:'center', padding:'10px', borderRadius:5, textDecoration:'none', border:'1px solid rgba(0,212,255,0.2)', background:'rgba(0,212,255,0.06)', color:'#00D4FF' }}>🇬🇧 ENGLISH</a>
+          </div>
         </div>
       )}
 

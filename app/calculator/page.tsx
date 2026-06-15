@@ -98,6 +98,20 @@ export default function CalculatorPage() {
   const [profile, setProfile] = useState<Record<string,unknown>|null>(null)
   const [locale,  setLocale]  = useState('fr')
 
+  const handleLangChange = async (lang: 'fr' | 'en') => {
+    setLocale(lang)
+    try {
+      localStorage.setItem('pxLang', lang)
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session) {
+        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+      }
+    } catch {}
+    if (lang === 'en' && typeof window !== 'undefined' && !window.location.pathname.startsWith('/en')) {
+      // Reste sur la même page mais met à jour la langue
+    }
+  }
+
   useEffect(() => {
     supabasePublic.auth.getSession().then(({ data: { session } }) => {
       if (!session?.user) return
@@ -160,7 +174,7 @@ export default function CalculatorPage() {
     <div style={{ display:'flex', minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY }}>
       <Sidebar active="calculator" />
       <main style={{ flex:1, padding:'1.5rem 1rem', maxWidth:640, margin:'0 auto', width:'100%' }}>
-        <TopBar locale={locale} profile={profile} />
+        <TopBar locale={locale} profile={profile} onLangChange={handleLangChange} />
 
         {/* Header */}
         <div style={{ marginBottom:'1.5rem' }}>
