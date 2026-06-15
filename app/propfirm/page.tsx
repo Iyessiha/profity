@@ -68,6 +68,12 @@ export default function PropFirmPage() {
 
   const isPremiumElite = plan === 'elite'
 
+  // Variables du formulaire — déclarées avant le gate pour éviter les erreurs de prerender
+  const selectedFirm = FIRMS.find(f => f.id === firmId) ?? FIRMS[FIRMS.length - 1]
+  const pt  = firmId === 'custom' ? customPT  : selectedFirm.profit_target
+  const mdd = firmId === 'custom' ? customDD  : selectedFirm.max_drawdown
+  const dl  = firmId === 'custom' ? customDL  : selectedFirm.daily_loss
+
   // ── Gate Elite ─────────────────────────────────────────────
   if (!loading && !isPremiumElite) {
     return (
@@ -123,10 +129,6 @@ export default function PropFirmPage() {
       </div>
     )
   }
-  const pt  = firmId === 'custom' ? customPT  : selectedFirm.profit_target
-  const mdd = firmId === 'custom' ? customDD  : selectedFirm.max_drawdown
-  const dl  = firmId === 'custom' ? customDL  : selectedFirm.daily_loss
-
   const addAccount = async () => {
     setSaving(true)
     const { data: { session } } = await supabasePublic.auth.getSession()
