@@ -217,8 +217,37 @@ export default function Sidebar({ plan, locale }: Props) {
           ))}
         </nav>
 
-        {/* Footer déconnexion */}
+        {/* Footer : sélecteur langue (mobile) + déconnexion */}
         <div style={{ padding: '0.75rem 1rem', borderTop: '1px solid var(--bd)' }}>
+
+          {/* Sélecteur langue — visible uniquement en mode drawer (mobile) */}
+          <div className="mobile-only" style={{
+            display: 'flex', gap: 6, marginBottom: 10,
+          }}>
+            {(['fr', 'en'] as const).map(l => (
+              <button key={l} onClick={async () => {
+                try {
+                  localStorage.setItem('pxLang', l)
+                  const { supabasePublic } = await import('@/lib/supabase')
+                  const { data: { session } } = await supabasePublic.auth.getSession()
+                  if (session) await supabasePublic.from('profiles').update({ locale: l }).eq('id', session.user.id)
+                } catch {}
+                window.location.reload()
+              }} style={{
+                flex: 1, fontFamily: HUD, fontSize: 9, letterSpacing: 2,
+                padding: '9px 0', borderRadius: 6, cursor: 'pointer',
+                border: `1px solid ${locale === l ? 'rgba(0,255,178,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                background: locale === l ? 'rgba(0,255,178,0.1)' : 'transparent',
+                color: locale === l ? '#00FFB2' : 'rgba(232,244,248,0.35)',
+                fontWeight: locale === l ? 700 : 400,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+              }}>
+                <span style={{ fontSize: 14 }}>{l === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
           <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'transparent', border: 'none', cursor: 'pointer', padding: '5px', width: '100%' }}>
             <i className="ti ti-logout" style={{ fontSize: 14, color: subColor, flexShrink: 0 }} aria-hidden="true" />
             <span className="sidebar-label" style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: subColor }}>
