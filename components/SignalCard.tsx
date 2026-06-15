@@ -2,13 +2,6 @@
 // PROFITYX — SignalCard v3 (SMC complet)
 // ============================================================
 'use client'
-import type { ChartSignal, NewsSignal, OrderType } from '@/types'
-import dynamic from 'next/dynamic'
-
-// ============================================================
-// PROFITYX — SignalCard v3 (SMC complet)
-// ============================================================
-'use client'
 import { useState, useRef, useEffect } from 'react'
 import type { ChartSignal, NewsSignal, OrderType } from '@/types'
 import dynamic from 'next/dynamic'
