@@ -156,6 +156,21 @@ export default function LandingEN() {
           ))}
         </div>
         <div style={{ display:'flex', gap:10, alignItems:'center', flexShrink:0 }}>
+
+          {/* Sélecteur langue */}
+          <div className="nav-desktop" style={{ display:'flex', alignItems:'center', gap:3 }}>
+            <a href="/" style={{
+              fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'5px 9px', borderRadius:5,
+              textDecoration:'none', border:'1px solid rgba(255,255,255,0.12)',
+              background:'transparent', color:'rgba(240,248,255,0.4)',
+            }}>FR</a>
+            <a href="/en" style={{
+              fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'5px 9px', borderRadius:5,
+              textDecoration:'none', border:'1px solid rgba(0,212,255,0.4)',
+              background:'rgba(0,212,255,0.1)', color:'#00D4FF', fontWeight:700,
+            }}>EN</a>
+          </div>
+
           <a href="/auth/login" className="nav-desktop" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.5)', textDecoration:'none' }}>LOGIN</a>
           <a href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'9px 18px', borderRadius:4, textDecoration:'none', fontWeight:700, whiteSpace:'nowrap' }}>FREE TRIAL</a>
           <button onClick={() => setMenuOpen(o => !o)} className="nav-mobile-btn" aria-label="Menu" style={{ background:'transparent', border:'1px solid rgba(0,255,178,0.2)', borderRadius:6, color:'#00FFB2', padding:'7px 10px', cursor:'pointer', fontSize:18, lineHeight:1, display:'none' }}>
@@ -172,6 +187,11 @@ export default function LandingEN() {
           <a href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'14px', borderRadius:6, textDecoration:'none', fontWeight:700, textAlign:'center', marginTop:12 }}>
             START FOR FREE →
           </a>
+          {/* Sélecteur langue mobile */}
+          <div style={{ display:'flex', gap:8, marginTop:8 }}>
+            <a href="/" style={{ flex:1, fontFamily:HUD, fontSize:9, letterSpacing:2, textAlign:'center', padding:'10px', borderRadius:5, textDecoration:'none', border:'1px solid rgba(255,255,255,0.12)', background:'transparent', color:'rgba(240,248,255,0.5)' }}>🇫🇷 FRANÇAIS</a>
+            <a href="/en" style={{ flex:1, fontFamily:HUD, fontSize:9, letterSpacing:2, textAlign:'center', padding:'10px', borderRadius:5, textDecoration:'none', border:'1px solid rgba(0,212,255,0.35)', background:'rgba(0,212,255,0.08)', color:'#00D4FF', fontWeight:700 }}>🇬🇧 ENGLISH</a>
+          </div>
         </div>
       )}
 
@@ -361,39 +381,7 @@ export default function LandingEN() {
         </div>
       </section>
 
-      {/* ── PAYMENT ─────────────────────────────────────────── */}
-      <section style={{ position:'relative', zIndex:1, padding:'3rem 2rem', maxWidth:800, margin:'0 auto', textAlign:'center' }}>
-        <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(240,248,255,0.3)', marginBottom:24 }}>PAY YOUR WAY</div>
-        <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
-          {[
-            { src:'/logos/visa.png',       alt:'Visa',       bg:'rgba(255,255,255,0.95)', bd:'rgba(0,0,0,0.1)' },
-            { src:'/logos/mastercard.png', alt:'Mastercard', bg:'rgba(255,255,255,0.95)', bd:'rgba(0,0,0,0.1)' },
-            { src:'/logos/mtn.png',        alt:'MTN MoMo',   bg:'#FFCC00',               bd:'rgba(255,180,0,0.5)' },
-            { src:'/logos/geniuspay.png',  alt:'GeniusPay',  bg:'#FFFFFF',               bd:'rgba(0,0,0,0.1)' },
-          ].map(l => (
-            <div key={l.alt} style={{ background:l.bg, border:`1px solid ${l.bd}`, borderRadius:8, padding:'8px 14px', display:'flex', alignItems:'center', justifyContent:'center', minWidth:100, height:50 }}>
-              <img src={l.src} alt={l.alt} style={{ height:30, maxWidth:110, objectFit:'contain' }} />
-            </div>
-          ))}
-        </div>
-        <div style={{ display:'flex', gap:16, justifyContent:'center', flexWrap:'wrap', marginTop:20 }}>
-          {['🔒 SSL 256-bit', '🏦 No data stored', '↩️ Cancel anytime', '✓ No hidden fees'].map(b => (
-            <span key={b} style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.35)' }}>{b}</span>
-          ))}
-        </div>
-      </section>
 
-      {/* ── TRACK RECORD ────────────────────────────────────── */}
-      <section style={{ position:'relative', zIndex:1, padding:'clamp(3rem,6vw,5rem) 2rem', maxWidth:800, margin:'0 auto', textAlign:'center' }}>
-        <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'rgba(0,255,178,0.6)', marginBottom:12 }}>FULL TRANSPARENCY</div>
-        <h2 style={{ fontFamily:HUD, fontSize:'clamp(22px,3vw,36px)', fontWeight:900, marginBottom:16 }}>Our live track record</h2>
-        <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(240,248,255,0.5)', marginBottom:32 }}>
-          Win rate, average R/R, every WIN and LOSS signal displayed. No filter.
-        </p>
-        <a href="/results" style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'14px 32px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
-          VIEW LIVE TRACK RECORD →
-        </a>
-      </section>
 
       {/* ── PAYMENT METHODS ─────────────────────────────────── */}
       <section style={{ position:'relative', zIndex:1, padding:'3rem 2rem', maxWidth:800, margin:'0 auto', textAlign:'center' }}>
