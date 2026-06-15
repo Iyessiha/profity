@@ -181,6 +181,42 @@ function PriceLevelsSVG({ record }: { record: ChartRecord }) {
 }
 
 // ── Boutons notation ───────────────────────────────────────
+// ── Toggle partage public sur /results ───────────────────────
+function PublicToggle({ analysisId, isPublic, token }: { analysisId: string; isPublic: boolean; token?: string }) {
+  const [pub, setPub] = useState(isPublic)
+  const [saving, setSaving] = useState(false)
+
+  const toggle = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!token || saving) return
+    setSaving(true)
+    try {
+      await fetch(`/api/analyses/${analysisId}/public`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ is_public: !pub }),
+      })
+      setPub(p => !p)
+    } catch {}
+    setSaving(false)
+  }
+
+  return (
+    <button onClick={toggle} disabled={saving} style={{
+      display: 'flex', alignItems: 'center', gap: 6, marginTop: 6,
+      background: pub ? 'rgba(0,212,255,0.08)' : 'transparent',
+      border: `1px solid ${pub ? 'rgba(0,212,255,0.25)' : 'rgba(255,255,255,0.08)'}`,
+      borderRadius: 6, padding: '7px 10px', cursor: 'pointer', width: '100%',
+      fontFamily: HUD, fontSize: 7, letterSpacing: 1,
+      color: pub ? '#00D4FF' : 'rgba(232,244,248,0.3)',
+      transition: 'all .2s',
+    }}>
+      <span style={{ fontSize: 11 }}>{pub ? '🌐' : '🔒'}</span>
+      {saving ? '...' : pub ? 'VISIBLE SUR /RESULTS — RETIRER' : 'PARTAGER SUR /RESULTS'}
+    </button>
+  )
+}
+
 function RatingButtons({ analysisId, current, token, onRated }: {
   analysisId:string; current?:TradeResult|null; token?:string
   onRated:(id:string,result:TradeResult)=>void
@@ -281,6 +317,8 @@ function DetailModal({ item, type, locale, token, onClose, onRated }: {
             PARTAGER CE WIN
           </a>
         )}
+        {/* Toggle partage public sur /results */}
+        <PublicToggle analysisId={chart.id} isPublic={!!chart.is_public} token={token} />
       </div>
     </div>
   )

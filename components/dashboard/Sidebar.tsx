@@ -34,6 +34,7 @@ const NAV_GROUPS: {
     items: [
       { key: 'journal',    icon: 'ti-notebook',    fr: 'JOURNAL',     en: 'JOURNAL',     href: '/journal',     badge: 'NEW' },
       { key: 'calculator', icon: 'ti-calculator',  fr: 'CALCULATEUR', en: 'CALCULATOR',  href: '/calculator',  badge: 'PRO'  },
+      { key: 'propfirm',   icon: 'ti-building-bank', fr: 'PROP FIRM', en: 'PROP FIRM',   href: '/propfirm',    badge: 'NEW'  },
     ],
   },
   {
