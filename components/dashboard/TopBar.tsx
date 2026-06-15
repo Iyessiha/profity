@@ -11,13 +11,12 @@ interface TopBarProps {
   profile: Record<string, unknown> | null
   locale: string
   currency?: string
-  onLangChange?: (lang: 'fr' | 'en') => void
 }
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 
-export default function TopBar({ user, profile, locale, currency = 'XOF', onLangChange }: TopBarProps) {
+export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopBarProps) {
   const { theme, toggleTheme } = useTheme()
   const { toggle } = useMenu()
   const [time, setTime] = useState('')
@@ -100,23 +99,21 @@ export default function TopBar({ user, profile, locale, currency = 'XOF', onLang
 
 
         {/* Sélecteur langue FR / EN */}
-        {onLangChange && (
-          <div style={{ display:'flex', alignItems:'center', gap:3, flexShrink:0 }}>
-            {(['fr','en'] as const).map(l => (
-              <button key={l} onClick={() => onLangChange(l)} style={{
-                fontFamily: HUD, fontSize: 8, letterSpacing: 1,
-                padding: '5px 9px', borderRadius: 5, cursor: 'pointer',
-                border: `1px solid ${locale === l ? 'rgba(0,255,178,0.4)' : 'rgba(255,255,255,0.08)'}`,
-                background: locale === l ? 'rgba(0,255,178,0.12)' : 'transparent',
-                color: locale === l ? '#00FFB2' : 'rgba(232,244,248,0.35)',
-                fontWeight: locale === l ? 700 : 400,
-                transition: 'all .15s',
-              }}>
-                {l.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        )}
+        <div style={{ display:'flex', alignItems:'center', gap:3, flexShrink:0 }}>
+          {(['fr','en'] as const).map(l => (
+            <button key={l} onClick={() => handleLangChange(l)} style={{
+              fontFamily: HUD, fontSize: 8, letterSpacing: 1,
+              padding: '5px 9px', borderRadius: 5, cursor: 'pointer',
+              border: `1px solid ${locale === l ? 'rgba(0,255,178,0.4)' : 'rgba(255,255,255,0.08)'}`,
+              background: locale === l ? 'rgba(0,255,178,0.12)' : 'transparent',
+              color: locale === l ? '#00FFB2' : 'rgba(232,244,248,0.35)',
+              fontWeight: locale === l ? 700 : 400,
+              transition: 'all .15s',
+            }}>
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
 
         {/* Toggle thème ☀️/🌙 */}
         <button onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}

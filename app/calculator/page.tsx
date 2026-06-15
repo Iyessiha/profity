@@ -158,22 +158,11 @@ export default function CalculatorPage() {
   const groups = [...new Set(PAIRS.map(p => p.group))]
 
 
-  const handleLangChange = async (lang: 'fr' | 'en') => {
-    setLocale(lang)
-    try {
-      localStorage.setItem('pxLang', lang)
-      const { data: { session } } = await supabasePublic.auth.getSession()
-      if (session) {
-        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
-      }
-    } catch {}
-  }
-
   return (
     <div style={{ display:'flex', minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY }}>
       <Sidebar active="calculator" />
       <main style={{ flex:1, padding:'1.5rem 1rem', maxWidth:640, margin:'0 auto', width:'100%' }}>
-        <TopBar locale={locale} profile={profile} onLangChange={handleLangChange} />
+        <TopBar locale={locale} profile={profile} />
 
         {/* Header */}
         <div style={{ marginBottom:'1.5rem' }}>

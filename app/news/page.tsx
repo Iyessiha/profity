@@ -90,17 +90,6 @@ function ImpactBadge({ impact }: { impact: string }) {
 function SignalBox({ sig, label }: { sig: Signal; label: string }) {
   const dc = sig.direction === 'LONG' ? '#00B890' : sig.direction === 'SHORT' ? 'var(--red)' : '#888'
 
-  const handleLangChange = async (lang: 'fr' | 'en') => {
-    setLocale(lang)
-    try {
-      localStorage.setItem('pxLang', lang)
-      const { data: { session } } = await supabasePublic.auth.getSession()
-      if (session) {
-        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
-      }
-    } catch {}
-  }
-
   return (
     <div style={{ background:'var(--bg2)', border:`1px solid ${dc}25`, borderRadius:8, padding:'0.875rem', flex:1 }}>
       <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', marginBottom:6 }}>{label}</div>
@@ -380,7 +369,7 @@ export default function NewsPage() {
       {selected && <EventModal ev={selected} isPremium={isPremium} onClose={()=>setSelected(null)} />}
       <Sidebar tab="calendar" setTab={()=>{}} plan={plan} locale={locale} />
       <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'var(--bg0)', width:'100%', overflow:'hidden' }}>
-        <TopBar locale={locale} profile={profile} onLangChange={handleLangChange} />
+        <TopBar locale={locale} profile={profile} />
         <QuotaBar token={token} locale={locale} plan={plan} />
 
         <div className="resp-pad" style={{ padding:'1.25rem 1.5rem', flex:1, width:'100%', overflowX:'hidden' }}>

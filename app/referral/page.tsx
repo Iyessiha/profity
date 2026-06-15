@@ -28,17 +28,6 @@ function QRPlaceholder({ code }: { code: string }) {
     return ((seed * (i + 7) * 13) % 17) > 8
   })
 
-  const handleLangChange = async (lang: 'fr' | 'en') => {
-    setLocale(lang)
-    try {
-      localStorage.setItem('pxLang', lang)
-      const { data: { session } } = await supabasePublic.auth.getSession()
-      if (session) {
-        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
-      }
-    } catch {}
-  }
-
   return (
     <div style={{ background:'#fff', borderRadius:10, padding:10, display:'inline-block', boxShadow:'0 4px 20px rgba(0,0,0,0.3)' }}>
       <div style={{ display:'grid', gridTemplateColumns:`repeat(${cells}, 14px)`, gap:1 }}>
@@ -138,7 +127,7 @@ export default function ReferralPage() {
     <div className="app-shell">
       <Sidebar tab="history" setTab={() => {}} plan={plan} locale={locale} />
       <div className="app-main" style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'var(--bg0)', width:'100%', overflow:'hidden' }}>
-        <TopBar locale={locale} profile={profile} onLangChange={handleLangChange} />
+        <TopBar locale={locale} profile={profile} />
         <QuotaBar token={token} locale={locale} plan={plan} />
 
         {/* Toast */}
