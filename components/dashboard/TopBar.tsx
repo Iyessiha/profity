@@ -62,8 +62,9 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
           <i className="ti ti-menu-2" style={{ fontSize: 18 }} aria-hidden="true" />
         </button>
 
-        {/* Logo */}
-        <a href="/" style={{ textDecoration:'none', flexShrink:0, display:'flex', alignItems:'center' }}>
+        {/* Logo — visible seulement sur mobile (desktop : logo dans la sidebar) */}
+        <a href="/" style={{ textDecoration:'none', flexShrink:0, display:'flex', alignItems:'center' }}
+          className="mobile-only">
           <img src="/logos/profityx-logo.png" alt="ProfityX"
             className="topbar-logo"
             style={{ height:28, width:'auto', objectFit:'contain' }} />
