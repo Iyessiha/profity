@@ -34,7 +34,7 @@ const NAV_GROUPS: {
     items: [
       { key: 'journal',    icon: 'ti-notebook',    fr: 'JOURNAL',     en: 'JOURNAL',     href: '/journal',     badge: 'NEW' },
       { key: 'calculator', icon: 'ti-calculator',  fr: 'CALCULATEUR', en: 'CALCULATOR',  href: '/calculator',  badge: 'PRO'  },
-      { key: 'propfirm',   icon: 'ti-building-bank', fr: 'PROP FIRM', en: 'PROP FIRM',   href: '/propfirm',    badge: 'NEW'  },
+      { key: 'propfirm',   icon: 'ti-building-bank', fr: 'PROP FIRM', en: 'PROP FIRM',   href: '/propfirm',    badge: 'ELITE' },
     ],
   },
   {
@@ -193,6 +193,7 @@ export default function Sidebar({ plan, locale }: Props) {
                         NEW:    { background: '#00FFB2', color: '#020408', animation: 'px-pulse 2s ease-in-out infinite' },
                         LIVE:   { background: '#FF6B35', color: '#fff' },
                         PRO:    { background: 'rgba(201,168,76,0.18)', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.4)' },
+                        ELITE:  { background: 'linear-gradient(135deg,rgba(201,168,76,0.25),rgba(255,200,80,0.15))', color: '#C9A84C', border: '1px solid rgba(201,168,76,0.5)' },
                         '+20 CR': { background: 'rgba(0,212,255,0.12)', color: '#00D4FF', border: '1px solid rgba(0,212,255,0.35)' },
                       }
                       const s = styles[txt] ?? { background: 'var(--ac2)', color: '#020408' }

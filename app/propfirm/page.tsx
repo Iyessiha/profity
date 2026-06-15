@@ -66,7 +66,63 @@ export default function PropFirmPage() {
     })()
   }, [])
 
-  const selectedFirm = FIRMS.find(f => f.id === firmId) ?? FIRMS[FIRMS.length - 1]
+  const isPremiumElite = plan === 'elite'
+
+  // ── Gate Elite ─────────────────────────────────────────────
+  if (!loading && !isPremiumElite) {
+    return (
+      <div className="app-shell">
+        <Sidebar tab={'chart' as any} setTab={() => {}} plan={plan} locale={locale} />
+        <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background:'var(--bg0)', width:'100%' }}>
+          <TopBar locale={locale} profile={profile} />
+          <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'2rem' }}>
+            <div style={{ maxWidth:440, textAlign:'center' }}>
+              {/* Aperçu flou */}
+              <div style={{ position:'relative', marginBottom:'2rem', borderRadius:12, overflow:'hidden', border:'1px solid rgba(201,168,76,0.2)' }}>
+                <div style={{ filter:'blur(4px)', opacity:.4, padding:'1.5rem', background:'var(--bg1)', pointerEvents:'none' }}>
+                  {['FTMO · $10 000','MyForexFunds · $25 000','E8 Funding · $50 000'].map(n => (
+                    <div key={n} style={{ background:'var(--bg0)', borderRadius:8, padding:'1rem', marginBottom:8, display:'flex', justifyContent:'space-between' }}>
+                      <span style={{ fontFamily:HUD, fontSize:10, color:'var(--tx0)' }}>{n}</span>
+                      <span style={{ fontFamily:HUD, fontSize:10, color:'#00FFB2' }}>87/100</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Overlay cadenas */}
+                <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', background:'rgba(2,4,8,0.6)', backdropFilter:'blur(2px)' }}>
+                  <div style={{ fontSize:36, marginBottom:8 }}>🔒</div>
+                  <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#C9A84C' }}>ELITE ONLY</div>
+                </div>
+              </div>
+
+              <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'#C9A84C', marginBottom:8 }}>FONCTIONNALITÉ ELITE</div>
+              <h2 style={{ fontFamily:HUD, fontSize:20, fontWeight:900, color:'var(--tx0)', marginBottom:12 }}>
+                {locale === 'en' ? 'PROP FIRM TOOLS' : 'OUTILS PROP FIRM'}
+              </h2>
+              <p style={{ fontFamily:BODY, fontSize:14, color:'var(--tx3)', lineHeight:1.7, marginBottom:'1.5rem' }}>
+                {locale === 'en'
+                  ? 'Track your prop firm challenges, monitor your daily loss and drawdown in real time, and receive automatic alerts before hitting your limits.'
+                  : 'Suivez vos challenges prop firm, surveillez votre daily loss et drawdown en temps réel, et recevez des alertes automatiques avant d\'atteindre vos limites.'}
+              </p>
+
+              {/* Fonctionnalités listées */}
+              {['🏦 FTMO, MyForexFunds, E8, TopStep & custom', '📊 Suivi daily loss + drawdown en temps réel', '🔗 Liaison automatique avec vos analyses IA', '⚠️ Alertes avant les limites critiques', '🎯 Score de sécurité /100 par compte', '📋 6 stratégies de survie prop firm'].map(f => (
+                <div key={f} style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8, textAlign:'left' }}>
+                  <span style={{ fontFamily:BODY, fontSize:13, color:'var(--tx2)' }}>{f}</span>
+                </div>
+              ))}
+
+              <a href="/pricing" style={{ display:'inline-block', marginTop:'1.5rem', fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'linear-gradient(135deg,#C9A84C,#E8B84B)', padding:'13px 32px', borderRadius:6, textDecoration:'none', fontWeight:700, boxShadow:'0 4px 20px rgba(201,168,76,0.3)' }}>
+                {locale === 'en' ? '🚀 UPGRADE TO ELITE' : '🚀 PASSER EN ELITE'}
+              </a>
+              <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginTop:10 }}>
+                {locale === 'en' ? 'Unlimited analyses · All tools · Priority support' : 'Analyses illimitées · Tous les outils · Support prioritaire'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
   const pt  = firmId === 'custom' ? customPT  : selectedFirm.profit_target
   const mdd = firmId === 'custom' ? customDD  : selectedFirm.max_drawdown
   const dl  = firmId === 'custom' ? customDL  : selectedFirm.daily_loss

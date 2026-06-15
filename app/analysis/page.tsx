@@ -186,8 +186,23 @@ export default function AnalysisPage() {
         <TopBar locale={locale} profile={profile} />
         <QuotaBar token={token} locale={locale} plan={plan} />
 
-        {/* Bandeau compte Prop Firm actif */}
-        {activePropFirm && (() => {
+        {/* Bandeau compte Prop Firm — visible pour tous, actif Elite seulement */}
+        {(() => {
+          const isElite = plan === 'elite'
+          if (!isElite && !activePropFirm) return (
+            <a href="/pricing" style={{ textDecoration:'none', display:'block', margin:'0 1.5rem 0' }}>
+              <div style={{ background:'rgba(201,168,76,0.06)', border:'1px solid rgba(201,168,76,0.2)', borderRadius:8, padding:'8px 14px', display:'flex', alignItems:'center', gap:10 }}>
+                <span style={{ fontSize:14 }}>🔒</span>
+                <span style={{ fontFamily:'Orbitron,monospace', fontSize:8, letterSpacing:1, color:'#C9A84C', flex:1 }}>
+                  {locale === 'en' ? 'PROP FIRM TOOLS — Elite only' : 'OUTILS PROP FIRM — Elite uniquement'}
+                </span>
+                <span style={{ fontFamily:'Orbitron,monospace', fontSize:7, color:'#020408', background:'linear-gradient(135deg,#C9A84C,#E8B84B)', padding:'4px 10px', borderRadius:4, fontWeight:700, whiteSpace:'nowrap' }}>
+                  {locale === 'en' ? 'UPGRADE →' : 'PASSER ELITE →'}
+                </span>
+              </div>
+            </a>
+          )
+          if (!activePropFirm) return null
           const dlPct    = activePropFirm.daily_loss_used
           const dlMax    = activePropFirm.daily_loss
           const dlRatio  = dlPct / dlMax
