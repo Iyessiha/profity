@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import AppLayout from "@/components/challenge/AppLayout";
@@ -8,7 +9,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
-export default function ChallengeShell({ children }: { children: React.ReactNode }) {
+function ShellInner({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -41,4 +42,8 @@ export default function ChallengeShell({ children }: { children: React.ReactNode
       {children}
     </AppLayout>
   );
+}
+
+export default function ChallengeShell({ children }: { children: React.ReactNode }) {
+  return <Suspense><ShellInner>{children}</ShellInner></Suspense>;
 }

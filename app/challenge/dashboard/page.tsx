@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
@@ -9,7 +10,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
-export default function ChallengeDashboardPage() {
+function DashboardInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const accountId = searchParams.get("account");
@@ -28,4 +29,8 @@ export default function ChallengeDashboardPage() {
 
   if (!accountId) return null;
   return <ChallengeDashboard accountId={accountId} />;
+}
+
+export default function ChallengeDashboardPage() {
+  return <Suspense><DashboardInner /></Suspense>;
 }
