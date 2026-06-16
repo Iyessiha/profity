@@ -142,9 +142,21 @@ export default function ChallengeOnboarding({ userId, onDone }: Props) {
     <div className="ob-root">
       <style>{CSS}</style>
 
+      {/* ── Mini topbar : retour + logo ── */}
+      <div className="ob-topbar">
+        <a href="/dashboard" className="ob-back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+          </svg>
+          Tableau de bord
+        </a>
+        <img src="/logos/profityx-logo.png" alt="ProfityX" className="ob-topbar-logo" />
+      </div>
+
       {/* ── En-tête ── */}
       <div className="ob-header">
-        <span className="ob-logo">PROFITY<b>X</b></span>
+        <img src="/logos/profityx-logo.png" alt="ProfityX" className="ob-logo-img" />
         <h1 className="ob-title">Connecte ton compte MT5</h1>
         <p className="ob-sub">
           L'EA tourne sur ton broker, ProfityX suit et valide ton challenge en direct.
@@ -496,8 +508,11 @@ const CSS = `
 
 /* header */
 .ob-header{max-width:640px; margin:0 auto 32px; text-align:center;}
-.ob-logo{font-family:'Space Grotesk'; font-weight:700; font-size:17px; letter-spacing:.05em;}
-.ob-logo b{color:var(--climb);}
+.ob-logo-img{height:36px; width:auto; object-fit:contain; display:block; margin:0 auto 12px;}
+.ob-topbar{display:flex; align-items:center; justify-content:space-between; padding-bottom:20px; margin-bottom:4px;}
+.ob-topbar-logo{height:28px; width:auto; object-fit:contain;}
+.ob-back{display:inline-flex; align-items:center; gap:7px; color:var(--muted); font-size:13px; text-decoration:none; font-weight:500; transition:color .2s;}
+.ob-back:hover{color:var(--text);}
 .ob-title{font-family:'Space Grotesk'; font-weight:700; font-size:clamp(24px,4vw,32px);
   margin:18px 0 10px; letter-spacing:-.02em;}
 .ob-sub{color:var(--muted); font-size:15px; margin:0 0 28px; line-height:1.55;}
