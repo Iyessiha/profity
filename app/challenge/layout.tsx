@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import AppLayout from "@/components/challenge/AppLayout";
@@ -9,34 +8,34 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function ChallengeShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const accountId = searchParams.get("account") ?? undefined;
 
   const currentPage =
-    pathname.startsWith("/dashboard")  ? "dashboard"  :
-    pathname.startsWith("/history")    ? "history"    :
-    pathname.startsWith("/settings")   ? "settings"   :
-    pathname.startsWith("/onboarding") ? "onboarding" : "dashboard";
+    pathname.includes("/challenge/dashboard")  ? "dashboard"  :
+    pathname.includes("/challenge/history")    ? "history"    :
+    pathname.includes("/challenge/settings")   ? "settings"   :
+    pathname.includes("/challenge/onboarding") ? "onboarding" : "dashboard";
 
-  const handleAccountChange = (id: string) => router.push(`/${currentPage}?account=${id}`);
-  const handleNavigate = (page: string) => {
-    if (page === "onboarding") { router.push("/onboarding"); return; }
-    router.push(`/${page}${accountId ? `?account=${accountId}` : ""}`);
+  const go = (page: string, id?: string) => {
+    const q = (id ?? accountId) ? `?account=${id ?? accountId}` : "";
+    router.push(page === "onboarding" ? "/challenge/onboarding" : `/challenge/${page}${q}`);
   };
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/auth/login");
   };
 
   return (
     <AppLayout
       activeAccountId={accountId}
       currentPage={currentPage}
-      onAccountChange={handleAccountChange}
-      onNavigate={handleNavigate}
+      onAccountChange={(id) => go(currentPage, id)}
+      onNavigate={(page) => go(page)}
       onSignOut={handleSignOut}
     >
       {children}
