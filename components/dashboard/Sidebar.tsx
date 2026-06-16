@@ -35,7 +35,7 @@ const NAV_GROUPS: {
       { key: 'journal',    icon: 'ti-notebook',    fr: 'JOURNAL',     en: 'JOURNAL',     href: '/journal',              badge: 'NEW'   },
       { key: 'calculator', icon: 'ti-calculator',  fr: 'CALCULATEUR', en: 'CALCULATOR',  href: '/calculator',           badge: 'PRO'   },
       { key: 'propfirm',   icon: 'ti-building-bank', fr: 'PROP FIRM', en: 'PROP FIRM',   href: '/propfirm',             badge: 'ELITE' },
-      { key: 'challenge',  icon: 'ti-robot',       fr: 'ROBOT MT5',   en: 'MT5 ROBOT',   href: '/challenge/dashboard',  badge: 'NEW'   },
+
     ],
   },
   {
@@ -196,8 +196,8 @@ export default function Sidebar({ plan, locale }: Props) {
 
               {/* Items */}
               {group.items.map(item => {
-                const isActive = item.key === 'challenge'
-                  ? currentPath.startsWith('/challenge')
+                const isActive = item.key === 'propfirm'
+                  ? (currentPath.startsWith('/propfirm') || currentPath.startsWith('/challenge'))
                   : currentPath === item.href
                 const label    = locale === 'fr' ? item.fr : item.en
                 return (

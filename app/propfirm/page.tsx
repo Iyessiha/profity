@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic'
 // PROFITYX — /propfirm : Outils Prop Firm
 // Aide les traders à survivre et réussir les challenges prop
 // ============================================================
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Sidebar from '@/components/dashboard/Sidebar'
 import TopBar from '@/components/dashboard/TopBar'
 import { QuotaBar } from '@/components/dashboard/TopBar'
@@ -30,6 +30,7 @@ interface Tool {
 }
 
 export default function PropFirmPage() {
+  const [activeTab, setActiveTab] = useState<'manuel'|'robot'>('manuel')
   const [token,   setToken]   = useState('')
   const [profile, setProfile] = useState<Record<string,unknown>|null>(null)
   const [plan,    setPlan]    = useState('free')
@@ -200,20 +201,131 @@ export default function PropFirmPage() {
         <TopBar locale={locale} profile={profile} />
         <QuotaBar token={token} locale={locale} plan={plan} />
 
-        {/* ─── Bandeau Challenge Temps Réel ─── */}
-        <div style={{ margin:'1rem 1.5rem 0', padding:'14px 20px', background:'linear-gradient(135deg,rgba(0,255,178,0.06),rgba(201,168,76,0.04))', border:'1px solid rgba(0,255,178,0.15)', borderLeft:'3px solid #00FFB2', borderRadius:12, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
-          <div>
-            <div style={{ fontFamily:"'Orbitron',monospace", fontSize:10, letterSpacing:2, color:'#00FFB2', marginBottom:4 }}>NOUVEAU · SUIVI CHALLENGE TEMPS RÉEL</div>
-            <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:14, color:'rgba(240,248,255,0.75)', lineHeight:1.5 }}>
-              Connecte ton compte MT5 — balance, equity, drawdown et jours tradés mis à jour en direct.{' '}
-              <span style={{ color:'#C9A84C', fontWeight:600 }}>ELITE :</span> Robot MT5 + Prop Firm Guard automatique inclus.
-            </div>
-          </div>
-          <a href="/challenge/dashboard" style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#00FFB2', color:'#050A10', fontFamily:"'Orbitron',monospace", fontSize:10, fontWeight:700, letterSpacing:1.5, padding:'10px 18px', borderRadius:8, textDecoration:'none', whiteSpace:'nowrap', flexShrink:0 }}>
-            OUVRIR LE DASHBOARD →
-          </a>
+        {/* ─── Onglets : Suivi Manuel / Robot MT5 ─── */}
+        <div style={{ display:'flex', gap:0, borderBottom:'1px solid var(--bd)', margin:'0 1.5rem', marginTop:'1rem' }}>
+          {[
+            { key:'manuel', label:'SUIVI MANUEL', icon:'ti-chart-bar' },
+            { key:'robot',  label:'ROBOT MT5',    icon:'ti-robot',    badge:'NEW' },
+          ].map(t => (
+            <button key={t.key} onClick={() => setActiveTab(t.key as any)} style={{
+              display:'flex', alignItems:'center', gap:8,
+              padding:'12px 20px', background:'none', border:'none', cursor:'pointer',
+              fontFamily:HUD, fontSize:9, letterSpacing:2, fontWeight:700,
+              color: activeTab === t.key ? '#00FFB2' : 'var(--tx3)',
+              borderBottom: activeTab === t.key ? '2px solid #00FFB2' : '2px solid transparent',
+              transition:'color .2s, border-color .2s',
+            }}>
+              <i className={`ti ${t.icon}`} style={{ fontSize:13 }} />
+              {t.label}
+              {t.badge && (
+                <span style={{ fontSize:7, letterSpacing:1, background:'rgba(0,255,178,0.12)',
+                  color:'#00FFB2', border:'1px solid rgba(0,255,178,0.3)',
+                  borderRadius:999, padding:'2px 6px' }}>{t.badge}</span>
+              )}
+            </button>
+          ))}
         </div>
 
+        {/* ─── Contenu onglet Robot MT5 ─── */}
+        {activeTab === 'robot' && (
+          <div className="resp-pad" style={{ padding:'1.5rem', flex:1 }}>
+            <div style={{ maxWidth:900, margin:'0 auto' }}>
+
+              {/* En-tête robot */}
+              <div style={{ marginBottom:'1.5rem' }}>
+                <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'#00FFB2', marginBottom:4 }}>MODULE</div>
+                <h1 style={{ fontFamily:HUD, fontSize:22, fontWeight:900, color:'var(--tx0)', margin:'0 0 8px' }}>
+                  ROBOT <span style={{ color:'#00FFB2' }}>MT5</span>
+                </h1>
+                <p style={{ fontFamily:BODY, fontSize:15, color:'var(--tx2)', margin:0, lineHeight:1.6 }}>
+                  Connecte ton compte MT5 — l'EA envoie balance, equity, drawdown et trades en temps réel.
+                  Le Dashboard challenge valide automatiquement les règles de ta prop firm.
+                </p>
+              </div>
+
+              {/* Deux cartes : Tracker vs Robot */}
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:16, marginBottom:24 }}>
+                {[
+                  {
+                    title:'EA TRACKER', color:'#00FFB2',
+                    desc:'Surveille ton compte sans trader. Pour les traders manuels.',
+                    features:['Equity & balance temps réel','Drawdown journalier/total','Jours de trading','Alertes avant breach'],
+                    href:'/challenge/onboarding', cta:'CONNECTER MON COMPTE',
+                    dl:'/downloads/ProfityX_Tracker.mq5', dlLabel:'↓ Tracker.mq5', plan:'PRO',
+                  },
+                  {
+                    title:'EA ROBOT', color:'#C9A84C',
+                    desc:'Trade automatiquement ET surveille. Prop Firm Guard intégré.',
+                    features:['Trend-Follow EMA+Stochastique','Position sizing adaptatif','Stop auto sur objectif atteint','Suspension si DD limite atteinte'],
+                    href:'/challenge/onboarding', cta:'CONFIGURER LE ROBOT',
+                    dl:'/downloads/ProfityX_Robot.mq5', dlLabel:'↓ Robot.mq5', plan:'ELITE',
+                  },
+                ].map(card => (
+                  <div key={card.title} style={{
+                    background:'var(--bg1)', border:`1px solid ${card.color}33`,
+                    borderTop:`3px solid ${card.color}`, borderRadius:12, padding:'1.5rem',
+                    display:'flex', flexDirection:'column', gap:12,
+                  }}>
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
+                      <span style={{ fontFamily:HUD, fontSize:12, fontWeight:900, color:card.color }}>{card.title}</span>
+                      <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'3px 8px',
+                        background:`${card.color}18`, color:card.color, border:`1px solid ${card.color}44`,
+                        borderRadius:999 }}>{card.plan}</span>
+                    </div>
+                    <p style={{ fontFamily:BODY, fontSize:14, color:'var(--tx2)', margin:0, lineHeight:1.55 }}>{card.desc}</p>
+                    <ul style={{ margin:0, padding:'0 0 0 1rem', display:'flex', flexDirection:'column', gap:6 }}>
+                      {card.features.map(f => (
+                        <li key={f} style={{ fontFamily:BODY, fontSize:13, color:'var(--tx1)', lineHeight:1.4 }}>
+                          <span style={{ color:card.color }}>✓</span> {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <div style={{ display:'flex', gap:8, marginTop:'auto', flexWrap:'wrap' }}>
+                      <a href={card.href} style={{
+                        flex:1, display:'inline-flex', alignItems:'center', justifyContent:'center', gap:6,
+                        background:card.color, color:'#050A10', fontFamily:HUD, fontSize:8,
+                        fontWeight:700, letterSpacing:1.5, padding:'10px 14px', borderRadius:8,
+                        textDecoration:'none', whiteSpace:'nowrap',
+                      }}>{card.cta} →</a>
+                      <a href={card.dl} download style={{
+                        display:'inline-flex', alignItems:'center', justifyContent:'center',
+                        background:'var(--bg2)', border:'1px solid var(--bd)', color:'var(--tx2)',
+                        fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'10px 12px',
+                        borderRadius:8, textDecoration:'none', whiteSpace:'nowrap',
+                      }}>{card.dlLabel}</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA Dashboard */}
+              <div style={{ background:'var(--bg1)', border:'1px solid rgba(0,255,178,0.15)',
+                borderRadius:12, padding:'1.5rem', display:'flex', alignItems:'center',
+                justifyContent:'space-between', gap:16, flexWrap:'wrap' }}>
+                <div>
+                  <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'#00FFB2', marginBottom:6 }}>
+                    📊 DASHBOARD CHALLENGE EN DIRECT
+                  </div>
+                  <p style={{ fontFamily:BODY, fontSize:14, color:'var(--tx2)', margin:0, lineHeight:1.55 }}>
+                    Si ton EA est déjà connecté, ouvre le dashboard pour voir ta courbe d'equity,
+                    tes jauges de drawdown et le statut de ton challenge en temps réel.
+                  </p>
+                </div>
+                <a href="/challenge/dashboard" style={{
+                  display:'inline-flex', alignItems:'center', gap:8,
+                  background:'rgba(0,255,178,0.1)', border:'1px solid rgba(0,255,178,0.3)',
+                  color:'#00FFB2', fontFamily:HUD, fontSize:9, fontWeight:700,
+                  letterSpacing:1.5, padding:'12px 20px', borderRadius:8, textDecoration:'none',
+                  whiteSpace:'nowrap', flexShrink:0,
+                }}>OUVRIR LE DASHBOARD →</a>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ─── Contenu onglet Manuel ─── */}
+        {activeTab === 'manuel' && (
         <div className="resp-pad" style={{ padding:'1.5rem', flex:1 }}>
           <div style={{ maxWidth:900, margin:'0 auto' }}>
 
@@ -386,6 +498,7 @@ export default function PropFirmPage() {
           <a href="/support">{locale === 'en' ? 'Support' : 'Assistance'}</a>
         </footer>
       </div>
+        )}
     </div>
   )
 }

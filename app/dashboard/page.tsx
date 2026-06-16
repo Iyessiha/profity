@@ -113,7 +113,7 @@ export default function DashboardPage() {
 
   // Carte challenge inline
   const ChallengeCard = () => (
-    <a href="/challenge/dashboard" style={{ display:'block', textDecoration:'none', background:'linear-gradient(135deg,rgba(0,255,178,0.05),rgba(201,168,76,0.03))', border:'1px solid rgba(0,255,178,0.12)', borderLeft:'3px solid #00FFB2', borderRadius:12, padding:'16px 20px', marginBottom:'1rem', cursor:'pointer' }}>
+    <a href="/propfirm" style={{ display:'block', textDecoration:'none', background:'linear-gradient(135deg,rgba(0,255,178,0.05),rgba(201,168,76,0.03))', border:'1px solid rgba(0,255,178,0.12)', borderLeft:'3px solid #00FFB2', borderRadius:12, padding:'16px 20px', marginBottom:'1rem', cursor:'pointer' }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap' }}>
         <div>
           <div style={{ fontFamily:"'Orbitron',monospace", fontSize:9, letterSpacing:2, color:'#00FFB2', marginBottom:6 }}>🤖 ROBOT MT5 · CHALLENGE TRACKER</div>
