@@ -46,39 +46,40 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
   return (
     <header style={{
       background: 'var(--bg1)', borderBottom: '1px solid var(--bd)',
-      padding: '0 1rem', height: 56, display: 'flex', alignItems: 'center',
+      padding: '0 0.75rem', height: 56, display: 'flex', alignItems: 'center',
       justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50,
-      transition: 'background .3s, border-color .3s', gap: 8,
+      transition: 'background .3s, border-color .3s', gap: 6,
     }}>
-      {/* Gauche : hamburger + logo + horloge */}
-      <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-        {/* Hamburger */}
+
+      {/* ── GAUCHE : hamburger + logo ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
         <button
           className="hamburger-btn"
           onClick={toggle}
           aria-label="Menu"
-          style={{ position: 'static', flexShrink: 0 }}
+          style={{ flexShrink: 0 }}
         >
           <i className="ti ti-menu-2" style={{ fontSize: 18 }} aria-hidden="true" />
         </button>
 
-        {/* Logo — visible seulement sur mobile (desktop : logo dans la sidebar) */}
-        <a href="/" style={{ textDecoration:'none', flexShrink:0, display:'flex', alignItems:'center' }}
-          className="mobile-only">
+        {/* Logo mobile seulement */}
+        <a href="/" className="mobile-only"
+          style={{ textDecoration:'none', flexShrink:0, display:'flex', alignItems:'center' }}>
           <img src="/logos/profityx-logo.png" alt="ProfityX"
             className="topbar-logo"
-            style={{ height:28, width:'auto', objectFit:'contain' }} />
+            style={{ height:26, width:'auto', objectFit:'contain' }} />
         </a>
 
-        {/* Horloge */}
-        <div className="topbar-clock" style={{ fontFamily: HUD, color: 'var(--ac)', letterSpacing: 2, flexShrink: 0 }}>{time}</div>
+        {/* Horloge — desktop seulement */}
+        <div className="topbar-hide" style={{ fontFamily: HUD, fontSize:11, color: 'var(--ac)', letterSpacing: 2, flexShrink: 0 }}>{time}</div>
         <div className="topbar-hide" style={{ width: 1, height: 16, background: 'var(--bd1)', flexShrink: 0 }} />
         <div className="topbar-hide" style={{ fontFamily: BODY, fontSize: 12, color: 'var(--tx2)', letterSpacing: 1, textTransform: 'capitalize', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{date}</div>
       </div>
 
-      {/* Droite : devise + toggle thème + profil */}
-      <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        {/* Marché ouvert (caché sur mobile) */}
+      {/* ── DROITE ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+
+        {/* Marché ouvert — desktop seulement */}
         <div className="topbar-hide" style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 3, padding: '4px 8px' }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ok)' }} />
           <span style={{ fontFamily: HUD, fontSize: 7, color: 'var(--ok)', letterSpacing: 1.5 }}>
@@ -86,21 +87,19 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
           </span>
         </div>
 
-        {/* Devise — cachée sur petits écrans */}
+        {/* Devise — desktop seulement */}
         <div className="topbar-hide" style={{ fontFamily: HUD, fontSize: 9, color: 'var(--ac2)', background: 'color-mix(in srgb, var(--ac2) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--ac2) 18%, transparent)', borderRadius: 3, padding: '4px 8px', letterSpacing: 1, flexShrink: 0 }}>
           {currency}
         </div>
 
-        {/* Crédits */}
+        {/* Crédits — toujours visible */}
         {token && <CreditBalance token={token} locale={locale} />}
 
-        {/* Notifications */}
+        {/* Notifications — toujours visible */}
         {token && <NotificationBell token={token} />}
 
-
-
-        {/* Sélecteur langue FR / EN */}
-        <div style={{ display:'flex', alignItems:'center', gap:3, flexShrink:0 }}>
+        {/* Sélecteur langue FR/EN — desktop seulement */}
+        <div className="topbar-hide" style={{ display:'flex', alignItems:'center', gap:3, flexShrink:0 }}>
           {(['fr','en'] as const).map(l => (
             <button key={l} onClick={() => handleLangChange(l)} style={{
               fontFamily: HUD, fontSize: 8, letterSpacing: 1,
@@ -109,29 +108,39 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
               background: locale === l ? 'rgba(0,255,178,0.12)' : 'transparent',
               color: locale === l ? '#00FFB2' : 'rgba(232,244,248,0.35)',
               fontWeight: locale === l ? 700 : 400,
-              transition: 'all .15s',
             }}>
               {l.toUpperCase()}
             </button>
           ))}
         </div>
 
-        {/* Toggle thème ☀️/🌙 */}
-        <button onClick={toggleTheme} title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+        {/* Toggle thème — desktop seulement */}
+        <button onClick={toggleTheme}
+          className="topbar-hide"
+          title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
           style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 10px', borderRadius:7,
             border:`1px solid ${theme === 'dark' ? 'rgba(201,168,76,0.3)' : 'rgba(0,166,81,0.3)'}`,
             background: theme === 'dark' ? 'rgba(201,168,76,0.07)' : 'rgba(0,166,81,0.07)',
-            cursor:'pointer', flexShrink:0,
-            color: theme === 'dark' ? '#C9A84C' : '#00A651',
+            cursor:'pointer', flexShrink:0, color: theme === 'dark' ? '#C9A84C' : '#00A651',
           }}>
-          <i className={'ti ' + (theme === 'dark' ? 'ti-sun' : 'ti-moon')} style={{ fontSize:14 }} aria-hidden="true" />
-          <span style={{ fontFamily:HUD, fontSize:7, letterSpacing:1 }} className="topbar-hide">
-            {theme === 'dark' ? 'CLAIR' : 'SOMBRE'}
-          </span>
+          <i className={'ti ' + (theme === 'dark' ? 'ti-sun' : 'ti-moon')} style={{ fontSize:14 }} />
         </button>
 
-        {/* Avatar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+        {/* Toggle thème mobile — icône seule */}
+        <button onClick={toggleTheme}
+          className="mobile-only"
+          title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+          style={{ display:'flex', alignItems:'center', justifyContent:'center',
+            width:34, height:34, borderRadius:8,
+            border:`1px solid ${theme === 'dark' ? 'rgba(201,168,76,0.3)' : 'rgba(0,166,81,0.3)'}`,
+            background: theme === 'dark' ? 'rgba(201,168,76,0.07)' : 'rgba(0,166,81,0.07)',
+            cursor:'pointer', flexShrink:0, color: theme === 'dark' ? '#C9A84C' : '#00A651',
+          }}>
+          <i className={'ti ' + (theme === 'dark' ? 'ti-sun' : 'ti-moon')} style={{ fontSize:15 }} />
+        </button>
+
+        {/* Avatar — desktop seulement */}
+        <div className="topbar-hide" style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
           <div style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, background: 'color-mix(in srgb, var(--ac) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--ac) 25%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: HUD, fontSize: 10, color: 'var(--ac)', fontWeight: 700 }}>
             {name[0]?.toUpperCase() ?? 'T'}
           </div>
@@ -140,6 +149,7 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
             <span style={{ fontFamily: BODY, fontSize: 10, color: 'var(--tx3)' }}>{(plan ?? 'free').toUpperCase()}</span>
           </div>
         </div>
+
       </div>
     </header>
   )
