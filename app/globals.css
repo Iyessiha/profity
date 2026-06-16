@@ -285,7 +285,7 @@ body {
     width:260px !important; height:100vh !important;
     transform:translateX(-100%);
     transition:transform .28s cubic-bezier(.4,0,.2,1);
-    z-index:300; overflow-y:auto; overflow-x:hidden;
+    z-index:300; overflow:hidden;          /* nav scrolle, pas le aside */
     flex-direction:column !important;
   }
   .app-sidebar.drawer-open, .admin-sidebar.drawer-open {

@@ -133,8 +133,7 @@ export default function Sidebar({ plan, locale }: Props) {
           height: '100vh',
           minHeight: '100%',
           alignSelf: 'stretch',
-          overflowY: 'auto',
-          overflowX: 'hidden',
+          overflow: 'hidden',          // Le aside NE scroll PAS — seul le nav scroll
           transition: 'background .3s, border-color .3s, transform .28s cubic-bezier(.4,0,.2,1)',
         }}
       >
@@ -182,7 +181,7 @@ export default function Sidebar({ plan, locale }: Props) {
         </div>
 
         {/* Navigation groupée */}
-        <nav style={{ padding: '0 0.625rem', flex: 1, paddingBottom: '0.5rem' }}>
+        <nav style={{ padding: '0 0.625rem', flex: 1, paddingBottom: '0.5rem', overflowY: 'auto', overflowX: 'hidden', minHeight: 0 }}>
           {NAV_GROUPS.map((group, gi) => (
             <div key={group.labelFr} style={{ marginBottom: gi < NAV_GROUPS.length - 1 ? 4 : 0 }}>
 
@@ -272,8 +271,8 @@ export default function Sidebar({ plan, locale }: Props) {
           ))}
         </nav>
 
-        {/* Footer : langue + déconnexion */}
-        <div style={{ padding: '0.75rem 1rem', borderTop: `1px solid ${divider}` }}>
+        {/* Footer : langue + déconnexion — toujours visible en bas */}
+        <div style={{ padding: '0.75rem 1rem', borderTop: `1px solid ${divider}`, flexShrink: 0 }}>
 
           {/* Sélecteur langue — mobile uniquement */}
           <div className="mobile-only" style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
