@@ -261,12 +261,20 @@ export default function AccountSettings({ accountId }: Props) {
           </button>
         </div>
 
-        {!regenConfirm ? (
-          <button className="as-btn-ghost as-btn-danger-ghost"
-            onClick={() => setRegenConfirm(true)}>
-            <RefreshCw size={14} /> Régénérer le token
-          </button>
-        ) : (
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <a href="/downloads/ProfityX_Tracker.mq5" download="ProfityX_Tracker.mq5"
+            className="as-btn-ghost" style={{ textDecoration: "none" }}>
+            ↓ Télécharger l'EA MT5
+          </a>
+          {!regenConfirm && (
+            <button className="as-btn-ghost as-btn-danger-ghost"
+              onClick={() => setRegenConfirm(true)}>
+              <RefreshCw size={14} /> Régénérer le token
+            </button>
+          )}
+        </div>
+
+        {regenConfirm && (
           <div className="as-confirm-block">
             <AlertTriangle size={14} color="#FB5566" />
             <span>
