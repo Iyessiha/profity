@@ -491,6 +491,7 @@ export default function PropFirmPage() {
 
           </div>
         </div>
+        )}
 
         <footer className="app-footer">
           <a href="/legal/cgu">CGU</a>
