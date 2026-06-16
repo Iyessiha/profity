@@ -247,7 +247,7 @@ export default function SettingsPage() {
   }
   const labelStyle: React.CSSProperties = {
     fontFamily:HUD, fontSize:8, letterSpacing:2,
-    color:'rgba(232,244,248,0.4)', display:'block', marginBottom:6,
+    color:'var(--tx3)', display:'block', marginBottom:6,
   }
   const cardStyle: React.CSSProperties = {
     background:'var(--bg1)', border:'1px solid var(--bd)',
@@ -286,7 +286,7 @@ export default function SettingsPage() {
       }}>
         <div style={{ display:'flex', alignItems:'center', gap:10, minWidth:0 }}>
           <a href="/dashboard" style={{
-            fontFamily:HUD, fontSize:8, color:'rgba(232,244,248,0.3)',
+            fontFamily:HUD, fontSize:8, color:'var(--tx3)',
             textDecoration:'none', letterSpacing:1, flexShrink:0,
             display:'flex', alignItems:'center', gap:5,
           }}>
@@ -321,9 +321,9 @@ export default function SettingsPage() {
               className="settings-tab-pill"
               style={{
                 display:'flex', alignItems:'center', gap:7,
-                padding:'10px 14px', borderBottom:`2px solid ${tab===t.key?'#00FFB2':'transparent'}`,
+                padding:'10px 14px',
                 background:'transparent', border:'none', borderBottom:`2px solid ${tab===t.key?'#00FFB2':'transparent'}`,
-                color: tab===t.key ? '#00FFB2' : 'rgba(232,244,248,0.35)',
+                color: tab===t.key ? '#00FFB2' : 'var(--tx3)',
                 fontFamily:HUD, fontSize:8, letterSpacing:2,
                 cursor:'pointer', whiteSpace:'nowrap', transition:'all .2s',
               }}>
@@ -367,7 +367,7 @@ export default function SettingsPage() {
                         disabled={avatarUploading}
                         onChange={e => { const f = e.target.files?.[0]; if (f) handleAvatarUpload(f) }} />
                     </label>
-                    <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:12, color:'rgba(232,244,248,0.35)', marginTop:6 }}>
+                    <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:12, color:'var(--tx3)', marginTop:6 }}>
                       JPG, PNG ou WEBP · max 2 Mo
                     </div>
                     {avatarErr && <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:12, color:'#FF3A5C', marginTop:4 }}>{avatarErr}</div>}
@@ -482,7 +482,7 @@ export default function SettingsPage() {
 
                 {plan === 'free' ? (
                   <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:8, padding:'1rem', textAlign:'center' }}>
-                    <div style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.5)', marginBottom:12 }}>
+                    <div style={{ fontFamily:BODY, fontSize:14, color:'var(--tx2)', marginBottom:12 }}>
                       Recevez vos signaux directement sur Telegram.
                     </div>
                     <a href="/pricing" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'9px 18px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
@@ -493,7 +493,7 @@ export default function SettingsPage() {
                   <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
                     {/* Badge limite */}
                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8 }}>
-                      <div style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.7)' }}>
+                      <div style={{ fontFamily:BODY, fontSize:14, color:'var(--tx1)' }}>
                         {plan === 'elite'
                           ? '✅ Alertes illimitées — Plan ELITE'
                           : '⚡ 3 alertes/mois incluses — Plan PRO'}
@@ -508,7 +508,7 @@ export default function SettingsPage() {
                     {/* Instructions connexion */}
                     <div style={{ background:'rgba(0,212,255,0.04)', border:'1px solid rgba(0,212,255,0.12)', borderRadius:8, padding:'1rem' }}>
                       <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(0,212,255,0.7)', marginBottom:10 }}>COMMENT CONNECTER</div>
-                      <div style={{ display:'flex', flexDirection:'column', gap:8, fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.6)' }}>
+                      <div style={{ display:'flex', flexDirection:'column', gap:8, fontFamily:BODY, fontSize:13, color:'var(--tx2)' }}>
                         <div>1. Ouvrez Telegram et cherchez <strong style={{ color:'#00D4FF' }}>@ProfityXBot</strong></div>
                         <div>2. Envoyez la commande <strong style={{ color:'#00D4FF' }}>/start</strong></div>
                         <div>3. Copiez votre <strong>Chat ID</strong> reçu en réponse</div>
@@ -529,7 +529,7 @@ export default function SettingsPage() {
                 </div>
 
                 {!pushState.supported ? (
-                  <div style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.4)' }}>
+                  <div style={{ fontFamily:BODY, fontSize:14, color:'var(--tx3)' }}>
                     Notifications push non supportées par ce navigateur. Utilisez Chrome, Edge ou Firefox.
                   </div>
                 ) : (
@@ -537,15 +537,15 @@ export default function SettingsPage() {
                     {/* Toggle principal */}
                     <div style={{
                       display:'flex', alignItems:'center', justifyContent:'space-between',
-                      background: pushSubscribed ? 'rgba(0,255,178,0.06)' : 'rgba(0,0,0,0.2)',
-                      border:`1px solid ${pushSubscribed ? 'rgba(0,255,178,0.2)' : 'rgba(232,244,248,0.06)'}`,
+                      background: pushSubscribed ? 'rgba(0,255,178,0.06)' : 'var(--bg0)',
+                      border:`1px solid ${pushSubscribed ? 'rgba(0,255,178,0.2)' : 'var(--bd)'}`,
                       borderRadius:6, padding:'14px 16px',
                     }}>
                       <div>
                         <div style={{ fontFamily:HUD, fontSize:11, color: pushSubscribed ? '#00FFB2' : '#E8F4F8', letterSpacing:1, marginBottom:4 }}>
                           {pushSubscribed ? '✓ ALERTES ACTIVÉES' : 'ALERTES DÉSACTIVÉES'}
                         </div>
-                        <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.4)' }}>
+                        <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>
                           {pushSubscribed
                             ? 'Vous recevrez une alerte 15 min avant chaque annonce High Impact.'
                             : 'Activez pour recevoir les alertes avant les annonces économiques majeures.'}
@@ -554,7 +554,7 @@ export default function SettingsPage() {
                       <button onClick={togglePush} disabled={pushLoading}
                         style={{
                           width:52, height:28, borderRadius:14,
-                          background: pushSubscribed ? '#00FFB2' : 'rgba(232,244,248,0.1)',
+                          background: pushSubscribed ? '#00FFB2' : 'var(--bg2)',
                           border:'none', cursor:'pointer',
                           position:'relative', transition:'background .3s',
                           flexShrink:0, opacity: pushLoading ? 0.5 : 1,
@@ -576,7 +576,7 @@ export default function SettingsPage() {
                         borderRadius:6, padding:'12px 14px',
                         display:'flex', alignItems:'center', justifyContent:'space-between',
                       }}>
-                        <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.55)' }}>
+                        <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx2)' }}>
                           Les alertes push sont disponibles à partir du plan Pro.
                         </div>
                         <a href="/pricing" style={{
@@ -614,7 +614,7 @@ export default function SettingsPage() {
                             borderRadius:6, padding:'10px 12px',
                           }}>
                             <div style={{ fontFamily:HUD, fontSize:10, color:a.c, marginBottom:4 }}>{a.t}</div>
-                            <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.4)' }}>{a.d}</div>
+                            <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>{a.d}</div>
                           </div>
                         ))}
                       </div>
@@ -633,7 +633,7 @@ export default function SettingsPage() {
                     <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', letterSpacing:1, marginBottom:4 }}>
                       RÉCAPITULATIF HEBDOMADAIRE
                     </div>
-                    <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.4)' }}>
+                    <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>
                       Résumé de vos analyses et performances chaque lundi.
                     </div>
                   </div>
@@ -641,7 +641,7 @@ export default function SettingsPage() {
                     onClick={() => setProfile(p => p ? {...p, notifications_email: !p.notifications_email} : p)}
                     style={{
                       width:52, height:28, borderRadius:14,
-                      background: profile?.notifications_email ? '#00FFB2' : 'rgba(232,244,248,0.1)',
+                      background: profile?.notifications_email ? '#00FFB2' : 'var(--bg2)',
                       border:'none', cursor:'pointer', position:'relative', transition:'background .3s', flexShrink:0,
                     }}>
                     <div style={{
@@ -672,7 +672,7 @@ export default function SettingsPage() {
                     <div style={{ fontFamily:HUD, fontSize:14, color: PLAN_LABELS[profile?.user_plan ?? 'free']?.color ?? '#888', letterSpacing:1, marginBottom:4 }}>
                       {PLAN_LABELS[profile?.user_plan ?? 'free']?.label}
                     </div>
-                    <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.4)' }}>
+                    <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>
                       {profile?.user_plan === 'free'
                         ? `${profile.analyses_used}/3 analyses · ${profile.news_used}/5 signaux news utilisés ce mois`
                         : profile?.user_plan === 'pro'
@@ -707,12 +707,12 @@ export default function SettingsPage() {
                   return (
                     <div key={q.label} style={{ marginBottom:16 }}>
                       <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
-                        <span style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.6)' }}>{q.label}</span>
+                        <span style={{ fontFamily:BODY, fontSize:13, color:'var(--tx2)' }}>{q.label}</span>
                         <span style={{ fontFamily:HUD, fontSize:10, color:q.color }}>
                           {isUnlimited ? '∞' : `${q.used} / ${q.max}`}
                         </span>
                       </div>
-                      <div style={{ height:4, background:'rgba(232,244,248,0.06)', borderRadius:2, overflow:'hidden' }}>
+                      <div style={{ height:4, background:'var(--bg2)', borderRadius:2, overflow:'hidden' }}>
                         <div style={{
                           height:'100%', borderRadius:2, transition:'width .5s',
                           width: isUnlimited ? '20%' : `${pct}%`,
@@ -722,7 +722,7 @@ export default function SettingsPage() {
                     </div>
                   )
                 })}
-                <div style={{ fontFamily:HUD, fontSize:8, color:'rgba(232,244,248,0.2)', letterSpacing:2, marginTop:8 }}>
+                <div style={{ fontFamily:HUD, fontSize:8, color:'var(--tx3)', letterSpacing:2, marginTop:8 }}>
                   RESET LE 1er DU MOIS
                 </div>
               </div>
@@ -770,7 +770,7 @@ export default function SettingsPage() {
                 <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#FF3A5C', marginBottom:'1rem' }}>
                   ZONE DANGEREUSE
                 </div>
-                <div style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.5)', marginBottom:'1rem' }}>
+                <div style={{ fontFamily:BODY, fontSize:14, color:'var(--tx2)', marginBottom:'1rem' }}>
                   La suppression de votre compte est permanente. Toutes vos données seront effacées.
                 </div>
                 <button
@@ -907,7 +907,7 @@ function InvoicesTab({ token, invoices, setInvoices, loading, setLoading }: {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-      <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem' }}>
+      <div style={{ background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem' }}>
         <div style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'var(--ac)', marginBottom:6 }}>
           🧾 MES FACTURES
         </div>
@@ -923,7 +923,7 @@ function InvoicesTab({ token, invoices, setInvoices, loading, setLoading }: {
       )}
 
       {!loading && invoices.length === 0 && (
-        <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10, padding:'2rem', textAlign:'center' }}>
+        <div style={{ background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:10, padding:'2rem', textAlign:'center' }}>
           <div style={{ fontSize:32, marginBottom:12 }}>🧾</div>
           <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:2, color:'var(--tx3)', marginBottom:8 }}>AUCUNE FACTURE</div>
           <div style={{ fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>
@@ -939,7 +939,7 @@ function InvoicesTab({ token, invoices, setInvoices, loading, setLoading }: {
       {!loading && invoices.map(inv => (
         <a key={inv.id} href={`/invoice/${inv.token}`} target="_blank" rel="noopener"
           style={{ textDecoration:'none', display:'block',
-            background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:10,
+            background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:10,
             padding:'1rem 1.25rem', transition:'border-color .2s',
           }}
           onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(0,255,178,0.3)')}
