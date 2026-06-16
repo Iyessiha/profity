@@ -489,7 +489,8 @@ const CSS = `
   --climb:#2DD4A7; --gold:#E8B339; --danger:#FB5566;
   background:var(--ink); color:var(--text);
   font-family:'Inter',system-ui,sans-serif;
-  min-height:100vh; padding:40px clamp(16px,5vw,40px); box-sizing:border-box;
+  min-height:100vh; width:100%; max-width:100vw; overflow-x:hidden;
+  padding:40px clamp(12px,4vw,40px); box-sizing:border-box;
 }
 .ob-root *{box-sizing:border-box;}
 
@@ -652,9 +653,27 @@ const CSS = `
 .ob-spin{animation:spin 1s linear infinite; display:inline-block;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-@media(max-width:520px){
+@media(max-width:640px){
+  .ob-root{padding:24px 16px 40px;}
+  .ob-card{border-radius:14px; padding:20px 16px;}
+  .ob-header{margin-bottom:20px;}
+  .ob-title{font-size:22px;}
+  .ob-sub{font-size:13px;}
+  .ob-stepper{gap:0;}
+  .ob-step-label{font-size:9px;}
+  .ob-step-line{min-width:20px;}
+  .ob-presets{gap:10px;}
+  .ob-preset{padding:12px 14px;}
+  .ob-preset-name{font-size:13px;}
+  .ob-preset-rules{gap:6px;}
+  .ob-rule{font-size:10.5px; padding:3px 8px;}
   .ob-token-row{flex-direction:column; align-items:stretch;}
   .ob-copy-btn{justify-content:center;}
   .ob-btn-large{align-self:stretch;}
+  .ob-btn-primary{width:100%; justify-content:center;}
+  .ob-row{flex-direction:column-reverse; gap:8px;}
+  .ob-btn-ghost{width:100%; justify-content:center;}
+  .ob-install-step{gap:12px;}
+  .ob-action-btn{font-size:11.5px; padding:6px 10px;}
 }
 `;
