@@ -500,7 +500,6 @@ export default function PropFirmPage() {
       </div>
     </div>
   )
-  )
 }
 
 // ── Carte d'un compte prop firm ───────────────────────────────
