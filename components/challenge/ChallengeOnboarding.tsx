@@ -335,8 +335,8 @@ function Rule({ icon, label, val, color }: {
 const INSTALL_STEPS = [
   {
     n: 1,
-    title: "Télécharge l'EA",
-    body: "Enregistre le fichier ProfityX_Tracker.mq5 dans le dossier MQL5 de MetaTrader 5.",
+    title: "Télécharge l'EA — choisis ton profil",
+    body: "Trader manuel ? Installe le Tracker (surveille sans trader). Trader algo ? Installe le Robot (trade + surveille automatiquement).",
     action: { label: "Télécharger l'EA", icon: <Download size={13} />, key: "dl" },
   },
   {

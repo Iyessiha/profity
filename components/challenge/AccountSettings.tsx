@@ -264,7 +264,11 @@ export default function AccountSettings({ accountId }: Props) {
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <a href="/downloads/ProfityX_Tracker.mq5" download="ProfityX_Tracker.mq5"
             className="as-btn-ghost" style={{ textDecoration: "none" }}>
-            ↓ Télécharger l'EA MT5
+            ↓ Tracker (surveillance)
+          </a>
+          <a href="/downloads/ProfityX_Robot.mq5" download="ProfityX_Robot.mq5"
+            className="as-btn-ghost" style={{ textDecoration: "none", color: "#E8B339", borderColor: "rgba(232,179,57,.3)" }}>
+            ↓ Robot (trading auto)
           </a>
           {!regenConfirm && (
             <button className="as-btn-ghost as-btn-danger-ghost"
