@@ -23,7 +23,14 @@ const PLANS = [
     key: 'pro', name: 'PRO', price: '17 500', priceYear: '150 000', currency: 'FCFA/mois', currencyYear: 'FCFA/an',
     color: '#00FFB2', bg: 'rgba(0,255,178,0.05)',
     credits: '150 crédits', analyses: 'Analyses illimitées',
-    features: ['Tout Free +', 'Order Block + FVG', 'BOS / CHoCH / Liquidité', 'Chart annoté', 'Signaux anticipatoires NFP/CPI'],
+    features: [
+      'Tout Free +',
+      'Order Block + FVG + BOS / CHoCH',
+      'Signaux NFP/CPI anticipatoires',
+      '🤖 EA Tracker MT5 inclus',
+      '📊 Dashboard challenge Prop Firm',
+      '🛡 Alertes avant breach de règles',
+    ],
     cta: 'PASSER PRO', href: '/auth/login',
     highlight: true,
   },
@@ -31,7 +38,14 @@ const PLANS = [
     key: 'elite', name: 'ELITE', price: '35 000', priceYear: '300 000', currency: 'FCFA/mois', currencyYear: 'FCFA/an',
     color: '#C9A84C', bg: 'rgba(201,168,76,0.05)',
     credits: '600 crédits', analyses: 'Analyses illimitées',
-    features: ['Tout Pro +', 'Mode Scalping', 'Signaux News temps réel', 'Support prioritaire', 'Accès anticipé nouvelles features'],
+    features: [
+      'Tout Pro +',
+      '🤖 Robot MT5 trading automatique',
+      '⚡ Prop Firm Guard (lot adaptatif)',
+      '🎯 Auto-stop sur objectif atteint',
+      'Mode Scalping + Signaux News live',
+      'Support VIP 24h/7j',
+    ],
     cta: 'PASSER ELITE', href: '/auth/login',
     highlight: false,
   },
@@ -41,6 +55,7 @@ const STEPS = [
   { n: '01', icon: '📤', title: 'Uploade ton chart', desc: 'Prends une capture d\'écran de ton chart TradingView ou Indices Synthétiques et uploade-la.' },
   { n: '02', icon: '🤖', title: 'L\'IA analyse en 10s', desc: 'Notre IA détecte les structures SMC : Order Blocks, FVG, BOS, CHoCH et Liquidité.' },
   { n: '03', icon: '🎯', title: 'Reçois ton signal', desc: 'Entrée précise, Stop Loss et 3 niveaux de Take Profit calculés automatiquement.' },
+  { n: '04', icon: '🏆', title: 'Suis ton challenge', desc: 'Connecte ton compte MT5 (PRO/ELITE). Le Dashboard suit ton profit, drawdown et jours de trading en temps réel.' },
 ]
 
 const ASSETS = ['Boom 1000','Crash 500','GainX 600','Step Index','EUR/USD','XAU/USD','GBP/USD','USD/JPY']
@@ -48,6 +63,8 @@ const ASSETS = ['Boom 1000','Crash 500','GainX 600','Step Index','EUR/USD','XAU/
 const FAQ = [
   { q: 'Ça marche avec quels actifs ?', a: 'ProfityX fonctionne avec tous les Indices Synthétiques (Boom, Crash, Volatility, GainX, Step Index) et les paires Forex majeures (EUR/USD, GBP/USD, XAU/USD, USD/JPY…). Tu sélectionnes l\'actif dans le menu avant d\'uploader ton chart.' },
   { q: 'C\'est quoi le Smart Money Concept (SMC) ?', a: 'Le SMC est une méthode d\'analyse institutionnelle qui suit les "smart money" (grandes banques). ProfityX détecte automatiquement les Order Blocks, Fair Value Gaps, BOS et CHoCH sur ton chart.' },
+  { q: 'C\'est quoi le suivi challenge Prop Firm ?', a: 'Disponible en PRO et ELITE. Tu télécharges l\'EA Tracker depuis ton compte, tu le colle sur ton MT5, et le Dashboard ProfityX suit ton profit, ton drawdown et tes jours de trading en direct. Tu reçois une alerte avant tout breach de règles — sans jamais quitter ton terminal.' },
+  { q: 'Le Robot MT5 (ELITE) trade-t-il à ma place ?', a: 'Oui. Le Robot est un Expert Advisor MT5 basé sur une stratégie Trend-Follow (EMA + Stochastique) avec un Prop Firm Guard intégré : il réduit automatiquement les lots quand le drawdown approche les limites et s\'arrête quand l\'objectif est atteint. Résultats non garantis — teste d\'abord sur démo.' },
   { q: 'Comment payer depuis la Côte d\'Ivoire ?', a: 'On accepte Wave, Orange Money, MTN MoMo, Moov Money, Visa et Mastercard via GeniusPay. Aucun compte bancaire international nécessaire.' },
   { q: 'Puis-je annuler à tout moment ?', a: 'Oui, aucun engagement. Tu peux annuler ton abonnement depuis ton espace compte à tout moment, sans frais.' },
 ]

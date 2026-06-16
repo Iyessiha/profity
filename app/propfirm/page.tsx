@@ -200,6 +200,20 @@ export default function PropFirmPage() {
         <TopBar locale={locale} profile={profile} />
         <QuotaBar token={token} locale={locale} plan={plan} />
 
+        {/* ─── Bandeau Challenge Temps Réel ─── */}
+        <div style={{ margin:'1rem 1.5rem 0', padding:'14px 20px', background:'linear-gradient(135deg,rgba(0,255,178,0.06),rgba(201,168,76,0.04))', border:'1px solid rgba(0,255,178,0.15)', borderLeft:'3px solid #00FFB2', borderRadius:12, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+          <div>
+            <div style={{ fontFamily:"'Orbitron',monospace", fontSize:10, letterSpacing:2, color:'#00FFB2', marginBottom:4 }}>NOUVEAU · SUIVI CHALLENGE TEMPS RÉEL</div>
+            <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:14, color:'rgba(240,248,255,0.75)', lineHeight:1.5 }}>
+              Connecte ton compte MT5 — balance, equity, drawdown et jours tradés mis à jour en direct.{' '}
+              <span style={{ color:'#C9A84C', fontWeight:600 }}>ELITE :</span> Robot MT5 + Prop Firm Guard automatique inclus.
+            </div>
+          </div>
+          <a href="/challenge/dashboard" style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#00FFB2', color:'#050A10', fontFamily:"'Orbitron',monospace", fontSize:10, fontWeight:700, letterSpacing:1.5, padding:'10px 18px', borderRadius:8, textDecoration:'none', whiteSpace:'nowrap', flexShrink:0 }}>
+            OUVRIR LE DASHBOARD →
+          </a>
+        </div>
+
         <div className="resp-pad" style={{ padding:'1.5rem', flex:1 }}>
           <div style={{ maxWidth:900, margin:'0 auto' }}>
 
