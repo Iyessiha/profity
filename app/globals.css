@@ -514,3 +514,9 @@ body {
 [data-theme="dark"] [style*="rgba(232,244,248, 0.55)"] {
   color: rgba(240,248,255,0.80) !important;
 }
+
+/* ── Prop Firm — responsive ─────────────────────────────── */
+@media (max-width: 480px) {
+  .propfirm-analyses { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .propfirm-analyses > div { min-width: 380px; }
+}

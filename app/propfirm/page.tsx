@@ -316,9 +316,10 @@ export default function PropFirmPage() {
                 <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:3, color:'var(--tx3)', marginBottom:'1rem' }}>
                   {locale === 'en' ? 'RECENT ANALYSES → RISK TRACKING' : 'ANALYSES RÉCENTES → SUIVI DU RISQUE'}
                 </div>
-                <div style={{ background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:10, overflow:'hidden' }}>
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr 1fr', padding:'8px 14px', borderBottom:'1px solid var(--bd)', background:'rgba(255,255,255,0.02)' }}>
-                    {['PAIRE','DIRECTION','ENTRÉE','RISQUE EST.','DATE'].map(h => (
+                <div className="propfirm-analyses" style={{ overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
+                <div style={{ background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:10, overflow:'hidden', minWidth:320 }}>
+                  <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr', padding:'8px 14px', borderBottom:'1px solid var(--bd)', background:'rgba(255,255,255,0.02)' }}>
+                    {['PAIRE','DIRECTION','RISQUE','DATE'].map(h => (
                       <div key={h} style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'var(--tx3)' }}>{h}</div>
                     ))}
                   </div>
@@ -328,10 +329,9 @@ export default function PropFirmPage() {
                       : '~1.00'
                     const dirColor = a.direction?.includes('LONG') || a.direction?.includes('BUY') ? '#00FFB2' : '#FF3A5C'
                     return (
-                      <div key={a.id} style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr 1fr', padding:'10px 14px', borderBottom:'1px solid rgba(255,255,255,0.03)', alignItems:'center' }}>
+                      <div key={a.id} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr', padding:'10px 14px', borderBottom:'1px solid rgba(255,255,255,0.03)', alignItems:'center' }}>
                         <div style={{ fontFamily:HUD, fontSize:9, color:'var(--tx0)' }}>{a.pair}</div>
                         <div style={{ fontFamily:HUD, fontSize:8, color:dirColor }}>{a.direction?.split(' ')[0]}</div>
-                        <div style={{ fontFamily:HUD, fontSize:8, color:'var(--tx2)' }}>{a.entry}</div>
                         <div style={{ fontFamily:HUD, fontSize:8, color:'#C9A84C' }}>~{riskPct}%</div>
                         <div style={{ fontFamily:BODY, fontSize:10, color:'var(--tx3)' }}>
                           {new Date(a.created_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'fr-FR', { day:'2-digit', month:'short' })}
@@ -340,6 +340,7 @@ export default function PropFirmPage() {
                     )
                   })}
                 </div>
+              </div>
                 <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginTop:6, padding:'0 2px' }}>
                   {locale === 'en'
                     ? '* Estimated risk based on entry/stop loss distance. Updated automatically with each new analysis.'
@@ -397,24 +398,33 @@ function AccountCard({ tool, profitPct, profitNeeded, ddPct, dlPct, ddSafe, dlSa
   )
 
   return (
-    <div style={{ background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:10, padding:'1.25rem', position:'relative' }}>
-      {/* Score de sécurité */}
-      <div style={{ position:'absolute', top:12, right:12, fontFamily:HUD, fontSize:16, color:riskColor, fontWeight:900 }}>
-        {Math.round(riskScore)}
-        <span style={{ fontSize:8, opacity:.6 }}>/100</span>
-      </div>
+    <div style={{ background:'var(--bg1)', border:`1px solid ${riskScore < 40 ? 'rgba(255,58,92,0.3)' : 'var(--bd)'}`, borderRadius:10, padding:'1.25rem', position:'relative' }}>
 
-      <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', marginBottom:2 }}>{tool.firm_name}</div>
-      <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)', marginBottom:'1rem' }}>
-        ${tool.account_size.toLocaleString()} · {tool.phase.toUpperCase()}
+      {/* Header : nom + score */}
+      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:'0.75rem' }}>
+        <div>
+          <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', marginBottom:2 }}>{tool.firm_name}</div>
+          <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>
+            ${tool.account_size.toLocaleString()} · {tool.phase.toUpperCase()}
+          </div>
+        </div>
+        <div style={{ textAlign:'right', flexShrink:0, marginLeft:8 }}>
+          <div style={{ fontFamily:HUD, fontSize:18, color:riskColor, fontWeight:900, lineHeight:1 }}>
+            {Math.round(riskScore)}<span style={{ fontSize:8, opacity:.6 }}>/100</span>
+          </div>
+          <div style={{ fontFamily:BODY, fontSize:9, color:riskColor, opacity:.7 }}>
+            {riskScore > 70 ? (locale==='en'?'SAFE':'SÛR') : riskScore > 40 ? (locale==='en'?'CAUTION':'ATTENTION') : (locale==='en'?'DANGER':'DANGER')}
+          </div>
+        </div>
       </div>
 
       {/* Profit */}
       <div style={{ marginBottom:10 }}>
-        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:2 }}>
-          <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)', letterSpacing:1 }}>{T.profit}</span>
-          <span style={{ fontFamily:HUD, fontSize:9, color: profitPct >= 0 ? '#00FFB2' : '#FF3A5C' }}>
-            {profitPct >= 0 ? '+' : ''}{profitPct.toFixed(2)}% {profitNeeded > 0 ? `(encore +${profitNeeded.toFixed(2)}%)` : '✓'}
+        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:3, gap:4 }}>
+          <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)', letterSpacing:1, flexShrink:0 }}>{T.profit}</span>
+          <span style={{ fontFamily:HUD, fontSize:8, color: profitPct >= 0 ? '#00FFB2' : '#FF3A5C', textAlign:'right' }}>
+            {profitPct >= 0 ? '+' : ''}{profitPct.toFixed(1)}%
+            {profitNeeded > 0 ? <span style={{ opacity:.6, fontSize:7 }}> (reste +{profitNeeded.toFixed(1)}%)</span> : ' ✓'}
           </span>
         </div>
         <Bar pct={profitPct} max={tool.profit_target} color="#00FFB2" />
@@ -422,10 +432,11 @@ function AccountCard({ tool, profitPct, profitNeeded, ddPct, dlPct, ddSafe, dlSa
 
       {/* Drawdown */}
       <div style={{ marginBottom:10 }}>
-        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:2 }}>
-          <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)', letterSpacing:1 }}>{T.dd}</span>
-          <span style={{ fontFamily:HUD, fontSize:9, color: ddPct < tool.max_drawdown * 0.7 ? '#00FFB2' : '#FF3A5C' }}>
-            -{ddPct.toFixed(2)}% ({locale==='en'?`${ddSafe.toFixed(2)}% safe`:`${ddSafe.toFixed(2)}% restant`})
+        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:3, gap:4 }}>
+          <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)', letterSpacing:1, flexShrink:0 }}>{T.dd}</span>
+          <span style={{ fontFamily:HUD, fontSize:8, color: ddPct < tool.max_drawdown * 0.7 ? '#00FFB2' : '#FF3A5C', textAlign:'right' }}>
+            -{ddPct.toFixed(1)}%
+            <span style={{ opacity:.6, fontSize:7 }}> ({ddSafe.toFixed(1)}% {locale==='en'?'left':'rest.'})</span>
           </span>
         </div>
         <Bar pct={ddPct} max={tool.max_drawdown} color={ddPct > tool.max_drawdown * 0.7 ? '#FF3A5C' : '#C9A84C'} />
@@ -433,10 +444,11 @@ function AccountCard({ tool, profitPct, profitNeeded, ddPct, dlPct, ddSafe, dlSa
 
       {/* Daily loss */}
       <div style={{ marginBottom:'1rem' }}>
-        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:2 }}>
-          <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)', letterSpacing:1 }}>{T.daily}</span>
-          <span style={{ fontFamily:HUD, fontSize:9, color: dlPct < tool.daily_loss * 0.7 ? '#00FFB2' : '#FF3A5C' }}>
-            -{dlPct.toFixed(2)}% ({locale==='en'?`${dlSafe.toFixed(2)}% left`:`${dlSafe.toFixed(2)}% restant`})
+        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:3, gap:4 }}>
+          <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)', letterSpacing:1, flexShrink:0 }}>{T.daily}</span>
+          <span style={{ fontFamily:HUD, fontSize:8, color: dlPct < tool.daily_loss * 0.7 ? '#00FFB2' : '#FF3A5C', textAlign:'right' }}>
+            -{dlPct.toFixed(1)}%
+            <span style={{ opacity:.6, fontSize:7 }}> ({dlSafe.toFixed(1)}% {locale==='en'?'left':'rest.'})</span>
           </span>
         </div>
         <Bar pct={dlPct} max={tool.daily_loss} color={dlPct > tool.daily_loss * 0.7 ? '#FF3A5C' : '#C9A84C'} />
@@ -448,27 +460,27 @@ function AccountCard({ tool, profitPct, profitNeeded, ddPct, dlPct, ddSafe, dlSa
           {[
             { label:`${locale==='en'?'Balance':'Solde'} ($)`, val:newBal, set:setNewBal },
             { label:'Drawdown (%)', val:newDD, set:setNewDD },
-            { label:`${locale==='en'?'Daily loss':'Perte jour'} (%)`, val:newDL, set:setNewDL },
+            { label:`Daily loss (%)`, val:newDL, set:setNewDL },
           ].map(f => (
             <div key={f.label} style={{ display:'flex', alignItems:'center', gap:8 }}>
-              <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)', minWidth:90 }}>{f.label}</span>
+              <span style={{ fontFamily:HUD, fontSize:7, color:'var(--tx3)', minWidth:80, flexShrink:0 }}>{f.label}</span>
               <input type="number" step="0.01" value={f.val} onChange={e => f.set(+e.target.value)}
-                style={{ flex:1, background:'var(--bg0)', border:'1px solid var(--bd)', color:'var(--tx0)', borderRadius:5, padding:'6px 8px', fontFamily:HUD, fontSize:10 }} />
+                style={{ flex:1, minWidth:0, background:'var(--bg0)', border:'1px solid var(--bd)', color:'var(--tx0)', borderRadius:5, padding:'6px 8px', fontFamily:HUD, fontSize:10 }} />
             </div>
           ))}
-          <div style={{ display:'flex', gap:6 }}>
+          <div style={{ display:'flex', gap:6, marginTop:4 }}>
             <button onClick={() => { onUpdate(tool.id, newBal, newDD, newDL); setEditing(false) }}
-              style={{ flex:1, background:'var(--ac)', color:'#020408', fontFamily:HUD, fontSize:8, fontWeight:700, border:'none', borderRadius:5, padding:'8px', cursor:'pointer' }}>
+              style={{ flex:1, background:'var(--ac)', color:'#020408', fontFamily:HUD, fontSize:8, fontWeight:700, border:'none', borderRadius:5, padding:'10px', cursor:'pointer' }}>
               {T.update}
             </button>
             <button onClick={() => setEditing(false)}
-              style={{ background:'transparent', color:'var(--tx3)', fontFamily:HUD, fontSize:8, border:'1px solid var(--bd)', borderRadius:5, padding:'8px 12px', cursor:'pointer' }}>
+              style={{ background:'transparent', color:'var(--tx3)', fontFamily:HUD, fontSize:8, border:'1px solid var(--bd)', borderRadius:5, padding:'10px 14px', cursor:'pointer' }}>
               ✕
             </button>
           </div>
         </div>
       ) : (
-        <button onClick={() => setEditing(true)} style={{ width:'100%', background:'transparent', border:'1px solid var(--bd)', color:'var(--tx2)', fontFamily:HUD, fontSize:8, letterSpacing:1, borderRadius:6, padding:'8px', cursor:'pointer' }}>
+        <button onClick={() => setEditing(true)} style={{ width:'100%', background:'transparent', border:'1px solid var(--bd)', color:'var(--tx2)', fontFamily:HUD, fontSize:8, letterSpacing:1, borderRadius:6, padding:'10px', cursor:'pointer' }}>
           {T.update} →
         </button>
       )}
