@@ -89,6 +89,8 @@ export default function Sidebar({ plan, locale }: Props) {
   }
 
   // ── Couleurs sidebar premium ────────────────────────────────
+  const planColor     = PLAN_COLORS[plan] ?? '#888'
+  const currentPath   = typeof window !== 'undefined' ? window.location.pathname : ''
   // Fond sidebar légèrement différencié
   const sidebarBg     = isDark ? '#0C1628'     : '#FFFFFF'
   const sidebarBorder = isDark ? 'rgba(0,255,178,0.08)' : '#E5E7EB'
