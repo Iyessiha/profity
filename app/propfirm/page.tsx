@@ -498,8 +498,8 @@ export default function PropFirmPage() {
           <a href="/support">{locale === 'en' ? 'Support' : 'Assistance'}</a>
         </footer>
       </div>
-        )}
     </div>
+  )
   )
 }
 
