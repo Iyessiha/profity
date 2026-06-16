@@ -101,16 +101,18 @@ export default function SettingsPage() {
       if (p) setProfile({ ...p, email: p.email ?? session.user.email ?? '' })
       setLoading(false)
 
-      // État push
-      const state = getNotificationState()
-      setPushState(state)
-
-      // Service Worker
-      const reg = await registerSW()
-      if (reg) {
-        setSwReg(reg)
-        const existing = await reg.pushManager.getSubscription()
-        setPushSubscribed(!!existing)
+      // État push — protégé contre les erreurs (VAPID non configuré, SW non supporté)
+      try {
+        const state = getNotificationState()
+        setPushState(state)
+        const reg = await registerSW()
+        if (reg) {
+          setSwReg(reg)
+          const existing = await reg.pushManager.getSubscription()
+          setPushSubscribed(!!existing)
+        }
+      } catch (pushErr) {
+        console.warn('[Settings] Push init failed:', pushErr)
       }
     }
     init()
@@ -824,22 +826,26 @@ function TelegramConnect({ plan }: { plan: string }) {
 
   useEffect(() => {
     // Charger le chat_id actuel
-    const token = localStorage.getItem('sb-access-token') || ''
-    if (!token) return
-    fetch('/api/me', { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json()).then(d => { if (d.telegram_chat_id) setCurrent(d.telegram_chat_id) })
-      .catch(() => {})
+    try {
+      const token = localStorage.getItem('sb-access-token') || ''
+      if (!token) return
+      fetch('/api/me', { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.json()).then(d => { if (d.telegram_chat_id) setCurrent(d.telegram_chat_id) })
+        .catch(() => {})
+    } catch {}
   }, [])
 
   const save = async () => {
     if (!chatId.trim()) return
     setLoading(true)
-    const token = localStorage.getItem('sb-access-token') || ''
-    const res = await fetch('/api/telegram/connect', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ chat_id: chatId.trim() }),
-    })
-    if (res.ok) { setSaved(true); setCurrent(chatId.trim()); setChatId('') }
+    try {
+      const token = localStorage.getItem('sb-access-token') || ''
+      const res = await fetch('/api/telegram/connect', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ chat_id: chatId.trim() }),
+      })
+      if (res.ok) { setSaved(true); setCurrent(chatId.trim()); setChatId('') }
+    } catch {}
     setLoading(false)
   }
 
@@ -848,8 +854,8 @@ function TelegramConnect({ plan }: { plan: string }) {
       {current && (
         <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(0,255,178,0.06)', border:'1px solid var(--bd)', borderRadius:6, padding:'10px 14px' }}>
           <span style={{ color:'#00FFB2' }}>✓</span>
-          <span style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.7)' }}>
-            Connecté — Chat ID : <strong style={{ color:'#F0F8FF' }}>{current}</strong>
+          <span style={{ fontFamily:BODY, fontSize:13, color:'var(--tx2)' }}>
+            Connecté — Chat ID : <strong style={{ color:'var(--tx0)' }}>{current}</strong>
           </span>
         </div>
       )}
@@ -860,7 +866,7 @@ function TelegramConnect({ plan }: { plan: string }) {
         <input
           value={chatId} onChange={e => setChatId(e.target.value)}
           placeholder="Votre Chat ID Telegram (ex: 123456789)"
-          style={{ flex:1, background:'rgba(0,0,0,0.3)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:6, padding:'11px 14px', fontFamily:BODY, fontSize:14, color:'#F0F8FF', outline:'none' }}
+          style={{ flex:1, background:'var(--bg0)', border:'1px solid var(--bd)', borderRadius:6, padding:'11px 14px', fontFamily:BODY, fontSize:14, color:'var(--tx0)', outline:'none' }}
         />
         <button onClick={save} disabled={loading || !chatId.trim()} style={{
           fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00D4FF',

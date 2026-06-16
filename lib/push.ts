@@ -4,7 +4,7 @@
 // Côté client uniquement
 // ============================================================
 
-const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
+const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? ''
 
 // ─── Enregistrer le Service Worker ────────────────────────
 export async function registerSW(): Promise<ServiceWorkerRegistration | null> {
