@@ -93,7 +93,9 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
         </div>
 
         {/* Crédits — toujours visible */}
-        {token && <CreditBalance token={token} locale={locale} />}
+        <div className="tour-credits">
+          {token && <CreditBalance token={token} locale={locale} />}
+        </div>
 
         {/* Notifications — toujours visible */}
         {token && <NotificationBell token={token} />}

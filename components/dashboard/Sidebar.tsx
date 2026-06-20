@@ -208,7 +208,7 @@ export default function Sidebar({ plan, locale }: Props) {
                       try { localStorage.setItem(ANALYSIS_BADGE_KEY, '1') } catch {}
                       setChartBadge(false)
                     }
-                  }} style={{
+                  }} className={`tour-${item.key}`} style={{
                     display: 'flex', alignItems: 'center', gap: 10,
                     padding: '10px 12px',
                     background: isActive ? activeBg : inactiveBg,

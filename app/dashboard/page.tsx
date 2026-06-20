@@ -18,6 +18,7 @@ import PopupManager, { usePopups } from '@/components/PopupManager'
 import lazyLoad from 'next/dynamic'
 import Leaderboard from '@/components/dashboard/Leaderboard'
 import { SkeletonDashboard } from '@/components/Skeleton'
+import DashboardTour from '@/components/dashboard/DashboardTour'
 import { useRealtimeSync } from '@/lib/useRealtime'
 import Onboarding from '@/components/Onboarding'
 import StreakToast from '@/components/StreakToast'
@@ -33,6 +34,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [locale,  setLocale]  = useState('fr')
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showTour, setShowTour] = useState(false)
   const [streakReward, setStreakReward] = useState<{ streak:number; reward:number; milestone:number } | null>(null)
 
   // Sync temps réel : crédits + profil
@@ -59,6 +61,10 @@ export default function DashboardPage() {
         setPlan(p.user_plan as string || 'free')
         setLocale((p.locale as string) || (typeof localStorage !== 'undefined' ? localStorage.getItem('pxLang') : null) || 'fr')
         if (!p.onboarding_done) setShowOnboarding(true)
+        // Tour interactif : affiché une seule fois pour les nouveaux utilisateurs
+        if (p.onboarding_done && !p.tour_done) {
+          setTimeout(() => setShowTour(true), 800) // petit délai pour le rendu
+        }
       }
       setLoading(false)
 
@@ -128,6 +134,21 @@ export default function DashboardPage() {
 
   return (
     <div className="app-shell">
+      {/* Tour interactif — nouveaux utilisateurs seulement */}
+      {showTour && (
+        <DashboardTour
+          locale={locale}
+          onDone={async () => {
+            setShowTour(false)
+            // Marquer le tour comme terminé en base
+            const { data: { session } } = await supabasePublic.auth.getSession()
+            if (session) {
+              await supabasePublic.from('profiles').update({ tour_done: true }).eq('id', session.user.id)
+            }
+          }}
+        />
+      )}
+
       {/* Onboarding au premier login */}
       {showOnboarding && user && (
         <Onboarding
