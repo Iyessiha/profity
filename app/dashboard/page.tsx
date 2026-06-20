@@ -61,9 +61,9 @@ export default function DashboardPage() {
         setPlan(p.user_plan as string || 'free')
         setLocale((p.locale as string) || (typeof localStorage !== 'undefined' ? localStorage.getItem('pxLang') : null) || 'fr')
         if (!p.onboarding_done) setShowOnboarding(true)
-        // Tour interactif : affiché une seule fois pour les nouveaux utilisateurs
-        if (p.onboarding_done && !p.tour_done) {
-          setTimeout(() => setShowTour(true), 800) // petit délai pour le rendu
+        // Tour interactif : affiché pour tout user qui n'a pas encore vu le tour
+        if (!p.tour_done) {
+          setTimeout(() => setShowTour(true), 800)
         }
       }
       setLoading(false)
