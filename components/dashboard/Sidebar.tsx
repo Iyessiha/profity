@@ -45,6 +45,7 @@ const NAV_GROUPS: {
       { key: 'referral',   icon: 'ti-users-plus',  fr: 'PARRAINAGE',   en: 'REFERRAL',     href: '/referral',  badge: '+20 CR' },
       { key: 'pricing',    icon: 'ti-credit-card', fr: 'ABONNEMENT',   en: 'SUBSCRIPTION', href: '/pricing',   badge: null },
       { key: 'settings',   icon: 'ti-settings',    fr: 'PARAMÈTRES',   en: 'SETTINGS',     href: '/settings',  badge: null },
+      { key: 'guide',      icon: 'ti-book-2',      fr: 'GUIDE',        en: 'GUIDE',        href: '/guide',     badge: null },
       { key: 'support',    icon: 'ti-headset',     fr: 'ASSISTANCE',   en: 'SUPPORT',      href: '/support',   badge: null },
     ],
   },
