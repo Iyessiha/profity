@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
+import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/lib/theme'
 import { MenuProvider } from '@/lib/menu-context'
 import PWAInstall from '@/components/PWAInstall'
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AnalyticsProvider />
         <RightClickGuard />
         <LangDetector />
+        <Analytics />
         {/* Google Ads Tag — next/script pour chargement garanti */}
         <Script src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: GTAG_SCRIPT }} />
