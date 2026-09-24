@@ -4,6 +4,7 @@
 // Protégé par un secret CRON_SECRET
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
+import { isCronAuthorized } from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,8 +12,7 @@ const FF_URL = 'https://nfs.faireconomy.media/ff_calendar_thisweek.json'
 
 export async function POST(req: NextRequest) {
   // Vérifier le secret cron
-  const secret = req.headers.get('x-cron-secret')
-  if (secret !== process.env.CRON_SECRET) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

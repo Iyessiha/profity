@@ -11,6 +11,15 @@ async function getUser(req: NextRequest) {
   return user
 }
 
+// Liste blanche : sans elle, le client pouvait fournir `user_id` (écrit APRÈS celui du token
+// → insertion dans le journal d'un autre utilisateur) ou modifier n'importe quelle colonne.
+const ALLOWED = ['pair','direction','entry','exit','stop_loss','tp','lot_size','result','pnl_pips','pnl_amount','emotion','notes','trade_date'] as const
+function pick(body: Record<string, unknown>) {
+  const out: Record<string, unknown> = {}
+  for (const k of ALLOWED) if (body[k] !== undefined) out[k] = body[k]
+  return out
+}
+
 export async function GET(req: NextRequest) {
   const user = await getUser(req)
   if (!user) return NextResponse.json({ success:false }, { status:401 })
@@ -28,10 +37,8 @@ export async function POST(req: NextRequest) {
   const user = await getUser(req)
   if (!user) return NextResponse.json({ success:false }, { status:401 })
   const body = await req.json().catch(() => ({}))
-  const { data, error } = await admin().from('trading_journal').insert({ user_id:user.id, ...body }).select().single()
+  const { data, error } = await admin().from('trading_journal').insert({ ...pick(body), user_id:user.id }).select().single()
   if (error) return NextResponse.json({ success:false, error:error.message }, { status:500 })
-  // +15 XP par trade logué
-  await admin().from('profiles').update({ total_xp: admin().rpc ? undefined : undefined }).eq('id', user.id)
   await admin().rpc('update_streak_and_reward', { p_user_id: user.id })
   return NextResponse.json({ success:true, trade:data })
 }
@@ -39,9 +46,9 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const user = await getUser(req)
   if (!user) return NextResponse.json({ success:false }, { status:401 })
-  const { id, ...updates } = await req.json().catch(() => ({}))
+  const { id, ...rest } = await req.json().catch(() => ({}))
   if (!id) return NextResponse.json({ error:'ID requis' }, { status:400 })
-  const { data, error } = await admin().from('trading_journal').update(updates).eq('id', id).eq('user_id', user.id).select().single()
+  const { data, error } = await admin().from('trading_journal').update(pick(rest)).eq('id', id).eq('user_id', user.id).select().single()
   if (error) return NextResponse.json({ success:false, error:error.message }, { status:500 })
   return NextResponse.json({ success:true, trade:data })
 }

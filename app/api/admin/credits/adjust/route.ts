@@ -7,8 +7,11 @@ export const dynamic = 'force-dynamic'
 export async function POST(req: NextRequest) {
   const auth = await requireAdmin(req)
   if ('error' in auth) return NextResponse.json({ error: auth.error }, { status: auth.status })
-  const { email, amount, reason } = await req.json()
+  const { email, amount, reason } = await req.json().catch(() => ({}))
   if (!email || !amount || !reason) return NextResponse.json({ error: 'email, amount et reason requis' }, { status: 400 })
+  // Entier borné : évite NaN/Infinity/valeurs démesurées envoyées au RPC
+  if (!Number.isInteger(amount) || Math.abs(amount) > 100000)
+    return NextResponse.json({ error: 'amount doit être un entier entre -100000 et 100000' }, { status: 400 })
   const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co', process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key')
   const { data: prof } = await admin.from('profiles').select('id').eq('email', email).single()
   if (!prof) return NextResponse.json({ error: `User ${email} introuvable` }, { status: 404 })
