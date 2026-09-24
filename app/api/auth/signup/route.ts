@@ -6,15 +6,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { sendEmail }                  from '@/lib/email'
+import { rateLimit }                  from '@/lib/rate-limit'
+import { clientIp }                   from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
 const SEQUENCE_DAYS = [0, 1, 3, 7, 14] // jours de la séquence
 
 export async function POST(req: NextRequest) {
-  const { email, password, name, ref_code, locale } = await req.json()
+  // Anti-abus : 5 inscriptions / heure / IP (compte auto-confirmé → cible facile pour le spam)
+  const rl = rateLimit(`signup:${clientIp(req)}`, { limit: 5, window: 3600 })
+  if (!rl.ok) return NextResponse.json({ error: 'Trop de tentatives. Réessayez plus tard.' }, { status: 429 })
+
+  const parsed = await req.json().catch(() => null)
+  const { email, password, name, ref_code, locale } = (parsed ?? {}) as Record<string, string | undefined>
   if (!email || !password)
     return NextResponse.json({ error: 'Email et mot de passe requis' }, { status: 400 })
+  if (typeof email !== 'string' || typeof password !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)
+    return NextResponse.json({ error: 'Email invalide' }, { status: 400 })
+  if (password.length < 8 || password.length > 128)
+    return NextResponse.json({ error: 'Le mot de passe doit contenir au moins 8 caractères.' }, { status: 400 })
 
   const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',

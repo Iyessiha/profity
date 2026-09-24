@@ -4,13 +4,13 @@
 // ============================================================
 import { NextRequest, NextResponse }               from 'next/server'
 import { createClient }                            from '@supabase/supabase-js'
-import { verifyWebhookSignature, CREDIT_PACK_PRICES } from '@/lib/geniuspay'
+import { verifyWebhookSignature, CREDIT_PACK_PRICES, PLAN_PRICES } from '@/lib/geniuspay'
+import { internalHeaders }                            from '@/lib/internal-auth'
 import { sendEmail }                               from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
 
 const PLAN_CREDITS: Record<string, number> = { pro: 150, elite: 600 }
-const PLAN_AMOUNT:  Record<string, number> = { pro: 17500, elite: 35000 }
 
 const adm = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
@@ -67,9 +67,15 @@ export async function POST(req: NextRequest) {
   const sig    = req.headers.get('x-geniuspay-signature') ?? req.headers.get('x-webhook-signature') ?? ''
   const ts     = req.headers.get('x-geniuspay-timestamp') ?? req.headers.get('x-webhook-timestamp') ?? ''
   const secret = process.env.GENIUSPAY_SECRET ?? process.env.GENIUSPAY_WEBHOOK_SECRET ?? ''
-  if (secret && sig && ts && !verifyWebhookSignature(rawBody, sig, ts, secret)) {
-    console.error('[Webhook] ❌ Signature invalide')
-    if (logId) await db.from('webhook_logs').update({ status:'error', error_message:'Invalid signature' }).eq('id', logId)
+  // Échec fermé : secret absent, en-têtes absents ou signature fausse → rejet.
+  // (Avant, un POST sans en-têtes de signature passait et pouvait activer n'importe quel plan.)
+  // Anti-rejeu (10 min) — timestamp accepté en secondes, millisecondes ou ISO ; ignoré si illisible
+  const rawTs  = Number(ts)
+  const tsSec  = Number.isFinite(rawTs) ? (rawTs > 1e12 ? rawTs / 1000 : rawTs) : Date.parse(ts) / 1000
+  const tsOk   = !Number.isFinite(tsSec) || Math.abs(Date.now() / 1000 - tsSec) < 600
+  if (!secret || !sig || !ts || !tsOk || !verifyWebhookSignature(rawBody, sig, ts, secret)) {
+    console.error('[Webhook] ❌ Signature absente ou invalide')
+    if (logId) await db.from('webhook_logs').update({ status:'error', error_message:'Invalid or missing signature' }).eq('id', logId)
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
@@ -83,7 +89,11 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 6. Idempotence : déjà traité ? ──────────────────────────
-  if (ref && ref !== `no-ref-${Date.now()}`) {
+  if (!ref) {
+    if (logId) await db.from('webhook_logs').update({ status:'error', error_message:'Référence de paiement absente' }).eq('id', logId)
+    return NextResponse.json({ error: 'Référence de paiement absente' }, { status: 400 })
+  }
+  {
     const { data: existing } = await db.from('payment_transactions')
       .select('status').eq('geniuspay_ref', ref).single()
     if (existing?.status === 'completed') {
@@ -133,6 +143,16 @@ export async function POST(req: NextRequest) {
     if ((kind === 'subscription' || !kind) && planKey && PLAN_CREDITS[planKey]) {
       const credits = PLAN_CREDITS[planKey]
 
+      // Le montant payé doit couvrir le prix du plan (dans la devise du paiement)
+      const currency = String(data.currency ?? 'XOF').toUpperCase()
+      const expected = PLAN_PRICES[currency]?.[planKey]
+      if (expected && amount < expected) {
+        const msg = `Montant insuffisant: ${amount} ${currency} < ${expected} (plan ${planKey})`
+        console.error(`[Webhook] ❌ ${msg}`)
+        if (logId) await db.from('webhook_logs').update({ status:'error', error_message: msg }).eq('id', logId)
+        return NextResponse.json({ error: 'Montant insuffisant' }, { status: 400 })
+      }
+
       await db.from('profiles').update({ user_plan: planKey }).eq('id', userId)
 
       // Marquer l'intent de paiement comme complété (stoppe la relance)
@@ -179,7 +199,7 @@ export async function POST(req: NextRequest) {
 
         // Générer la facture
         await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://profity-x.com'}/api/invoice/create`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: internalHeaders(),
           body: JSON.stringify({
             user_id: userId, client_name: userName, client_email: userEmail,
             plan: planKey, amount_xof: amount,
@@ -206,6 +226,13 @@ export async function POST(req: NextRequest) {
     // ── CAS 2 : Pack de crédits ────────────────────────────────
     if (kind === 'credit_pack' && packKey && CREDIT_PACK_PRICES[packKey]) {
       const pack = CREDIT_PACK_PRICES[packKey]
+      const packCurrency = String(data.currency ?? 'XOF').toUpperCase()
+      if (packCurrency === 'XOF' && amount < pack.amount) {
+        const msg = `Montant insuffisant pour le pack ${packKey}: ${amount} < ${pack.amount}`
+        console.error(`[Webhook] ❌ ${msg}`)
+        if (logId) await db.from('webhook_logs').update({ status:'error', error_message: msg }).eq('id', logId)
+        return NextResponse.json({ error: 'Montant insuffisant' }, { status: 400 })
+      }
       await db.rpc('add_credits', {
         p_user_id: userId, p_amount: pack.credits,
         p_type: 'purchase', p_description: `Pack ${pack.credits} crédits — ${ref}`,

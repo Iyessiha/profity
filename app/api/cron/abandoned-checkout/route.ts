@@ -5,17 +5,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '@/lib/email'
+import { isCronAuthorized } from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization')
-  const cronSecret = req.nextUrl.searchParams.get('secret')
-  const isAuthorized =
-    authHeader === `Bearer ${process.env.CRON_SECRET}` ||
-    cronSecret === process.env.PROFITY_CRON_KEY
-
-  if (!isAuthorized && process.env.NODE_ENV !== 'development') {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 

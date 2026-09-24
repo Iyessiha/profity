@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { sendEmail }                  from '@/lib/email'
+import { isCronAuthorized }           from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,8 +19,7 @@ const DAY_TEMPLATE: Record<number, string> = {
 
 export async function GET(req: NextRequest) {
   // Sécurité : vérifier le secret Vercel Cron
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 

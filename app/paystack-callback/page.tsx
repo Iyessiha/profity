@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams }               from 'next/navigation'
 import { gtagPurchase }                  from '@/lib/gtag'
+import { supabasePublic }                from '@/lib/supabase'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -19,7 +20,10 @@ function CallbackContent() {
 
   useEffect(() => {
     if (!reference) { setStatus('error'); return }
-    fetch(`/api/payment/paystack/verify?reference=${reference}`)
+    supabasePublic.auth.getSession()
+      .then(({ data: { session } }) => fetch(`/api/payment/paystack/verify?reference=${encodeURIComponent(reference)}`, {
+        headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
+      }))
       .then(r => r.json())
       .then(data => {
         if (data.data?.status === 'success') {

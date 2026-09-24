@@ -7,10 +7,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { sendEmail }                  from '@/lib/email'
 import { createHmac }                 from 'node:crypto'
+import { safeEqual, internalHeaders } from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
 const PLAN_CREDITS: Record<string, number> = { pro: 150, elite: 600 }
+// Montants attendus en kobo (doit rester aligné sur PLANS_NGN de paystack/checkout)
+const PLAN_KOBO: Record<string, number> = { pro: 4500000, elite: 9000000 }
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text()
@@ -20,8 +23,9 @@ export async function POST(req: NextRequest) {
   const signature = req.headers.get('x-paystack-signature') ?? ''
   const hash      = createHmac('sha512', secret).update(rawBody).digest('hex')
 
-  if (secret && signature && hash !== signature) {
-    console.error('[Paystack Webhook] ❌ Signature invalide')
+  // Échec fermé : clé absente ou signature absente/fausse → rejet
+  if (!secret || !signature || !safeEqual(hash, signature)) {
+    console.error('[Paystack Webhook] ❌ Signature absente ou invalide')
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
@@ -48,6 +52,12 @@ export async function POST(req: NextRequest) {
   if (!userId || !plan || !PLAN_CREDITS[plan]) {
     console.error('[Paystack Webhook] Métadonnées manquantes', { userId, plan })
     return NextResponse.json({ error: 'Métadonnées invalides' }, { status: 400 })
+  }
+
+  // Le paiement doit être en NGN et couvrir le prix du plan
+  if (String(data.currency ?? 'NGN').toUpperCase() !== 'NGN' || Number(data.amount ?? 0) < PLAN_KOBO[plan]) {
+    console.error('[Paystack Webhook] ❌ Montant/devise incorrects', { amount: data.amount, currency: data.currency, plan })
+    return NextResponse.json({ error: 'Montant invalide' }, { status: 400 })
   }
 
   const credits = PLAN_CREDITS[plan]
@@ -115,7 +125,7 @@ export async function POST(req: NextRequest) {
     }).catch(() => {})
 
     await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://profity-x.com'}/api/invoice/create`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: internalHeaders(),
       body: JSON.stringify({
         user_id:        userId,
         client_name:    prof.full_name ?? 'Trader',

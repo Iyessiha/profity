@@ -82,7 +82,8 @@ export default function DashboardPage() {
           setTimeout(() => {
             const div = document.createElement('div')
             div.style.cssText = `position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:9998;background:linear-gradient(135deg,#0A1628,#060B14);border:1px solid rgba(0,255,178,0.2);border-radius:10px;padding:12px 20px;font-family:'Orbitron',monospace;font-size:10px;color:#00FFB2;letter-spacing:1px;box-shadow:0 8px 32px rgba(0,0,0,0.5);white-space:nowrap;animation:slideDown .3s ease`
-            div.innerHTML = `👋 Bonjour ${firstName} &nbsp;·&nbsp; 🔥 ${streak} jour${streak>1?'s':''} de streak`
+            // textContent : full_name est saisi par l'utilisateur (XSS via innerHTML)
+            div.textContent = `👋 Bonjour ${firstName} · 🔥 ${streak} jour${streak>1?'s':''} de streak`
             div.style.animation = 'none'
             document.body.appendChild(div)
             setTimeout(() => div.remove(), 3500)

@@ -4,6 +4,7 @@
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
+import { isCronAuthorized }          from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,10 +17,7 @@ const db = () => createClient(
 )
 
 export async function GET(req: NextRequest) {
-  // Vérifier le token CRON
-  const auth = req.headers.get('authorization')
-  const cronKey = process.env.PROFITY_CRON_KEY ?? ''
-  if (cronKey && auth !== `Bearer ${cronKey}`) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

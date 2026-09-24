@@ -4,6 +4,7 @@ import { getBasicPrompt, getAdvancedPrompt, getElitePrompt, getScalpPrompt } fro
 import { parseClaudeJSON, validateChartSignal } from '@/lib/parser'
 import { saveChartAnalysis }         from '@/lib/supabase'
 import { rateLimit }                 from '@/lib/rate-limit'
+import { internalHeaders }           from '@/lib/internal-auth'
 import type { ApiResponse, ChartSignal } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -55,7 +56,8 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Tier selon le plan + SMC gratuit quotidien ───────────
-  const { data:prof } = await anon.from('profiles').select('user_plan,is_admin,locale').eq('id', user.id).single()
+  // `anon` n'a pas de session → RLS renvoyait null et TOUS les users étaient traités en « free ».
+  const { data:prof } = await admin.from('profiles').select('user_plan,is_admin,locale').eq('id', user.id).single()
   const plan   = prof?.user_plan ?? 'free'
   const locale = (prof?.locale as string) ?? 'fr'
 
@@ -93,7 +95,8 @@ export async function POST(req: NextRequest) {
     try {
       const bodyClone = await req.clone().json()
       if (bodyClone.mode === 'scalp') analysisMode = 'scalp'
-      if (bodyClone.derivSymbol) derivSymbol = String(bodyClone.derivSymbol)
+      // Injecté dans le prompt : n'accepter qu'un identifiant de symbole (anti prompt-injection)
+      if (bodyClone.derivSymbol && /^[A-Za-z0-9_]{1,20}$/.test(String(bodyClone.derivSymbol))) derivSymbol = String(bodyClone.derivSymbol)
     } catch {}
   }
 
@@ -103,8 +106,8 @@ export async function POST(req: NextRequest) {
     const ct = req.headers.get('content-type') ?? ''
     if (ct.includes('application/json')) {
       const body = await req.json()
-      mimeType    = body.mediaType ?? 'image/jpeg'
-      imageBase64 = body.image
+      mimeType    = typeof body.mediaType === 'string' ? body.mediaType : 'image/jpeg'
+      imageBase64 = typeof body.image === 'string' ? body.image : ''
     } else {
       const fd   = await req.formData()
       const file = fd.get('image') as File | null
@@ -332,7 +335,7 @@ Analyze this chart. READ the visible timeframe (top-left corner or title), exact
       if (canSend) {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://profity-x.com'
         await fetch(`${siteUrl}/api/telegram/send`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: internalHeaders(),
           body: JSON.stringify({ chat_id: tgProf.telegram_chat_id, signal }),
         }).catch(() => {})
 
