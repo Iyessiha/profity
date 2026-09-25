@@ -25,10 +25,11 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await anonClient.auth.getUser(token)
   if (!user) return NextResponse.json({ error: 'Token invalide' }, { status: 401 })
 
-  const body = await req.json()
+  const body = await req.json().catch(() => ({}))
   const { subscription, user_agent, platform } = body
 
-  if (!subscription?.endpoint) {
+  // L'endpoint est appelé côté serveur par web-push : n'accepter que du https
+  if (typeof subscription?.endpoint !== 'string' || !subscription.endpoint.startsWith('https://') || !subscription.keys?.p256dh || !subscription.keys?.auth) {
     return NextResponse.json({ error: 'Subscription invalide' }, { status: 400 })
   }
 

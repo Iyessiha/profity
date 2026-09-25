@@ -47,6 +47,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
   const { pair, target_price, condition } = body as { pair:string; target_price:number; condition:'above'|'below' }
   if (!pair || !target_price || !condition) return NextResponse.json({ error:'Champs requis' }, { status:400 })
+  if (typeof pair !== 'string' || pair.length > 20 || !Number.isFinite(Number(target_price)) || Number(target_price) <= 0 || !['above','below'].includes(condition))
+    return NextResponse.json({ error:'Valeurs invalides' }, { status:400 })
 
   const db = admin()
   const { data:profile } = await db.from('profiles').select('user_plan').eq('id', user.id).single()

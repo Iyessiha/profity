@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { sendEmail }                  from '@/lib/email'
+import { randomBytes }                from 'node:crypto'
 
 export const dynamic = 'force-dynamic'
 
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
     // Créer la facture si elle n'existe pas
     if (!existingInv && sub) {
       const year = new Date().getFullYear()
-      const num  = String(Date.now()).slice(-4)
+      const num  = String(Date.now()).slice(-6) + randomBytes(2).toString('hex').toUpperCase()
       invoiceNumber = `PX-${year}-${num}`
       const { data: newInv } = await admin.from('invoices').insert({
         invoice_number: invoiceNumber,

@@ -826,20 +826,24 @@ function TelegramConnect({ plan }: { plan: string }) {
 
   useEffect(() => {
     // Charger le chat_id actuel
-    try {
-      const token = localStorage.getItem('sb-access-token') || ''
-      if (!token) return
-      fetch('/api/me', { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => r.json()).then(d => { if (d.telegram_chat_id) setCurrent(d.telegram_chat_id) })
-        .catch(() => {})
-    } catch {}
+    // Le jeton Supabase n'est pas dans localStorage['sb-access-token'] (clé inexistante) et /api/me n'existe pas :
+    // on lit la session et le profil directement.
+    ;(async () => {
+      try {
+        const { data: { session } } = await supabasePublic.auth.getSession()
+        if (!session) return
+        const { data: p } = await supabasePublic.from('profiles').select('telegram_chat_id').eq('id', session.user.id).single()
+        if (p?.telegram_chat_id) setCurrent(String(p.telegram_chat_id))
+      } catch {}
+    })()
   }, [])
 
   const save = async () => {
     if (!chatId.trim()) return
     setLoading(true)
     try {
-      const token = localStorage.getItem('sb-access-token') || ''
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      const token = session?.access_token ?? ''
       const res = await fetch('/api/telegram/connect', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ chat_id: chatId.trim() }),

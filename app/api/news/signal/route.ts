@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { getNewsPrompt }             from '@/lib/prompts'
+import { rateLimit }                 from '@/lib/rate-limit'
 import { parseClaudeJSON, validateNewsSignal } from '@/lib/parser'
 import {
 
@@ -39,6 +40,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json<ApiResponse<null>>(
       { success: false, error: 'Token invalide', code: 'UNAUTHORIZED' },
       { status: 401 }
+    )
+  }
+
+  // Pro/Elite/admin sont illimités : sans limite de débit, un compte payant peut faire exploser la facture Claude
+  const rl = rateLimit(`news:${user.id}`, { limit: 10, window: 60 })
+  if (!rl.ok) {
+    return NextResponse.json<ApiResponse<null>>(
+      { success: false, error: 'Trop de requêtes. Attendez 1 minute.', code: 'RATE_LIMITED' },
+      { status: 429 }
     )
   }
 
@@ -82,9 +92,11 @@ export async function POST(req: NextRequest) {
   const { event_title, country, impact, actual, forecast, previous } = body
   const locale = body.locale ?? 'fr'
 
-  if (!event_title || !country) {
+  // Ces champs sont injectés dans le prompt Claude : types et longueurs bornés
+  const fields = [event_title, country, impact, actual, forecast, previous]
+  if (!event_title || !country || fields.some(f => f != null && (typeof f !== 'string' || f.length > 200))) {
     return NextResponse.json<ApiResponse<null>>(
-      { success: false, error: 'Données manquantes : event_title et country requis' },
+      { success: false, error: 'Données manquantes ou invalides : event_title et country requis' },
       { status: 400 }
     )
   }

@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendText, sendButtons, markAsRead, extractText } from '@/lib/whatsapp'
 import { AGENT_SYSTEM_PROMPT } from '@/lib/whatsapp-prompt'
+import { createHmac } from 'node:crypto'
+import { safeEqual } from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,7 +19,7 @@ export async function GET(req: NextRequest) {
   const token     = searchParams.get('hub.verify_token')
   const challenge = searchParams.get('hub.challenge')
 
-  if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+  if (mode === 'subscribe' && VERIFY_TOKEN && token === VERIFY_TOKEN) {
     console.log('✅ Webhook WhatsApp vérifié')
     return new NextResponse(challenge, { status: 200 })
   }
@@ -26,8 +28,20 @@ export async function GET(req: NextRequest) {
 
 // ── POST : traitement des messages entrants ───────────────────
 export async function POST(req: NextRequest) {
+  // Signature Meta (X-Hub-Signature-256 = HMAC-SHA256 du corps brut avec l'App Secret).
+  // Sans elle, n'importe qui pouvait déclencher des appels Claude facturés et faire
+  // écrire le compte WhatsApp Business à des numéros arbitraires (`from` est libre).
+  const appSecret = process.env.WHATSAPP_APP_SECRET ?? ''
+  const rawBody   = await req.text()
+  const sigHeader = req.headers.get('x-hub-signature-256') ?? ''
+  const expected  = 'sha256=' + createHmac('sha256', appSecret).update(rawBody).digest('hex')
+  if (!appSecret || !safeEqual(sigHeader, expected)) {
+    console.error('[WhatsApp] ❌ Signature absente/invalide (WHATSAPP_APP_SECRET défini ?)')
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
+  }
+
   try {
-    const body = await req.json()
+    const body = JSON.parse(rawBody)
 
     // Extraire le message
     const entry   = body?.entry?.[0]

@@ -15,13 +15,15 @@ export async function POST(req: NextRequest) {
   const normalizedResult = (result as string).toLowerCase()
 
   const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co', process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key')
+  // Résultat précédent : le bonus ne doit être versé qu'une fois (re-noter WIN ne re-crédite pas)
+  const { data: before } = await admin.from('chart_analyses').select('trade_result').eq('id', signal_id).single()
   const { error } = await admin.from('chart_analyses')
     .update({ trade_result: normalizedResult, rated_at: new Date().toISOString() })
     .eq('id', signal_id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   // Bonus +1 crédit si WIN
-  if (normalizedResult === 'win') {
+  if (normalizedResult === 'win' && before?.trade_result !== 'win') {
     const { data: sig } = await admin.from('chart_analyses').select('user_id').eq('id', signal_id).single()
     if (sig?.user_id) {
       await admin.rpc('add_credits', { p_user_id: sig.user_id, p_amount: 1, p_type: 'win_bonus', p_description: 'Bonus WIN — signal vérifié' })

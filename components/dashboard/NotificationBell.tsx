@@ -132,7 +132,8 @@ export default function NotificationBell({ token }: { token: string }) {
 
   const handleClick = async (n: Notif) => {
     if (!n.read) await markRead(n.id)
-    if (n.action_url) window.location.href = n.action_url
+    // Ne suivre que les chemins internes / https (bloque javascript: et //hote-externe)
+    if (n.action_url && (/^\/(?!\/)/.test(n.action_url) || /^https:\/\//.test(n.action_url))) window.location.href = n.action_url
     else setOpen(false)
   }
 

@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import webpush                       from 'web-push'
+import { isInternalRequest }         from '@/lib/internal-auth'
 
 // Configurer web-push avec les clés VAPID
 
@@ -35,8 +36,7 @@ interface PushPayload {
 
 export async function POST(req: NextRequest) {
   // Vérifier le secret interne (appelé par cron ou le module calendrier)
-  const secret = req.headers.get('x-internal-secret')
-  if (secret !== process.env.INTERNAL_SECRET) {
+  if (!isInternalRequest(req)) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 

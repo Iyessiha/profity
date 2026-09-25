@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isInternalRequest } from '@/lib/internal-auth'
 
+export const dynamic = 'force-dynamic'
+
+// Appelé uniquement par le serveur (analyze). Sans secret interne, n'importe qui
+// pourrait faire envoyer des messages arbitraires par le bot à n'importe quel chat.
 export async function POST(req: NextRequest) {
-  const { chat_id, signal } = await req.json()
+  if (!isInternalRequest(req)) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
+  const { chat_id, signal } = await req.json().catch(() => ({}))
   if (!chat_id || !signal) return NextResponse.json({ error: 'Missing params' }, { status: 400 })
 
   const emoji = signal.direction === 'LONG' ? '🟢' : '🔴'

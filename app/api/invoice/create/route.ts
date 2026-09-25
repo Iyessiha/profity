@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import { sendEmail }                  from '@/lib/email'
+import { isInternalRequest }          from '@/lib/internal-auth'
+import { randomBytes }                from 'node:crypto'
 
 export const dynamic = 'force-dynamic'
 
 const XOF_PER_USD = 620
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
+  // Réservé aux webhooks de paiement : sans cela, n'importe qui pouvait fabriquer
+  // des factures « payées » et envoyer des emails à des tiers depuis ProfityX.
+  if (!isInternalRequest(req)) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
+  const body = await req.json().catch(() => ({}))
   const { user_id, client_name, client_email, client_address, plan, amount_xof, payment_method, payment_ref } = body
-  if (!user_id || !client_email || !plan || !amount_xof)
+  if (!user_id || !client_email || !plan || !Number.isFinite(Number(amount_xof)) || Number(amount_xof) <= 0)
     return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 })
 
   const admin = createClient(
@@ -17,7 +23,8 @@ export async function POST(req: NextRequest) {
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
   const year   = new Date().getFullYear()
-  const num    = String(Date.now()).slice(-4).padStart(4, '0')
+  // 4 derniers chiffres de Date.now() se répétaient toutes les 10 s → numéros en double
+  const num    = String(Date.now()).slice(-6) + randomBytes(2).toString('hex').toUpperCase()
   const invoiceNumber = `PX-${year}-${num}`
 
   const planLabels: Record<string, string> = {

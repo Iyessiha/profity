@@ -4,6 +4,7 @@
 // ============================================================
 import { NextRequest, NextResponse }       from 'next/server'
 import { requireAdmin, supabaseAdmin, logAdminAction } from '@/lib/admin'
+import { internalHeaders } from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,10 +47,7 @@ export async function POST(req: NextRequest) {
 
   const res = await fetch(`${appUrl}/api/push/send`, {
     method:  'POST',
-    headers: {
-      'Content-Type':      'application/json',
-      'x-internal-secret': process.env.INTERNAL_SECRET ?? '',
-    },
+    headers: internalHeaders(),
     body: JSON.stringify({
       plan_filter: target_plans,
       payload: {

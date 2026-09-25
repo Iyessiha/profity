@@ -17,9 +17,10 @@ export async function GET(req: NextRequest) {
   if (!auth.ok) return auth.error!
 
   const { searchParams } = new URL(req.url)
-  const page   = parseInt(searchParams.get('page')  ?? '1')
-  const limit  = parseInt(searchParams.get('limit') ?? '20')
-  const search = searchParams.get('search') ?? ''
+  const page   = Math.max(1, parseInt(searchParams.get('page') ?? '1') || 1)
+  const limit  = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '20') || 20))
+  // Retirer les caractères qui ont un sens dans la grammaire de filtre PostgREST (, ( ) . * % \) → pas d'injection de filtre
+  const search = (searchParams.get('search') ?? '').replace(/[,()*%\\.:"']/g, ' ').trim().slice(0, 64)
   const plan   = searchParams.get('plan')   ?? ''
   const offset = (page - 1) * limit
 
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
     .order('last_active_date', { ascending: false, nullsFirst: false })
     .range(offset, offset + limit - 1)
 
-  if (search) query = query.or(`full_name.ilike.%${search}%`)
+  if (search) query = query.ilike('full_name', `%${search}%`)
   if (plan && plan !== 'all') query = query.eq('user_plan', plan)
 
   const { data: activity, count, error } = await query

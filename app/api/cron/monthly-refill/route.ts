@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { isCronAuthorized } from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
-  const secret = req.headers.get('x-cron-secret') || new URL(req.url).searchParams.get('secret')
-  if (secret !== process.env.PROFITY_CRON_KEY && process.env.NODE_ENV !== 'development') {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error:'Unauthorized' }, { status:401 })
   }
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co', process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'placeholder-svc-key', { auth:{autoRefreshToken:false,persistSession:false} })

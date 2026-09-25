@@ -22,7 +22,9 @@ function toCSV(rows: Record<string, unknown>[]): string {
   if (!rows.length) return ''
   const headers = Object.keys(rows[0])
   const escape  = (v: unknown) => {
-    const s = v == null ? '' : String(v)
+    let s = v == null ? '' : String(v)
+    // Injection de formule CSV (Excel/Sheets) : full_name, etc. sont saisis par les utilisateurs
+    if (/^[=+\-@\t\r]/.test(s) && typeof v !== 'number') s = `'${s}`
     return s.includes(',') || s.includes('"') || s.includes('\n')
       ? `"${s.replace(/"/g, '""')}"` : s
   }

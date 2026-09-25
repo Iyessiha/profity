@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import type { FFEvent, ApiResponse } from '@/types'
+import { isCronAuthorized }          from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -81,7 +82,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const impact    = searchParams.get('impact')     // 'High' | 'Medium' | 'Low' | 'all'
   const country   = searchParams.get('country')    // 'USD' | 'EUR' | etc.
-  const forceRefresh = searchParams.get('refresh') === '1'
+  // Route publique : contourner le cache (fetch amont + écriture DB) est réservé aux crons
+  const forceRefresh = searchParams.get('refresh') === '1' && isCronAuthorized(req)
 
   let events: FFEvent[]
   let fromCache = false

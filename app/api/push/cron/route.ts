@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
 import type { FFEvent }              from '@/types'
+import { isCronAuthorized, internalHeaders } from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,8 +21,7 @@ const ALERT_MINUTES = [15, 5] // Alertes à 15min et 5min avant
 
 export async function GET(req: NextRequest) {
   // Vérifier le secret cron Vercel
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -70,10 +70,7 @@ export async function GET(req: NextRequest) {
       const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://profity-x.com'
       const res = await fetch(`${appUrl}/api/push/send`, {
         method:  'POST',
-        headers: {
-          'Content-Type':      'application/json',
-          'x-internal-secret': process.env.INTERNAL_SECRET ?? '',
-        },
+        headers: internalHeaders(),
         body: JSON.stringify({
           plan_filter: isHigh ? ['pro', 'elite'] : ['elite'],
           payload,

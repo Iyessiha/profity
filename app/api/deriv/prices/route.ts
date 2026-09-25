@@ -4,12 +4,15 @@
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
 import WebSocket from 'ws'
+import { rateLimit } from '@/lib/rate-limit'
+import { clientIp } from '@/lib/internal-auth'
 
 const DERIV_WS  = 'wss://ws.binaryws.com/websockets/v3?app_id=1089'
 const TIMEOUT_MS = 8000
 
 // Symboles supportés
-export const DERIV_SYMBOLS: Record<string, { name: string; category: string; flag: string }> = {
+// Non exporté : un fichier route.ts ne peut exporter que des handlers/config Next
+const DERIV_SYMBOLS: Record<string, { name: string; category: string; flag: string }> = {
   // ── Synthétiques Boom/Crash ───────────────────────────
   BOOM1000:  { name: 'Boom 1000',    category: 'Boom/Crash', flag: '📈' },
   BOOM500:   { name: 'Boom 500',     category: 'Boom/Crash', flag: '📈' },
@@ -108,15 +111,24 @@ function fetchDerivPrices(symbols: string[], token: string): Promise<Record<stri
   })
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   const token = process.env.DERIV_API_TOKEN
   if (!token) return NextResponse.json({ error: 'Token Deriv non configuré' }, { status: 500 })
 
+  // Route publique qui ouvre un WebSocket sortant avec notre token : on limite par IP
+  const rl = rateLimit(`deriv:${clientIp(req)}`, { limit: 30, window: 60 })
+  if (!rl.ok) return NextResponse.json({ error: 'Trop de requêtes' }, { status: 429 })
+
   const url = new URL(req.url)
   const reqSymbols = url.searchParams.get('symbols')
+  // hasOwn : `'constructor' in obj` était vrai pour les clés du prototype
   const symbols = reqSymbols
-    ? reqSymbols.split(',').filter(s => s in DERIV_SYMBOLS)
+    ? Array.from(new Set(reqSymbols.split(',').filter(s => Object.prototype.hasOwnProperty.call(DERIV_SYMBOLS, s)))).slice(0, 20)
     : Object.keys(DERIV_SYMBOLS).slice(0, 8)  // Par défaut : 8 premiers
+
+  if (symbols.length === 0) return NextResponse.json({ success: true, prices: {}, timestamp: Date.now() })
 
   const prices = await fetchDerivPrices(symbols, token)
 
