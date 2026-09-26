@@ -1,21 +1,64 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
+import { routing } from "@/i18n/routing";
+import { updateSession } from "@/lib/supabase/middleware";
 
-export async function middleware(req: NextRequest) {
-  const path = req.nextUrl.pathname
+const intlMiddleware = createIntlMiddleware(routing);
 
-  // Protéger uniquement les routes API admin
-  // Les pages (dashboard, admin, settings) gèrent leur propre auth côté client
-  if (path.startsWith('/api/admin')) {
-    const token = req.headers.get('authorization')
-    if (!token) {
-      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+/** Paths accessible without authentication (relative to locale prefix). */
+const PUBLIC_SEGMENTS = new Set([
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/verify",
+  "/design",
+  "/",  // landing page
+]);
+
+function isPublicPath(pathname: string) {
+  // Strip the locale prefix (/fr/login → /login, /en → /)
+  const withoutLocale = pathname.replace(/^\/(fr|en)/, "") || "/";
+  if (PUBLIC_SEGMENTS.has(withoutLocale)) return true;
+  // Auth callback is always public
+  if (withoutLocale.startsWith("/auth/")) return true;
+  return false;
+}
+
+export async function middleware(request: NextRequest) {
+  // 1. Run next-intl middleware (locale detection, prefix redirect)
+  const intlResponse = intlMiddleware(request);
+
+  // 2. Refresh Supabase session (writes cookies onto intlResponse)
+  const supabaseResponse = await updateSession(request);
+
+  // Merge Supabase cookies into the intl response
+  for (const cookie of supabaseResponse.cookies.getAll()) {
+    intlResponse.cookies.set(cookie.name, cookie.value, {
+      ...cookie,
+    });
+  }
+
+  // 3. Check auth for protected routes
+  const { pathname } = request.nextUrl;
+  if (!isPublicPath(pathname)) {
+    const hasSession = request.cookies
+      .getAll()
+      .some((c) => c.name.includes("-auth-token") && c.value);
+
+    if (!hasSession) {
+      const locale = pathname.match(/^\/(fr|en)/)?.[1] ?? routing.defaultLocale;
+      const loginUrl = new URL(`/${locale}/login`, request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
-  return NextResponse.next()
+  return intlResponse;
 }
 
 export const config = {
-  matcher: ['/api/admin/:path*'],
-}
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};

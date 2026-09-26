@@ -1,0 +1,145 @@
+{
+  "meta": {
+    "title": "Profity",
+    "description": "Analyse de marché Smart Money, journal de trading et suivi de challenge prop firm."
+  },
+  "nav": {
+    "features": "Fonctionnalités",
+    "pricing": "Tarifs",
+    "login": "Se connecter",
+    "signup": "Commencer gratuitement",
+    "dashboard": "Dashboard",
+    "logout": "Se déconnecter"
+  },
+  "landing": {
+    "badge": "Smart Money Concepts",
+    "headline": "Des signaux de trading\nqui expliquent le pourquoi",
+    "subheadline": "Profity analyse la structure du marché — Order Blocks, Fair Value Gaps, BOS/CHoCH — et génère des signaux avec les niveaux exacts et le raisonnement complet.",
+    "cta": "Commencer gratuitement",
+    "ctaSecondary": "Voir les fonctionnalités",
+
+    "socialProof": "Utilisé par des traders en Côte d'Ivoire, Sénégal, Cameroun, Ghana et Nigeria",
+
+    "features": "Fonctionnalités",
+    "featuresSubtitle": "Tout ce qu'il faut pour trader avec méthode",
+
+    "featureSignals": "Signaux SMC complets",
+    "featureSignalsDesc": "Entrée, stop-loss, jusqu'à 3 take-profits, ratio risque/rendement. Le raisonnement Smart Money est déverrouillé pour les abonnés Pro et Elite.",
+
+    "featureJournal": "Journal de trading",
+    "featureJournalDesc": "Enregistre chaque trade avec tes notes, tes tags et ton P&L. Rattache tes trades aux signaux pour mesurer l'impact réel.",
+
+    "featurePropFirm": "Suivi prop firm",
+    "featurePropFirmDesc": "Drawdown statique ou trailing, perte journalière, objectif de profit — chaque limite est suivie en temps réel avec des alertes avant que tu ne sois éliminé.",
+
+    "featureCalendar": "Calendrier économique",
+    "featureCalendarDesc": "Événements macro à fort impact avec signaux news automatiques. Ne te fais plus surprendre par un NFP ou une décision de taux.",
+
+    "featureAlerts": "Alertes de prix",
+    "featureAlertsDesc": "Définis un niveau, choisis la direction. Tu es notifié une seule fois quand le prix touche — pas de spam sur les allers-retours.",
+
+    "featureMultiCurrency": "Paiement multi-devises",
+    "featureMultiCurrencyDesc": "XOF, XAF, GHS, NGN, USD, EUR — paie avec CinetPay, Paystack ou GeniusPay, dans ta monnaie.",
+
+    "tiers": "Tarifs",
+    "tiersSubtitle": "Choisis le plan qui correspond à ta pratique",
+
+    "tierFree": "Free",
+    "tierFreePrice": "0",
+    "tierFreeFeature1": "5 analyses / mois",
+    "tierFreeFeature2": "Signaux avec niveaux complets",
+    "tierFreeFeature3": "Journal de trading basique",
+    "tierFreeFeature4": "Calendrier économique",
+
+    "tierPro": "Pro",
+    "tierProPrice": "4 900",
+    "tierProCurrency": "XOF/mois",
+    "tierProFeature1": "40 analyses / mois",
+    "tierProFeature2": "Raisonnement SMC complet",
+    "tierProFeature3": "Signaux news macro",
+    "tierProFeature4": "Suivi prop firm",
+    "tierProBadge": "Populaire",
+
+    "tierElite": "Elite",
+    "tierElitePrice": "12 900",
+    "tierEliteCurrency": "XOF/mois",
+    "tierEliteFeature1": "200 analyses / mois",
+    "tierEliteFeature2": "Structure SMC détaillée (OB, FVG, BOS)",
+    "tierEliteFeature3": "Alertes de prix illimitées",
+    "tierEliteFeature4": "Support prioritaire",
+
+    "tierCta": "Commencer",
+    "tierCtaCurrent": "Plan actuel",
+
+    "faq": "Questions fréquentes",
+
+    "faq1Q": "C'est quoi Smart Money Concepts ?",
+    "faq1A": "Une méthode d'analyse qui lit la structure du marché comme le font les institutions : zones de liquidité, order blocks, changements de caractère (CHoCH) et cassures de structure (BOS). Profity automatise cette lecture.",
+
+    "faq2Q": "Est-ce que les signaux sont fiables ?",
+    "faq2A": "Chaque signal publie son win rate vérifié — les résultats sont gelés une fois enregistrés et ne peuvent pas être modifiés. Tu vois la vraie performance, pas une vitrine.",
+
+    "faq3Q": "Comment fonctionne le suivi prop firm ?",
+    "faq3A": "Tu entres les règles de ton challenge (FTMO, MyForexFunds, etc.) et Profity calcule en temps réel la marge restante avant chaque limite — perte journalière et drawdown — en distinguant statique et trailing.",
+
+    "faq4Q": "Quels moyens de paiement acceptez-vous ?",
+    "faq4A": "Mobile Money (Orange Money, MTN, Wave) via CinetPay, cartes bancaires via Paystack, et virement. XOF, XAF, GHS, NGN, USD et EUR sont supportés.",
+
+    "footer": "© {year} Profity. Analyse Smart Money pour les traders africains."
+  },
+  "auth": {
+    "loginTitle": "Se connecter",
+    "signupTitle": "Créer un compte",
+    "email": "Email",
+    "emailPlaceholder": "toi@example.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "••••••••",
+    "passwordMinLength": "8 caractères minimum",
+    "confirmPassword": "Confirmer le mot de passe",
+    "loginButton": "Se connecter",
+    "loginLoading": "Connexion…",
+    "signupButton": "Créer mon compte",
+    "signupLoading": "Création…",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas encore de compte ?",
+    "hasAccount": "Déjà un compte ?",
+    "createAccount": "Créer un compte",
+    "signIn": "Se connecter",
+    "forgotTitle": "Mot de passe oublié",
+    "forgotButton": "Envoyer le lien",
+    "forgotLoading": "Envoi…",
+    "forgotSuccess": "Si un compte existe avec cet email, tu vas recevoir un lien de réinitialisation. Vérifie aussi tes spams.",
+    "backToLogin": "← Retour à la connexion",
+    "resetTitle": "Nouveau mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "resetButton": "Changer le mot de passe",
+    "resetLoading": "Mise à jour…",
+    "verifyTitle": "Vérifie ta boîte mail",
+    "verifyMessage": "Un lien de confirmation a été envoyé à ton adresse. Clique dessus pour activer ton compte. Pense à vérifier les spams.",
+    "errorRequired": "Email et mot de passe requis.",
+    "errorMinLength": "Le mot de passe doit faire au moins 8 caractères.",
+    "errorMismatch": "Les mots de passe ne correspondent pas.",
+    "errorExists": "Un compte existe déjà avec cet email.",
+    "errorInvalid": "Email ou mot de passe incorrect.",
+    "errorNotConfirmed": "Vérifie ton email pour confirmer ton compte.",
+    "errorEmailRequired": "Entre ton adresse email.",
+    "errorNewPasswordRequired": "Nouveau mot de passe requis."
+  },
+  "dashboard": {
+    "welcome": "Bienvenue",
+    "profile": "Profil",
+    "email": "Email",
+    "handle": "Identifiant",
+    "preferences": "Préférences",
+    "language": "Langue",
+    "currency": "Devise",
+    "tradingStyle": "Style",
+    "notSet": "non défini",
+    "autoProvision": "Le trigger handle_new_user() a créé ton profil, tes préférences et tes stats automatiquement."
+  },
+  "common": {
+    "profity": "Profity",
+    "tagline": "Smart Money, décisions claires",
+    "admin": "Admin"
+  }
+}

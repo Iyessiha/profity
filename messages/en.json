@@ -1,0 +1,145 @@
+{
+  "meta": {
+    "title": "Profity",
+    "description": "Smart Money market analysis, trading journal, and prop firm challenge tracking."
+  },
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "login": "Sign in",
+    "signup": "Get started free",
+    "dashboard": "Dashboard",
+    "logout": "Sign out"
+  },
+  "landing": {
+    "badge": "Smart Money Concepts",
+    "headline": "Trading signals\nthat explain the why",
+    "subheadline": "Profity reads market structure — Order Blocks, Fair Value Gaps, BOS/CHoCH — and generates signals with exact levels and full reasoning.",
+    "cta": "Get started free",
+    "ctaSecondary": "See features",
+
+    "socialProof": "Used by traders in Ivory Coast, Senegal, Cameroon, Ghana and Nigeria",
+
+    "features": "Features",
+    "featuresSubtitle": "Everything you need to trade with method",
+
+    "featureSignals": "Full SMC signals",
+    "featureSignalsDesc": "Entry, stop-loss, up to 3 take-profits, risk-reward ratio. Smart Money reasoning is unlocked for Pro and Elite subscribers.",
+
+    "featureJournal": "Trading journal",
+    "featureJournalDesc": "Record every trade with your notes, tags and P&L. Link trades to signals to measure real impact.",
+
+    "featurePropFirm": "Prop firm tracker",
+    "featurePropFirmDesc": "Static or trailing drawdown, daily loss, profit target — every limit is tracked in real time with alerts before you get eliminated.",
+
+    "featureCalendar": "Economic calendar",
+    "featureCalendarDesc": "High-impact macro events with automatic news signals. Never get caught off-guard by NFP or a rate decision again.",
+
+    "featureAlerts": "Price alerts",
+    "featureAlertsDesc": "Set a level, pick a direction. You get notified once when price hits — no spam on oscillations.",
+
+    "featureMultiCurrency": "Multi-currency payments",
+    "featureMultiCurrencyDesc": "XOF, XAF, GHS, NGN, USD, EUR — pay with CinetPay, Paystack or GeniusPay, in your currency.",
+
+    "tiers": "Pricing",
+    "tiersSubtitle": "Pick the plan that fits your practice",
+
+    "tierFree": "Free",
+    "tierFreePrice": "0",
+    "tierFreeFeature1": "5 analyses / month",
+    "tierFreeFeature2": "Signals with full levels",
+    "tierFreeFeature3": "Basic trading journal",
+    "tierFreeFeature4": "Economic calendar",
+
+    "tierPro": "Pro",
+    "tierProPrice": "4,900",
+    "tierProCurrency": "XOF/mo",
+    "tierProFeature1": "40 analyses / month",
+    "tierProFeature2": "Full SMC reasoning",
+    "tierProFeature3": "Macro news signals",
+    "tierProFeature4": "Prop firm tracker",
+    "tierProBadge": "Popular",
+
+    "tierElite": "Elite",
+    "tierElitePrice": "12,900",
+    "tierEliteCurrency": "XOF/mo",
+    "tierEliteFeature1": "200 analyses / month",
+    "tierEliteFeature2": "Detailed SMC structure (OB, FVG, BOS)",
+    "tierEliteFeature3": "Unlimited price alerts",
+    "tierEliteFeature4": "Priority support",
+
+    "tierCta": "Get started",
+    "tierCtaCurrent": "Current plan",
+
+    "faq": "Frequently asked questions",
+
+    "faq1Q": "What is Smart Money Concepts?",
+    "faq1A": "An analysis method that reads market structure the way institutions do: liquidity zones, order blocks, character changes (CHoCH) and breaks of structure (BOS). Profity automates this reading.",
+
+    "faq2Q": "Are the signals reliable?",
+    "faq2A": "Every signal publishes its verified win rate — outcomes are frozen once recorded and cannot be edited. You see real performance, not a showcase.",
+
+    "faq3Q": "How does the prop firm tracker work?",
+    "faq3A": "You enter your challenge rules (FTMO, MyForexFunds, etc.) and Profity computes in real time the remaining margin before each limit — daily loss and drawdown — distinguishing static from trailing.",
+
+    "faq4Q": "What payment methods do you accept?",
+    "faq4A": "Mobile Money (Orange Money, MTN, Wave) via CinetPay, bank cards via Paystack, and wire transfer. XOF, XAF, GHS, NGN, USD and EUR are supported.",
+
+    "footer": "© {year} Profity. Smart Money analysis for African traders."
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "signupTitle": "Create an account",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordMinLength": "8 characters minimum",
+    "confirmPassword": "Confirm password",
+    "loginButton": "Sign in",
+    "loginLoading": "Signing in…",
+    "signupButton": "Create my account",
+    "signupLoading": "Creating…",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "createAccount": "Create an account",
+    "signIn": "Sign in",
+    "forgotTitle": "Forgot password",
+    "forgotButton": "Send reset link",
+    "forgotLoading": "Sending…",
+    "forgotSuccess": "If an account exists with this email, you'll receive a reset link. Check your spam folder too.",
+    "backToLogin": "← Back to sign in",
+    "resetTitle": "New password",
+    "newPassword": "New password",
+    "resetButton": "Change password",
+    "resetLoading": "Updating…",
+    "verifyTitle": "Check your inbox",
+    "verifyMessage": "A confirmation link was sent to your email. Click it to activate your account. Check your spam folder too.",
+    "errorRequired": "Email and password required.",
+    "errorMinLength": "Password must be at least 8 characters.",
+    "errorMismatch": "Passwords don't match.",
+    "errorExists": "An account already exists with this email.",
+    "errorInvalid": "Incorrect email or password.",
+    "errorNotConfirmed": "Check your email to confirm your account.",
+    "errorEmailRequired": "Enter your email address.",
+    "errorNewPasswordRequired": "New password required."
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "profile": "Profile",
+    "email": "Email",
+    "handle": "Handle",
+    "preferences": "Preferences",
+    "language": "Language",
+    "currency": "Currency",
+    "tradingStyle": "Style",
+    "notSet": "not set",
+    "autoProvision": "The handle_new_user() trigger created your profile, preferences and stats automatically."
+  },
+  "common": {
+    "profity": "Profity",
+    "tagline": "Smart Money, clear decisions",
+    "admin": "Admin"
+  }
+}
