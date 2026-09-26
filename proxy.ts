@@ -25,7 +25,7 @@ function isPublicPath(pathname: string) {
   return false;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // 1. Run next-intl middleware (locale detection, prefix redirect)
   const intlResponse = intlMiddleware(request);
 
