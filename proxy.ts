@@ -16,6 +16,9 @@ const PUBLIC_SEGMENTS = new Set([
   "/",  // landing page
 ]);
 
+/** Paths that require is_admin — checked in the (admin) layout, not here. */
+// const ADMIN_SEGMENTS = ["/admin"];
+
 function isPublicPath(pathname: string) {
   // Strip the locale prefix (/fr/login → /login, /en → /)
   const withoutLocale = pathname.replace(/^\/(fr|en)/, "") || "/";
