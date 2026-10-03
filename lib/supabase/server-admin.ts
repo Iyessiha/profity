@@ -1,10 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
+import { env } from "@/lib/env";
 
 export function getAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // Use env module which provides fallback values for build-time safety
+  const url = env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!url || !key) {
+  // Check if using placeholders (not configured)
+  if (url.includes("placeholder") || key.includes("placeholder")) {
     throw new Error(
       "Supabase not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in environment variables."
     );
