@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "format": "prettier --write .",
     "verify": "npm run db:bundle && npm run typecheck && npm run lint && npm run test && npm run build",
-    "db:bundle": "node scripts/bundle-schema.mjs"
+    "db:bundle": "node scripts/bundle-schema.mjs",
+    "db:setup": "tsx scripts/setup-db.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
