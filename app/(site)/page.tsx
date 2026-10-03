@@ -188,7 +188,7 @@ export default function LandingPage() {
               {label}
             </a>
           ))}
-          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'14px', borderRadius:6, textDecoration:'none', fontWeight:700, textAlign:'center', marginTop:12 }}>
+          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:'clamp(10px, 1.1vw, 11px)', letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'clamp(12px, 2vw, 14px)', borderRadius:6, textDecoration:'none', fontWeight:700, textAlign:'center', marginTop:12, minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
             COMMENCER GRATUITEMENT →
           </a>
           {/* Sélecteur langue mobile */}
@@ -287,17 +287,22 @@ export default function LandingPage() {
         </p>
 
         <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)', justifyContent: 'center', flexWrap: 'wrap', marginBottom: 'clamp(2rem, 4vw, 3rem)', animation: 'slideDown .6s ease-out .3s both' }}>
-          <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 'clamp(9px, 1.1vw, 11px)', letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: 'clamp(13px, 2vw, 16px) clamp(28px, 4vw, 36px)', borderRadius: 4, textDecoration: 'none', fontWeight: 700, boxShadow: '0 0 40px rgba(0,255,178,0.25)', minHeight: '44px', display: 'flex', alignItems: 'center', cursor: 'pointer', transition: 'all .3s cubic-bezier(.4, 0, .2, 1)', border: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 0 60px rgba(0,255,178,0.35)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 40px rgba(0,255,178,0.25)' }}>
-            COMMENCER GRATUITEMENT →
+          <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 'clamp(9px, 1.1vw, 11px)', letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: 'clamp(13px, 2vw, 16px) clamp(28px, 4vw, 36px)', borderRadius: 4, textDecoration: 'none', fontWeight: 700, boxShadow: '0 0 40px rgba(0,255,178,0.25)', minHeight: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all .3s cubic-bezier(.4, 0, .2, 1)', border: 'none', position: 'relative', overflow: 'hidden' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 0 60px rgba(0,255,178,0.35)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 40px rgba(0,255,178,0.25)' }}>
+            <span style={{ position: 'absolute', top: -2, right: 8, fontFamily: HUD, fontSize: 'clamp(6px, 0.7vw, 7px)', color: '#020408', background: 'rgba(0,0,0,0.2)', padding: '1px 6px', borderRadius: 2, fontWeight: 700, letterSpacing: 1 }}>GRATUIT</span>
+            COMMENCER →
           </a>
-          <a href="/results" style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 2, color: 'rgba(240,248,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', padding: 'clamp(13px, 2vw, 14px) clamp(20px, 3vw, 24px)', borderRadius: 4, textDecoration: 'none', minHeight: '44px', display: 'flex', alignItems: 'center', cursor: 'pointer', transition: 'all .2s ease', backgroundColor: 'transparent' }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(0,255,178,0.4)'; e.currentTarget.style.color = '#00FFB2' }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(240,248,255,0.5)' }}>
-            VOIR LES RÉSULTATS
+          <a href="/results" style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 2, color: 'rgba(240,248,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', padding: 'clamp(13px, 2vw, 14px) clamp(20px, 3vw, 24px)', borderRadius: 4, textDecoration: 'none', minHeight: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all .2s ease', backgroundColor: 'transparent' }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(0,255,178,0.4)'; e.currentTarget.style.color = '#00FFB2' }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(240,248,255,0.5)' }}>
+            VOIR RÉSULTATS LIVE
           </a>
         </div>
 
-        <p style={{ fontFamily: BODY, fontSize: 'clamp(11px, 1vw, 13px)', color: 'rgba(240,248,255,0.3)', animation: 'slideDown .6s ease-out .4s both' }}>
-          ✓ Sans carte bancaire &nbsp;·&nbsp; ✓ 10 crédits offerts &nbsp;·&nbsp; ✓ Annulable à tout moment
-        </p>
+        <div style={{ display: 'flex', gap: 'clamp(12px, 2vw, 16px)', justifyContent: 'center', flexWrap: 'wrap', marginBottom: 'clamp(1rem, 2vw, 1.5rem)', animation: 'slideDown .6s ease-out .4s both' }}>
+          {['✓ 10 crédits gratuits', '✓ Sans carte bancaire', '✓ 14j remboursement garanti'].map(t => (
+            <div key={t} style={{ fontFamily: BODY, fontSize: 'clamp(10px, 0.95vw, 12px)', color: 'rgba(0,255,178,0.6)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              {t}
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* ── ACTIFS SUPPORTÉS ──────────────────────────────────── */}
@@ -374,8 +379,11 @@ export default function LandingPage() {
       <section ref={pricingReveal} id="pricing" style={{ padding: 'clamp(4rem, 7vw, 6rem) clamp(1rem, 4vw, 2rem)', background: 'rgba(8,17,31,0.5)', opacity: pricingVis ? 1 : 0.5, transform: pricingVis ? 'translateY(0)' : 'translateY(20px)', transition: 'all .6s cubic-bezier(.4, 0, .2, 1)' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
-            <div style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>TARIFS</div>
-            <h2 style={{ fontFamily: HUD, fontSize: 'clamp(20px, 4vw, 40px)', fontWeight: 900 }}>Choisissez votre plan</h2>
+            <div style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>TARIFS TRANSPARENTS</div>
+            <h2 style={{ fontFamily: HUD, fontSize: 'clamp(20px, 4vw, 40px)', fontWeight: 900, marginBottom: 12 }}>Choisissez votre plan</h2>
+            <div style={{ background: 'rgba(0,255,178,0.08)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 8, padding: 'clamp(10px, 1.5vw, 12px)', display: 'inline-block' }}>
+              <span style={{ fontFamily: HUD, fontSize: 'clamp(8px, 0.9vw, 9px)', color: '#00FFB2', letterSpacing: 1 }}>🔥 BONUS: 10 crédits gratuits pour tout nouvel inscrit (14j valides)</span>
+            </div>
           </div>
 
           {/* Toggle mensuel / annuel */}
@@ -414,8 +422,13 @@ export default function LandingPage() {
                 cursor: 'pointer'
               }} onMouseEnter={(e) => { if (pricingVis) { e.currentTarget.style.borderColor = plan.highlight ? 'rgba(0,255,178,0.5)' : 'rgba(255,255,255,0.15)'; e.currentTarget.style.transform = 'translateY(-6px)' } }} onMouseLeave={(e) => { if (pricingVis) { e.currentTarget.style.borderColor = plan.highlight ? 'rgba(0,255,178,0.35)' : 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' } }}>
                 {plan.highlight && (
-                  <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: '#00FFB2', color: '#020408', fontFamily: HUD, fontSize: 'clamp(7px, 0.9vw, 8px)', letterSpacing: 2, padding: '4px 16px', borderRadius: 100, fontWeight: 900, whiteSpace: 'nowrap' }}>
-                    LE PLUS POPULAIRE
+                  <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: '#00FFB2', color: '#020408', fontFamily: HUD, fontSize: 'clamp(7px, 0.9vw, 8px)', letterSpacing: 2, padding: '4px 16px', borderRadius: 100, fontWeight: 900, whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,255,178,0.3)' }}>
+                    ⭐ LE PLUS POPULAIRE
+                  </div>
+                )}
+                {plan.key === 'pro' && billing === 'annual' && (
+                  <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(255,100,100,0.15)', border: '1px solid rgba(255,100,100,0.4)', color: '#FF6464', fontFamily: HUD, fontSize: 'clamp(7px, 0.8vw, 8px)', letterSpacing: 1, padding: '3px 8px', borderRadius: 4, fontWeight: 700 }}>
+                    ÉCONOMISE 25K
                   </div>
                 )}
                 <div style={{ fontFamily: HUD, fontSize: 'clamp(10px, 1.2vw, 11px)', letterSpacing: 2, color: plan.color, marginBottom: 8 }}>{plan.name}</div>
@@ -433,8 +446,8 @@ export default function LandingPage() {
                     </div>
                   ))}
                 </div>
-                <a href={plan.href} style={{ display: 'block', textAlign: 'center', fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 2, textDecoration: 'none', padding: 'clamp(11px, 2vw, 13px)', borderRadius: 6, fontWeight: 700, background: plan.highlight ? '#00FFB2' : 'transparent', color: plan.highlight ? '#020408' : plan.color, border: `1px solid ${plan.color}40`, minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.transform = plan.highlight ? 'scale(1.03)' : 'translateY(-2px)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
-                  {plan.cta}
+                <a href={plan.href} style={{ display: 'block', textAlign: 'center', fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 2, textDecoration: 'none', padding: 'clamp(13px, 2.5vw, 15px)', borderRadius: 6, fontWeight: 700, background: plan.highlight ? '#00FFB2' : 'transparent', color: plan.highlight ? '#020408' : plan.color, border: `1px solid ${plan.highlight ? 'transparent' : plan.color}60`, minHeight: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .25s cubic-bezier(.4, 0, .2, 1)', cursor: 'pointer', boxShadow: plan.highlight ? '0 8px 24px rgba(0,255,178,0.2)' : 'none', position: 'relative', overflow: 'hidden' }} onMouseEnter={(e) => { e.currentTarget.style.transform = plan.highlight ? 'scale(1.04) translateY(-2px)' : 'translateY(-2px)'; e.currentTarget.style.boxShadow = plan.highlight ? '0 12px 32px rgba(0,255,178,0.3)' : `0 4px 12px ${plan.color}40` }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1) translateY(0)'; e.currentTarget.style.boxShadow = plan.highlight ? '0 8px 24px rgba(0,255,178,0.2)' : 'none' }}>
+                  {plan.cta} →
                 </a>
               </div>
             ))}
@@ -515,18 +528,27 @@ export default function LandingPage() {
       </section>
 
       {/* ── CTA FINAL ─────────────────────────────────────────── */}
-      <section style={{ padding: 'clamp(4rem, 7vw, 6rem) clamp(1rem, 4vw, 2rem)', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
-        <h2 style={{ fontFamily: HUD, fontSize: 'clamp(22px, 4.5vw, 44px)', fontWeight: 900, lineHeight: 1.2, marginBottom: 'clamp(12px, 2vw, 16px)' }}>
-          TON PROCHAIN TRADE<br />
-          <span style={{ color: '#00FFB2' }}>COMMENCE MAINTENANT</span>
-        </h2>
-        <p style={{ fontFamily: BODY, fontSize: 'clamp(14px, 1.5vw, 16px)', color: 'rgba(240,248,255,0.45)', marginBottom: 'clamp(20px, 4vw, 32px)', lineHeight: 1.7 }}>
-          Rejoins {users}+ traders qui utilisent l'IA pour analyser leurs charts.
-        </p>
-        <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 'clamp(10px, 1.2vw, 12px)', letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: 'clamp(14px, 2.5vw, 18px) clamp(32px, 6vw, 48px)', borderRadius: 4, textDecoration: 'none', fontWeight: 700, display: 'inline-block', boxShadow: '0 0 50px rgba(0,255,178,0.2)', minHeight: '48px', cursor: 'pointer', transition: 'all .3s cubic-bezier(.4, 0, .2, 1)', border: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 70px rgba(0,255,178,0.3)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 50px rgba(0,255,178,0.2)' }}>
-          CRÉER MON COMPTE GRATUIT →
-        </a>
-        <p style={{ fontFamily: BODY, fontSize: 'clamp(11px, 1vw, 13px)', color: 'rgba(240,248,255,0.25)', marginTop: 'clamp(10px, 2vw, 14px)' }}>Sans carte bancaire · 10 crédits offerts</p>
+      <section style={{ padding: 'clamp(4rem, 7vw, 6rem) clamp(1rem, 4vw, 2rem)', textAlign: 'center', maxWidth: 750, margin: '0 auto' }}>
+        <div style={{ background: 'rgba(0,255,178,0.05)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 12, padding: 'clamp(1.5rem, 2.5vw, 2rem)', marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+          <div style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 2, color: '#00FFB2', marginBottom: 8 }}>⏰ OFFRE LIMITÉE</div>
+          <h2 style={{ fontFamily: HUD, fontSize: 'clamp(20px, 4vw, 40px)', fontWeight: 900, lineHeight: 1.2, marginBottom: 'clamp(12px, 2vw, 16px)' }}>
+            COMMENCE MAINTENANT<br />
+            <span style={{ color: '#00FFB2' }}>10 CRÉDITS GRATUITS</span>
+          </h2>
+          <p style={{ fontFamily: BODY, fontSize: 'clamp(13px, 1.4vw, 15px)', color: 'rgba(240,248,255,0.6)', marginBottom: 'clamp(20px, 3vw, 28px)', lineHeight: 1.7 }}>
+            {users}+ traders actifs. Signaux en temps réel. <strong style={{ color: '#F0F8FF' }}>14 jours remboursé si pas satisfait.</strong>
+          </p>
+          <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 'clamp(10px, 1.2vw, 12px)', letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: 'clamp(15px, 2.5vw, 18px) clamp(36px, 7vw, 52px)', borderRadius: 6, textDecoration: 'none', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 32px rgba(0,255,178,0.25)', minHeight: '50px', cursor: 'pointer', transition: 'all .3s cubic-bezier(.4, 0, .2, 1)', border: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.06) translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 48px rgba(0,255,178,0.35)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1) translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,255,178,0.25)' }}>
+            CRÉER MON COMPTE GRATUIT →
+          </a>
+          <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)', justifyContent: 'center', flexWrap: 'wrap', marginTop: 'clamp(1rem, 2vw, 1.5rem)' }}>
+            {['🔓 0 FCFA requis', '⚡ 1 min setup', '✓ Annule quand tu veux'].map(t => (
+              <div key={t} style={{ fontFamily: BODY, fontSize: 'clamp(10px, 0.95vw, 11px)', color: 'rgba(0,255,178,0.6)' }}>
+                {t}
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────── */}
