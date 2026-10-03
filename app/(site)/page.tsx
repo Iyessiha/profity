@@ -185,9 +185,9 @@ export default function LandingPage() {
 
       {/* Drawer menu mobile */}
       {menuOpen && (
-        <div style={{ position:'fixed', top:60, left:0, right:0, background:'rgba(2,4,8,0.98)', borderBottom:'1px solid rgba(0,255,178,0.12)', zIndex:99, padding:'1.5rem', display:'flex', flexDirection:'column', gap:4 }}>
+        <div style={{ position:'fixed', top:'clamp(54px, 10vw, 60px)', left:0, right:0, bottom:0, background:'rgba(2,4,8,0.98)', borderBottom:'1px solid rgba(0,255,178,0.12)', zIndex:99, padding:'clamp(1rem, 3vw, 1.5rem)', paddingBottom:'clamp(1rem, 3vw, 1.5rem)', paddingTop: 'max(1rem, env(safe-area-inset-top))', paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', overflowY:'auto', display:'flex', flexDirection:'column', gap:4 }}>
           {[['#how','Comment ça marche'],['#features','Fonctionnalités'],['#pricing','Tarifs'],['/results','Résultats live'],['/blog','Blog'],['/auth/login','Se connecter']].map(([href,label]) => (
-            <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'rgba(240,248,255,0.6)', textDecoration:'none', padding:'14px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+            <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ fontFamily:HUD, fontSize:'clamp(9px, 1.1vw, 10px)', letterSpacing:2, color:'rgba(240,248,255,0.6)', textDecoration:'none', padding:'clamp(12px, 2vw, 14px) 0', borderBottom:'1px solid rgba(255,255,255,0.04)', minHeight: '44px', display: 'flex', alignItems: 'center', transition: 'color .2s ease' }} onMouseEnter={(e) => e.currentTarget.style.color = '#00FFB2'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(240,248,255,0.6)'}>
               {label}
             </a>
           ))}
@@ -374,8 +374,8 @@ export default function LandingPage() {
           <div style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>COMPARAISON</div>
           <h2 style={{ fontFamily: HUD, fontSize: 'clamp(20px, 4vw, 40px)', fontWeight: 900 }}>Quelle fonctionnalité pour quel plan?</h2>
         </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: BODY }}>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: BODY, minWidth: '600px' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid rgba(0,255,178,0.2)' }}>
                 <th style={{ textAlign: 'left', padding: 'clamp(12px, 2vw, 16px)', fontFamily: HUD, fontSize: 'clamp(10px, 1.1vw, 12px)', color: 'rgba(240,248,255,0.7)', fontWeight: 700 }}>Fonctionnalité</th>
@@ -669,10 +669,49 @@ export default function LandingPage() {
         html { scroll-behavior: smooth; }
         .nav-desktop { display: flex !important; }
         .nav-mobile-btn { display: none !important; }
+        a[href], button { -webkit-tap-highlight-color: transparent; }
+
+        /* Mobile optimizations */
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
           .nav-mobile-btn { display: flex !important; }
-          section { margin-left: -1rem !important; margin-right: -1rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
+
+          /* Better mobile spacing */
+          section { padding-left: max(1rem, env(safe-area-inset-left)) !important; padding-right: max(1rem, env(safe-area-inset-right)) !important; }
+
+          /* Improve button touch targets */
+          a, button { min-height: 48px; min-width: 48px; }
+
+          /* Better readability on mobile */
+          table { font-size: clamp(10px, 2.5vw, 12px); }
+
+          /* Mobile-optimized spacing between sections */
+          section { margin-bottom: clamp(1.5rem, 3vw, 2rem); }
+
+          /* Better card spacing on mobile */
+          [style*="display: grid"] { gap: clamp(10px, 2vw, 12px) !important; }
+
+          /* Touch-friendly inputs */
+          input, textarea { min-height: 44px; padding: clamp(10px, 2vw, 12px); font-size: 16px; }
+
+          /* Prevent zoom on focus */
+          input:focus, textarea:focus { font-size: 16px; }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 480px) {
+          h1, h2, h3 { word-break: break-word; }
+
+          /* Ensure minimum tap target */
+          button, a[role="button"] { padding-top: max(10px, env(safe-area-inset-top)); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+
+          /* Better mobile menu spacing */
+          div[style*="position:fixed"] { padding: max(1rem, env(safe-area-inset-left)) !important; }
+        }
+
+        /* Landscape mode fix */
+        @media (max-height: 500px) and (orientation: landscape) {
+          section { padding-top: clamp(1rem, 2vw, 1.5rem); padding-bottom: clamp(1rem, 2vw, 1.5rem); }
         }
       `}</style>
     </div>
