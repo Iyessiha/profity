@@ -3,6 +3,8 @@
 // Usage : import { t } from '@/lib/i18n'; t(locale, 'key')
 // ============================================================
 
+import { useSyncExternalStore } from 'react'
+
 export type Locale = 'fr' | 'en'
 
 const DICT: Record<string, Record<Locale, string>> = {
@@ -82,10 +84,69 @@ export function t(locale: string, key: string): string {
   return DICT[key]?.[lang] ?? DICT[key]?.['fr'] ?? key
 }
 
+/** Choisit le texte FR ou EN selon la langue courante. */
+export function tr(locale: string, fr: string, en: string): string {
+  return locale === 'en' ? en : fr
+}
+
+// ─── Préférence de langue unifiée ─────────────────────────────
+// Source de vérité : localStorage `pxLang`. Elle est aussi recopiée dans
+// le cookie NEXT_LOCALE (utilisé par la v2 next-intl et par les API) et
+// dans profiles.locale pour suivre l'utilisateur d'un appareil à l'autre.
+const LANG_KEY   = 'pxLang'
+const LANG_EVENT = 'px:lang'
+
+function isLocale(v: unknown): v is Locale {
+  return v === 'fr' || v === 'en'
+}
+
 export function getLang(): Locale {
   try {
-    const stored = localStorage.getItem('pxLang')
-    if (stored === 'en') return 'en'
+    const stored = localStorage.getItem(LANG_KEY)
+    if (isLocale(stored)) return stored
+    if (location.pathname === '/en' || location.pathname.startsWith('/en/')) return 'en'
   } catch {}
   return 'fr'
+}
+
+/**
+ * Change la langue de toute l'app (tous les composants abonnés via useLang
+ * se mettent à jour) et l'enregistre dans le profil si `persist` est vrai.
+ */
+export function setLang(lang: Locale, persist = true): void {
+  try {
+    localStorage.setItem(LANG_KEY, lang)
+    document.cookie = `NEXT_LOCALE=${lang}; path=/; max-age=31536000; samesite=lax`
+    document.documentElement.lang = lang
+    window.dispatchEvent(new Event(LANG_EVENT))
+  } catch {}
+  if (!persist) return
+  import('@/lib/supabase').then(async ({ supabasePublic }) => {
+    const { data: { session } } = await supabasePublic.auth.getSession()
+    if (session) await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+  }).catch(() => {})
+}
+
+/**
+ * Adopte la langue enregistrée dans le profil si l'utilisateur n'a encore
+ * rien choisi sur cet appareil (ex : connexion depuis un nouveau téléphone).
+ */
+export function adoptProfileLang(profileLocale: unknown): void {
+  try {
+    if (!isLocale(localStorage.getItem(LANG_KEY)) && isLocale(profileLocale)) setLang(profileLocale, false)
+  } catch {}
+}
+
+function subscribe(cb: () => void) {
+  window.addEventListener(LANG_EVENT, cb)
+  window.addEventListener('storage', cb)
+  return () => {
+    window.removeEventListener(LANG_EVENT, cb)
+    window.removeEventListener('storage', cb)
+  }
+}
+
+/** Langue courante, réactive. Rend 'fr' côté serveur puis la vraie langue. */
+export function useLang(): Locale {
+  return useSyncExternalStore(subscribe, getLang, () => 'fr' as Locale)
 }
