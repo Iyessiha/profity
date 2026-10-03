@@ -30,24 +30,25 @@ const PLANS = [
   {
     key: 'free', name: 'FREE', price: '0', currency: 'FCFA/mois',
     color: '#888', bg: 'rgba(100,100,120,0.06)',
-    credits: '10 crédits', analyses: '3 analyses/jour',
+    credits: '10 crédits offerts', analyses: '3 analyses/jour',
     desc: 'Parfait pour tester. Analyse SMC de base, pas de limites de temps.',
-    features: ['✓ 3 signaux SMC/jour', '✓ Forex + Indices Synthétiques', '✓ Calendrier macro NFP/CPI', '✓ Historique 30 jours'],
+    features: ['✓ 3 signaux SMC/jour', '✓ Tous les actifs supportés', '✓ Calendrier macro (NFP, CPI)', '✓ Historique 30 jours', '✓ Support par email'],
     cta: 'COMMENCER GRATUITEMENT', href: '/auth/login',
     highlight: false,
   },
   {
     key: 'pro', name: 'PRO', price: '17 500', priceYear: '150 000', currency: 'FCFA/mois', currencyYear: 'FCFA/an',
     color: '#00FFB2', bg: 'rgba(0,255,178,0.05)',
-    credits: 'Analyses illimitées', analyses: 'Win rate 65-72%',
-    desc: 'Le choix des traders sérieux. Illimité + Dashboard Prop Firm.',
+    credits: 'Illimitées', analyses: 'Win rate 65-72%',
+    desc: 'Le choix des traders sérieux. Illimité + Dashboard Prop Firm + EA Tracker.',
     features: [
       '✓ Analyses ILLIMITÉES',
-      '✓ Order Block + FVG + BOS/CHoCH détection',
-      '✓ Signaux anticipatoires NFP/CPI',
-      '✓ EA Tracker MT5 (suivi profit/drawdown)',
-      '✓ Dashboard challenge Prop Firm',
-      '✓ Alertes SMS avant breach',
+      '✓ SMC Complet (Order Block, FVG, BOS, CHoCH)',
+      '✓ Signaux anticipatoires avant news (NFP, CPI)',
+      '✓ EA Tracker MT5 (track profit/drawdown/DD %)',
+      '✓ Dashboard Prop Firm (règles breach + alerte SMS)',
+      '✓ Support par email 24h',
+      '✓ Historique illimité (consultable à vie)',
     ],
     cta: 'PASSER PRO', href: '/auth/login',
     highlight: true,
@@ -55,15 +56,17 @@ const PLANS = [
   {
     key: 'elite', name: 'ELITE', price: '35 000', priceYear: '300 000', currency: 'FCFA/mois', currencyYear: 'FCFA/an',
     color: '#C9A84C', bg: 'rgba(201,168,76,0.05)',
-    credits: 'Analyses illimitées', analyses: 'Trading 24/7 automatique',
-    desc: 'Pour les traders sérieux qui veulent l\'automatisation complète.',
+    credits: 'Illimitées', analyses: 'Trading 24/7 automatique',
+    desc: 'Pour les traders qui veulent l\'automatisation complète + IA qui trade à leur place.',
     features: [
       '✓ Tout PRO +',
-      '✓ Robot MT5 trading automatique (EMA+Stoch)',
-      '✓ Prop Firm Guard (lot adaptatif)',
-      '✓ Auto-stop à objectif atteint',
-      '✓ Mode Scalping + Signaux News live',
+      '✓ Robot MT5 Expert Advisor (Trend-Follow + Stoch)',
+      '✓ Prop Firm Guard (lot adaptatif, dodge drawdown)',
+      '✓ Auto-stop quand objectif atteint',
+      '✓ Mode Scalping (micros profits)',
+      '✓ Signaux News en temps réel (avant NFP/CPI)',
       '✓ Support VIP 24h/7j par WhatsApp',
+      '✓ Mises à jour Robot 1x/mois (améliorations)',
     ],
     cta: 'PASSER ELITE', href: '/auth/login',
     highlight: false,
@@ -346,12 +349,14 @@ export default function LandingPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(200px, 100%, 250px), 1fr))', gap: 'clamp(12px, 2vw, 16px)' }}>
             {[
-              { icon: '🧠', title: 'Analyse SMC', desc: 'Order Block, Fair Value Gap, BOS, CHoCH, Liquidité détectés automatiquement.' },
-              { icon: '⚡', title: '10 secondes', desc: 'Signal complet en moins de 10 secondes après upload du chart.' },
-              { icon: '📊', title: 'Calendrier macro', desc: 'NFP, CPI, FOMC — alertes en temps réel avec signal anticipatoire.' },
-              { icon: '🌍', title: 'Indices Synthétiques + Forex', desc: 'Boom, Crash, GainX, Volatility, EUR/USD, XAU/USD et plus.' },
-              { icon: '📱', title: 'Mobile first', desc: 'Interface optimisée pour mobile. Installe l\'app PWA en 1 clic.' },
-              { icon: '🔒', title: 'Sécurisé', desc: 'Données chiffrées SSL. Paiements via GeniusPay certifié.' },
+              { icon: '🧠', title: 'Analyse SMC Complète', desc: 'Détecte Order Blocks, Fair Value Gaps, Break of Structure et Change of Character. Comme analyser avec un trader pro, mais instantané.' },
+              { icon: '⚡', title: 'Signal en 10 secondes', desc: 'Upload chart → reçois signal complet. Entrée précise, SL calculé, 3x TP optimisés. Copie/paste direct MT5.' },
+              { icon: '📅', title: 'Calendrier Macro Live', desc: 'NFP, CPI, FOMC, taux d\'intérêt — alertes email/SMS avant + signal anticipatoire. Trade les news en confiance.' },
+              { icon: '🌍', title: 'Tous les Actifs', desc: 'Boom 1000, Crash 500, Indices, EUR/USD, XAU/USD, GBP/USD, plus 50+ paires. Change d\'actif en 1 clic.' },
+              { icon: '📱', title: 'App Mobile Native', desc: 'Responsive design + PWA (télécharge sur home). Analyse charts depuis n\'importe où, même offline.' },
+              { icon: '🤖', title: 'Dashboard Temps Réel', desc: 'PRO/ELITE: connecte MT5, vois profit, drawdown, jours en live. Alerte SMS avant breach règles Prop Firm.' },
+              { icon: '🔒', title: 'Sécurité Bancaire', desc: 'SSL 256-bit, données chiffrées. Paiements via GeniusPay (partenaire certifié). Aucun stockage de carte.' },
+              { icon: '🎯', title: 'IA Adaptative', desc: 'Notre IA apprend de tes trades. Plus tu analyses, plus elle s\'améliore. Ajustement automatique.' },
             ].map((f, i) => (
               <div key={f.title} style={{ background: '#020408', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: 'clamp(1.2rem, 2.5vw, 1.5rem)', transition: 'all .3s ease', transform: featuresVis ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)', opacity: featuresVis ? 1 : 0, transitionDelay: `${i * 0.08}s`, cursor: 'pointer' }} onMouseEnter={(e) => { if (featuresVis) { e.currentTarget.style.background = 'rgba(0,255,178,0.04)'; e.currentTarget.style.borderColor = 'rgba(0,255,178,0.15)'; e.currentTarget.style.transform = 'translateY(-4px)' } }} onMouseLeave={(e) => { if (featuresVis) { e.currentTarget.style.background = '#020408'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'translateY(0)' } }}>
                 <div style={{ fontSize: 'clamp(24px, 4vw, 28px)', marginBottom: 12 }}>{f.icon}</div>
@@ -360,6 +365,50 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── COMPARAISON PLANS ────────────────────────────────────── */}
+      <section style={{ padding: 'clamp(3rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem)', maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 3.5rem)' }}>
+          <div style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>COMPARAISON</div>
+          <h2 style={{ fontFamily: HUD, fontSize: 'clamp(20px, 4vw, 40px)', fontWeight: 900 }}>Quelle fonctionnalité pour quel plan?</h2>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: BODY }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid rgba(0,255,178,0.2)' }}>
+                <th style={{ textAlign: 'left', padding: 'clamp(12px, 2vw, 16px)', fontFamily: HUD, fontSize: 'clamp(10px, 1.1vw, 12px)', color: 'rgba(240,248,255,0.7)', fontWeight: 700 }}>Fonctionnalité</th>
+                <th style={{ textAlign: 'center', padding: 'clamp(12px, 2vw, 16px)', fontFamily: HUD, fontSize: 'clamp(9px, 1vw, 11px)', color: '#888', fontWeight: 700 }}>FREE</th>
+                <th style={{ textAlign: 'center', padding: 'clamp(12px, 2vw, 16px)', fontFamily: HUD, fontSize: 'clamp(9px, 1vw, 11px)', color: '#00FFB2', fontWeight: 700 }}>PRO</th>
+                <th style={{ textAlign: 'center', padding: 'clamp(12px, 2vw, 16px)', fontFamily: HUD, fontSize: 'clamp(9px, 1vw, 11px)', color: '#C9A84C', fontWeight: 700 }}>ELITE</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { feat: 'Analyses par jour', free: '3', pro: '∞', elite: '∞' },
+                { feat: 'Analyse SMC', free: '✓ Basique', pro: '✓ Complète', elite: '✓ Complète' },
+                { feat: 'Signaux NFP/CPI', free: '−', pro: '✓ Anticipatoire', elite: '✓ Anticipatoire' },
+                { feat: 'Dashboard Prop Firm', free: '−', pro: '✓ Inclus', elite: '✓ Inclus' },
+                { feat: 'EA Tracker MT5', free: '−', pro: '✓ Inclus', elite: '✓ Inclus' },
+                { feat: 'Robot Trading Auto', free: '−', pro: '−', elite: '✓ Inclus' },
+                { feat: 'Support 24h/7j', free: '−', pro: '✓ Email', elite: '✓ VIP WhatsApp' },
+                { feat: 'Historique Signaux', free: '30 jours', pro: '∞', elite: '∞' },
+              ].map((row, i) => (
+                <tr key={row.feat} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: i % 2 === 0 ? 'transparent' : 'rgba(0,255,178,0.02)' }}>
+                  <td style={{ padding: 'clamp(12px, 2vw, 16px)', fontSize: 'clamp(12px, 1vw, 13px)', color: 'rgba(240,248,255,0.7)' }}>{row.feat}</td>
+                  <td style={{ padding: 'clamp(12px, 2vw, 16px)', textAlign: 'center', fontSize: 'clamp(11px, 0.95vw, 12px)', color: 'rgba(240,248,255,0.5)' }}>{row.free}</td>
+                  <td style={{ padding: 'clamp(12px, 2vw, 16px)', textAlign: 'center', fontSize: 'clamp(11px, 0.95vw, 12px)', color: '#00FFB2', fontWeight: row.pro === '∞' ? 700 : 400 }}>{row.pro}</td>
+                  <td style={{ padding: 'clamp(12px, 2vw, 16px)', textAlign: 'center', fontSize: 'clamp(11px, 0.95vw, 12px)', color: '#C9A84C', fontWeight: row.elite === '∞' ? 700 : 400 }}>{row.elite}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div style={{ textAlign: 'center', marginTop: 'clamp(2rem, 4vw, 3rem)' }}>
+          <p style={{ fontFamily: BODY, fontSize: 'clamp(12px, 1vw, 13px)', color: 'rgba(240,248,255,0.4)', marginBottom: 'clamp(1rem, 2vw, 1.5rem)' }}>
+            Besoin d'aide pour choisir? <a href="#pricing" style={{ color: '#00FFB2', textDecoration: 'none', fontWeight: 700 }}>Scroll vers tarifs →</a>
+          </p>
         </div>
       </section>
 
