@@ -5,6 +5,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabasePublic } from '@/lib/supabase'
+import { useLang, tr } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -16,10 +17,11 @@ const TYPES = [
   { v: 'mtn',          label: 'MTN MoMo',     color: '#FFCC00' },
   { v: 'moov',         label: 'Moov Money',   color: '#0066CC' },
   { v: 'wave',         label: 'Wave',         color: '#00BFFF' },
-  { v: 'card',         label: 'Carte bancaire', color: '#888' },
+  { v: 'card',         label: 'card', color: '#888' },
 ]
 
 export default function PaymentMethods({ autoRenew: initialAutoRenew = true, hasSubscription = false }: { autoRenew?: boolean; hasSubscription?: boolean }) {
+  const lang = useLang()
   const [token, setToken] = useState('')
   const [items, setItems] = useState<PM[]>([])
   const [type, setType] = useState('orange_money')
@@ -51,7 +53,7 @@ export default function PaymentMethods({ autoRenew: initialAutoRenew = true, has
   const add = async () => {
     setErr('')
     if (type !== 'card' && !/^\+?\d{8,15}$/.test(number.replace(/\s/g, ''))) {
-      setErr('Numéro invalide'); return
+      setErr(tr(lang, 'Numéro invalide', 'Invalid number')); return
     }
     setBusy(true)
     try {
@@ -62,8 +64,8 @@ export default function PaymentMethods({ autoRenew: initialAutoRenew = true, has
       })
       const json = await res.json()
       if (json.success) { setItems(p => [...p, json.data]); setNumber('') }
-      else setErr(json.error ?? 'Erreur')
-    } catch { setErr('Erreur réseau') }
+      else setErr(json.error ?? tr(lang, 'Erreur', 'Error'))
+    } catch { setErr(tr(lang, 'Erreur réseau', 'Network error')) }
     finally { setBusy(false) }
   }
 
@@ -96,7 +98,7 @@ export default function PaymentMethods({ autoRenew: initialAutoRenew = true, has
       {/* Moyens de paiement */}
       <div style={cardStyle}>
         <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: '#00D4FF', marginBottom: '1.25rem' }}>
-          MOYENS DE PAIEMENT
+          {tr(lang, 'MOYENS DE PAIEMENT', 'PAYMENT METHODS')}
         </div>
 
         {items.length > 0 && (
@@ -111,14 +113,14 @@ export default function PaymentMethods({ autoRenew: initialAutoRenew = true, has
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: typeColor(pm.type) }} />
                   <span style={{ fontFamily: BODY, fontSize: 14, color: 'var(--tx0)' }}>{pm.label}</span>
                   {pm.is_default && (
-                    <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: '#00FFB2', background: 'rgba(0,255,178,0.1)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 2, padding: '2px 6px' }}>DÉFAUT</span>
+                    <span style={{ fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: '#00FFB2', background: 'rgba(0,255,178,0.1)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 2, padding: '2px 6px' }}>{tr(lang, 'PAR DÉFAUT', 'DEFAULT')}</span>
                   )}
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {!pm.is_default && (
-                    <button onClick={() => setDefault(pm.id)} style={{ background: 'transparent', border: '1px solid rgba(0,255,178,0.2)', color: '#00FFB2', fontFamily: HUD, fontSize: 7, letterSpacing: 1, padding: '4px 8px', borderRadius: 3, cursor: 'pointer' }}>DÉFAUT</button>
+                    <button onClick={() => setDefault(pm.id)} style={{ background: 'transparent', border: '1px solid rgba(0,255,178,0.2)', color: '#00FFB2', fontFamily: HUD, fontSize: 7, letterSpacing: 1, padding: '4px 8px', borderRadius: 3, cursor: 'pointer' }}>{tr(lang, 'PAR DÉFAUT', 'SET DEFAULT')}</button>
                   )}
-                  <button onClick={() => remove(pm.id)} style={{ background: 'transparent', border: 'none', color: 'rgba(255,58,92,0.7)', cursor: 'pointer', fontSize: 16 }} aria-label="Supprimer">
+                  <button onClick={() => remove(pm.id)} style={{ background: 'transparent', border: 'none', color: 'rgba(255,58,92,0.7)', cursor: 'pointer', fontSize: 16 }} aria-label={tr(lang, 'Supprimer', 'Delete')}>
                     <i className="ti ti-trash" aria-hidden="true" />
                   </button>
                 </div>
@@ -133,38 +135,38 @@ export default function PaymentMethods({ autoRenew: initialAutoRenew = true, has
             background: 'var(--bg1)', border: '1px solid rgba(0,255,178,0.15)', color: 'var(--tx0)',
             fontFamily: BODY, fontSize: 14, padding: '9px 12px', borderRadius: 4, cursor: 'pointer',
           }}>
-            {TYPES.map(t => <option key={t.v} value={t.v} style={{ background: 'var(--bg1)' }}>{t.label}</option>)}
+            {TYPES.map(t => <option key={t.v} value={t.v} style={{ background: 'var(--bg1)' }}>{t.v === 'card' ? tr(lang, 'Carte bancaire', 'Bank card') : t.label}</option>)}
           </select>
           <input
             value={number} onChange={e => setNumber(e.target.value)}
-            placeholder={type === 'card' ? '4 derniers chiffres' : '+225 07 00 00 00 00'}
+            placeholder={type === 'card' ? tr(lang, '4 derniers chiffres', 'Last 4 digits') : '+225 07 00 00 00 00'}
             style={{ flex: 1, minWidth: 160, background: 'var(--bg1)', border: '1px solid rgba(0,255,178,0.15)', color: 'var(--tx0)', fontFamily: BODY, fontSize: 14, padding: '9px 12px', borderRadius: 4 }}
           />
           <button onClick={add} disabled={busy || !number} style={{
             background: 'rgba(0,255,178,0.1)', border: '1px solid rgba(0,255,178,0.25)', color: '#00FFB2',
             fontFamily: HUD, fontSize: 9, letterSpacing: 1, padding: '0 18px', borderRadius: 4, cursor: 'pointer',
-          }}>AJOUTER</button>
+          }}>{tr(lang, 'AJOUTER', 'ADD')}</button>
         </div>
         {err && <div style={{ fontFamily: BODY, fontSize: 12, color: '#FF3A5C', marginTop: 8 }}>{err}</div>}
         <div style={{ fontFamily: BODY, fontSize: 11, color: 'rgba(232,244,248,0.3)', marginTop: 10 }}>
-          Le numéro est masqué et stocké de façon sécurisée. Le paiement reste traité par GeniusPay.
+          {tr(lang, 'Le numéro est masqué et stocké de façon sécurisée. Le paiement reste traité par GeniusPay.', 'The number is masked and stored securely. Payment is still processed by GeniusPay.')}
         </div>
       </div>
 
       {/* Renouvellement automatique */}
       <div style={cardStyle}>
         <div style={{ fontFamily: HUD, fontSize: 10, letterSpacing: 2, color: '#00D4FF', marginBottom: '1.25rem' }}>
-          RENOUVELLEMENT AUTOMATIQUE
+          {tr(lang, 'RENOUVELLEMENT AUTOMATIQUE', 'AUTO-RENEWAL')}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ flex: 1, paddingRight: 16 }}>
             <div style={{ fontFamily: HUD, fontSize: 11, color: 'var(--tx0)', letterSpacing: 1, marginBottom: 4 }}>
-              ABONNEMENT RÉCURRENT
+              {tr(lang, 'ABONNEMENT RÉCURRENT', 'RECURRING SUBSCRIPTION')}
             </div>
             <div style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(232,244,248,0.4)' }}>
               {autoRenew
-                ? 'Votre abonnement se renouvelle automatiquement chaque mois.'
-                : 'Votre abonnement prendra fin à l\'échéance, sans reconduction.'}
+                ? tr(lang, 'Votre abonnement se renouvelle automatiquement chaque mois.', 'Your subscription renews automatically every month.')
+                : tr(lang, "Votre abonnement prendra fin à l'échéance, sans reconduction.", 'Your subscription will end at the due date without renewal.')}
             </div>
           </div>
           <button onClick={toggleRenew} disabled={!hasSubscription} style={{
@@ -178,7 +180,7 @@ export default function PaymentMethods({ autoRenew: initialAutoRenew = true, has
         </div>
         {!hasSubscription && (
           <div style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(232,244,248,0.3)', marginTop: 10 }}>
-            Disponible une fois un abonnement actif.
+            {tr(lang, 'Disponible une fois un abonnement actif.', 'Available once you have an active subscription.')}
           </div>
         )}
       </div>

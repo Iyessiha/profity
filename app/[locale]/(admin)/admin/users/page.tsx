@@ -1,18 +1,14 @@
-import { createClient as adminClient } from "@supabase/supabase-js";
+import { getAdminClient } from "@/lib/supabase/server-admin";
 import Link from "next/link";
 
 export const metadata = { title: "Utilisateurs — Admin Profity" };
-
-const admin = adminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
 
 export default async function UsersPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
+  const admin = getAdminClient();
   const { q, page } = await searchParams;
   const pageNum = Math.max(1, parseInt(page ?? "1", 10));
   const pageSize = 25;
@@ -127,7 +123,7 @@ export default async function UsersPage({
   );
 }
 
-function Th({ children }: { children: React.ReactNode }) {
+function Th({ children }: { children?: React.ReactNode }) {
   return (
     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-text-muted">
       {children}

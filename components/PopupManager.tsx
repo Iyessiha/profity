@@ -3,6 +3,7 @@
 // ============================================================
 'use client'
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { planPrice, planPricePerPeriod } from '@/lib/plans'
 import { pixelLead } from '@/lib/pixel'
 
 const HUD  = "'Orbitron', monospace"
@@ -141,15 +142,15 @@ function UpgradePopup({ onClose, locale }: { onClose: () => void; locale: string
         onClose={onClose}>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:4 }}>
           {[
-            { plan:'PRO', price:'9.90$', color:'#00FFB2',  features:['Analyses illimitées','Chart annoté','SMC complet'] },
-            { plan:'ELITE', price:'24.90$', color:'#C9A84C', features:['Tout Pro','Annotations précises','Priorité IA'] },
+            { plan:'PRO', price:planPrice(locale, 'pro'), color:'#00FFB2',  features: fr ? ['Analyses illimitées','Chart annoté','SMC complet'] : ['Unlimited analyses','Annotated chart','Full SMC'] },
+            { plan:'ELITE', price:planPrice(locale, 'elite'), color:'#C9A84C', features: fr ? ['Tout Pro','Annotations précises','Priorité IA'] : ['Everything in Pro','Precise annotations','AI priority'] },
           ].map(p => (
             <div key={p.plan} style={{
               background:`${p.color}08`, border:`1px solid ${p.color}20`,
               borderRadius:8, padding:'10px 12px',
             }}>
               <div style={{ fontFamily:HUD, fontSize:9, color:p.color, letterSpacing:1, marginBottom:6 }}>{p.plan}</div>
-              <div style={{ fontFamily:HUD, fontSize:16, fontWeight:900, color:p.color, marginBottom:8 }}>{p.price}<span style={{ fontSize:9, opacity:0.6 }}>/mois</span></div>
+              <div style={{ fontFamily:HUD, fontSize:16, fontWeight:900, color:p.color, marginBottom:8 }}>{p.price}<span style={{ fontSize:9, opacity:0.6 }}>{fr ? '/mois' : '/month'}</span></div>
               {p.features.map(f => (
                 <div key={f} style={{ fontFamily:BODY, fontSize:11, color:'rgba(232,244,248,0.5)', marginBottom:2 }}>✓ {f}</div>
               ))}
@@ -303,9 +304,9 @@ function After3Popup({ onClose, locale }: { onClose: () => void; locale: string 
       <PopCard color="#FF6B35" icon="🔥" tag={fr ? 'TU PRENDS LE RYTHME !' : "YOU'RE ON A ROLL!"}
         title={fr ? 'Passe au niveau supérieur' : 'Level up your trading'}
         body={fr
-          ? 'Tu as déjà réalisé <b>3 analyses</b> avec l\'IA ! Nos membres Pro font en moyenne <b>15 analyses/semaine</b>.<br/>Analyses illimitées + chart annoté pour 9.90$/mois.'
-          : 'You\'ve already done <b>3 analyses</b> with the AI! Pro members average <b>15 analyses/week</b>.<br/>Unlimited analyses + annotated chart for $9.90/month.'}
-        cta={fr ? '⭐ PASSER PRO — 9.90$/mois' : '⭐ GO PRO — $9.90/month'}
+          ? 'Tu as déjà réalisé <b>3 analyses</b> avec l\'IA ! Nos membres Pro font en moyenne <b>15 analyses/semaine</b>.<br/>Analyses illimitées + chart annoté pour ' + planPricePerPeriod('fr', 'pro') + '.'
+          : 'You\'ve already done <b>3 analyses</b> with the AI! Pro members average <b>15 analyses/week</b>.<br/>Unlimited analyses + annotated chart for ' + planPricePerPeriod('en', 'pro') + '.'}
+        cta={fr ? `⭐ PASSER PRO — ${planPricePerPeriod('fr', 'pro')}` : `⭐ GO PRO — ${planPricePerPeriod('en', 'pro')}`}
         ctaHref="/pricing"
         ctaSecondary={fr ? 'Continuer en Free' : 'Continue for free'}
         onClose={onClose}>

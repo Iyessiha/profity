@@ -1,18 +1,14 @@
 import { notFound } from "next/navigation";
-import { createClient as adminClient } from "@supabase/supabase-js";
+import { getAdminClient } from "@/lib/supabase/server-admin";
 import { suspendUser, unsuspendUser, promoteToAdmin, revokeAdmin, cancelSubscription } from "../../actions";
 
 export const metadata = { title: "Profil utilisateur — Admin Profity" };
-
-const admin = adminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function UserDetailPage({ params }: Props) {
   const { id } = await params;
+  const admin = getAdminClient();
 
   const [
     { data: profile },
@@ -182,7 +178,7 @@ function TierBadge({ tier }: { tier: string }) {
   const s: Record<string, string> = { elite: "bg-long-soft text-long", pro: "bg-accent-soft text-accent", free: "bg-bg text-text-muted" };
   return <span className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${s[tier] ?? s.free}`}>{tier.toUpperCase()}</span>;
 }
-function Th({ children }: { children: React.ReactNode }) {
+function Th({ children }: { children?: React.ReactNode }) {
   return <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-text-muted">{children}</th>;
 }
 function Td({ children }: { children: React.ReactNode }) {

@@ -112,3 +112,62 @@ export interface ApiResponse<T> {
   error?:  string
   code?:   string
 }
+
+// ── Trading Accounts & Challenges ─────────────────────────
+export interface TradingAccount {
+  id: string
+  user_id: string
+  label: string | null
+  connect_token: string
+  mt5_login: number | null
+  broker_server: string | null
+  broker_company: string | null
+  currency: string | null
+  leverage: number | null
+  is_active: boolean
+  last_seen_at: string | null
+  created_at: string
+}
+
+export interface ChallengePres {
+  id: string
+  name: string
+  description: string | null
+  account_size: number | null
+  profit_target_pct: number
+  max_total_dd_pct: number
+  dd_type: "static" | "trailing"
+  max_daily_dd_pct: number | null
+}
+
+export interface Challenge {
+  id: string
+  account_id: string
+  preset_id: string
+  status: "active" | "passed" | "breached" | "abandoned"
+  starting_balance: number
+  current_equity: number
+  profit: number
+  loss: number
+  max_dd: number
+  current_dd: number
+  days_elapsed: number
+  starting_at: string
+  ended_at: string | null
+  created_at: string
+}
+
+export interface ChallengeEvent {
+  id: string
+  challenge_id: string
+  kind: string
+  details: Record<string, any> | null
+  created_at: string
+}
+
+export interface EquitySnapshot {
+  id: string
+  challenge_id: string
+  equity: number
+  timestamp: string
+}

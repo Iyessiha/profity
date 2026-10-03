@@ -21,10 +21,11 @@ interface ChartRecord {
   market_state?: string|null; confidence?: string|null
   smc_analysis?: string|null; confluence_factors?: string[]|null
   order_type?: string|null; trend?: string|null
-  order_block?: { high:number; low:number; type:string; label:string }|null
-  fvg?: { high:number; low:number; type:string; label:string }|null
+  order_block?: { high:number; low:number; type:'bullish'|'bearish'; label:string }|null
+  fvg?: { high:number; low:number; type:'bullish'|'bearish'; label:string }|null
   bos_level?: number|null; choch_level?: number|null
   liquidity_high?: number|null; liquidity_low?: number|null
+  is_public?: boolean|null
 }
 interface NewsRecord {
   id:string; event_title:string; country:string; direction:'LONG'|'SHORT'|'NEUTRE'
@@ -318,7 +319,7 @@ function DetailModal({ item, type, locale, token, onClose, onRated }: {
           </a>
         )}
         {/* Toggle partage public sur /results */}
-        <PublicToggle analysisId={chart.id} isPublic={!!chart.is_public} token={token} />
+        {chart && <PublicToggle analysisId={chart.id} isPublic={!!chart.is_public} token={token} />}
       </div>
     </div>
   )

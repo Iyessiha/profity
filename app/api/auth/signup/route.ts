@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
 
   // 3. Email de bienvenue immédiat (J0) via Brevo
   try {
-    await sendEmail({ template: 'welcome', to: email, name: userName })
+    await sendEmail({ template: 'welcome', to: email, name: userName, locale: (locale === 'en' ? 'en' : 'fr') })
     // Marquer J0 comme envoyé
     await admin.from('email_sequences')
       .update({ status: 'sent', sent_at: now.toISOString() })

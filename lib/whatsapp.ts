@@ -77,7 +77,7 @@ export async function markAsRead(messageId: string) {
 export function extractText(msg: WaMessage): string {
   if (msg.type === 'text') return msg.text?.body ?? ''
   if (msg.type === 'interactive') {
-    const m = msg as Record<string, Record<string, Record<string, string>>>
+    const m = msg as unknown as Record<string, Record<string, Record<string, string>>>
     return m.interactive?.button_reply?.title ?? m.interactive?.list_reply?.title ?? ''
   }
   return ''

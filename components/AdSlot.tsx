@@ -32,7 +32,7 @@ export default function AdSlot({ type, slot, manual, showAds = true }: AdSlotPro
       document.head.appendChild(script)
     }
     // Déclencher l'affichage
-    try { ((window as Record<string,unknown>).adsbygoogle as unknown[])?.push({}) } catch {}
+    try { (((window as unknown as Record<string,unknown>).adsbygoogle ??= []) as unknown[]).push({}) } catch {}
   }, [slot, showAds])
 
   if (!showAds) return null

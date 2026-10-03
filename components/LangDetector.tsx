@@ -6,6 +6,7 @@
 'use client'
 import { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import { setLang } from '@/lib/i18n'
 
 export default function LangDetector() {
   const pathname = usePathname()
@@ -25,15 +26,13 @@ export default function LangDetector() {
     // Détecter via API
     fetch('/api/detect-lang')
       .then(r => r.json())
-      .then(({ lang, country }) => {
-        localStorage.setItem('pxLang', lang)
+      .then(({ lang }) => {
+        if (lang === 'fr' || lang === 'en') setLang(lang, false)
 
         // Rediriger vers la bonne landing page
         if (lang === 'en' && pathname === '/') {
-          console.log(`[LangDetector] ${country} → /en`)
           router.replace('/en')
         } else if (lang === 'fr' && pathname === '/en') {
-          console.log(`[LangDetector] ${country} → /`)
           router.replace('/')
         }
       })

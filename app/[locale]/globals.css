@@ -1,0 +1,299 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   PROFITY DESIGN SYSTEM
+   ----------------------------------------------------------------------------
+   Two visual registers, one token vocabulary.
+
+     register "app"      dense, dark-native  — signal, journal, prop firm, admin
+     register "document" airy,  light-native — pricing, checkout, invoice, legal
+
+   Components only ever reference semantic tokens (surface-*, text-*, line-*,
+   accent-*, long/short). They never name a colour. Swapping a register or a
+   theme therefore needs no component change.
+
+   Trading semantics are reserved: green means LONG / profit / take-profit and
+   red means SHORT / loss / stop-loss, in every register. The brand accent is
+   deliberately off that axis (brass in app, indigo in document) so a brand
+   surface can never be mistaken for a market outcome.
+   ========================================================================== */
+
+@theme inline {
+  --color-surface-base:    var(--surface-base);
+  --color-surface-raised:  var(--surface-raised);
+  --color-surface-sunken:  var(--surface-sunken);
+  --color-surface-overlay: var(--surface-overlay);
+
+  --color-text-strong: var(--text-strong);
+  --color-text:        var(--text);
+  --color-text-muted:  var(--text-muted);
+  --color-text-faint:  var(--text-faint);
+
+  --color-line-subtle: var(--line-subtle);
+  --color-line:        var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-accent:          var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-accent-soft:     var(--accent-soft);
+  --color-accent-line:     var(--accent-line);
+
+  --color-long:       var(--long);
+  --color-long-soft:  var(--long-soft);
+  --color-long-line:  var(--long-line);
+  --color-short:      var(--short);
+  --color-short-soft: var(--short-soft);
+  --color-short-line: var(--short-line);
+  --color-warn:       var(--warn);
+  --color-warn-soft:  var(--warn-soft);
+  --color-info:       var(--info);
+  --color-info-soft:  var(--info-soft);
+  --color-flat:       var(--flat);
+  --color-flat-soft:  var(--flat-soft);
+
+  --color-tier-free:  var(--tier-free);
+  --color-tier-pro:   var(--tier-pro);
+  --color-tier-elite: var(--tier-elite);
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    var(--font-plex-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --radius-card:    0.375rem;
+  --radius-control: 0.25rem;
+}
+
+/* ── app · dark — the default register ──────────────────────────────────── */
+:root {
+  color-scheme: dark;
+
+  --surface-base:    #0a0f16;
+  --surface-raised:  #0e141c;
+  --surface-sunken:  #070b11;
+  --surface-overlay: #131b25;
+
+  --text-strong: #f2f6fa;
+  --text:        #dbe3ec;
+  --text-muted:  #8b9aac;
+  --text-faint:  #6e7d8c;
+
+  --line-subtle: #151d27;
+  --line:        #1e2835;
+  --line-strong: #2c3846;
+
+  --accent:          #d9a94a;
+  --accent-contrast: #0a0f16;
+  --accent-soft:     rgb(217 169 74 / 0.11);
+  --accent-line:     rgb(217 169 74 / 0.38);
+
+  --long:       #23d18b;
+  --long-soft:  rgb(35 209 139 / 0.12);
+  --long-line:  rgb(35 209 139 / 0.34);
+  --short:      #f26d7d;
+  --short-soft: rgb(242 109 125 / 0.12);
+  --short-line: rgb(242 109 125 / 0.34);
+  --warn:       #e8a13c;
+  --warn-soft:  rgb(232 161 60 / 0.12);
+  --info:       #5cb0d6;
+  --info-soft:  rgb(92 176 214 / 0.12);
+  --flat:       #8b9aac;
+  --flat-soft:  rgb(139 154 172 / 0.12);
+
+  --tier-free:  #8b9aac;
+  --tier-pro:   #5cb0d6;
+  --tier-elite: #d9a94a;
+}
+
+/* ── app · light — explicit opt-out for daylight and accessibility ──────── */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --surface-base:    #eef1f4;
+  --surface-raised:  #ffffff;
+  --surface-sunken:  #f4f7f9;
+  --surface-overlay: #ffffff;
+
+  --text-strong: #0e141c;
+  --text:        #333d49;
+  --text-muted:  #65707e;
+  --text-faint:  #7d8895;
+
+  --line-subtle: #e7ecf0;
+  --line:        #d8e0e6;
+  --line-strong: #bcc7d1;
+
+  --accent:          #8a6414;
+  --accent-contrast: #ffffff;
+  --accent-soft:     rgb(138 100 20 / 0.09);
+  --accent-line:     rgb(138 100 20 / 0.32);
+
+  --long:       #0b7a57;
+  --long-soft:  rgb(11 122 87 / 0.10);
+  --long-line:  rgb(11 122 87 / 0.30);
+  --short:      #c2354a;
+  --short-soft: rgb(194 53 74 / 0.10);
+  --short-line: rgb(194 53 74 / 0.30);
+  --warn:       #9a6206;
+  --warn-soft:  rgb(154 98 6 / 0.10);
+  --info:       #1c6c91;
+  --info-soft:  rgb(28 108 145 / 0.10);
+  --flat:       #65707e;
+  --flat-soft:  rgb(101 112 126 / 0.10);
+
+  --tier-free:  #65707e;
+  --tier-pro:   #1c6c91;
+  --tier-elite: #8a6414;
+}
+
+/* ── document · light — money screens.
+   Set on a wrapper element, not on :root, so a route group can choose its
+   register; custom properties then inherit through the whole subtree. ───── */
+[data-register="document"] {
+  color-scheme: light;
+  background-color: var(--surface-base);
+  color: var(--text);
+
+  --surface-base:    #edf0f3;
+  --surface-raised:  #ffffff;
+  --surface-sunken:  #f7f9fb;
+  --surface-overlay: #ffffff;
+
+  --text-strong: #141a21;
+  --text:        #333c47;
+  --text-muted:  #65707e;
+  --text-faint:  #7f8a97;
+
+  --line-subtle: #ebf0f4;
+  --line:        #dce3e9;
+  --line-strong: #c3ccd4;
+
+  --accent:          #4a3fbf;
+  --accent-contrast: #ffffff;
+  --accent-soft:     rgb(74 63 191 / 0.08);
+  --accent-line:     rgb(74 63 191 / 0.30);
+
+  --long:       #0b6e4f;
+  --long-soft:  rgb(11 110 79 / 0.10);
+  --long-line:  rgb(11 110 79 / 0.28);
+  --short:      #c2354a;
+  --short-soft: rgb(194 53 74 / 0.10);
+  --short-line: rgb(194 53 74 / 0.28);
+  --warn:       #9a6206;
+  --warn-soft:  rgb(154 98 6 / 0.10);
+  --info:       #1c6c91;
+  --info-soft:  rgb(28 108 145 / 0.10);
+  --flat:       #65707e;
+  --flat-soft:  rgb(101 112 126 / 0.10);
+
+  --tier-free:  #65707e;
+  --tier-pro:   #1c6c91;
+  --tier-elite: #7c5cd6;
+}
+
+/* ── document · dark — so a night-time checkout does not blind ──────────── */
+:root[data-theme="dark"] [data-register="document"] {
+  color-scheme: dark;
+
+  --surface-base:    #101319;
+  --surface-raised:  #171c24;
+  --surface-sunken:  #0c0f14;
+  --surface-overlay: #1c222b;
+
+  --text-strong: #f3f4f8;
+  --text:        #d9dce4;
+  --text-muted:  #949cab;
+  --text-faint:  #767e8d;
+
+  --line-subtle: #1b2027;
+  --line:        #252c36;
+  --line-strong: #343d49;
+
+  --accent:          #9a8fff;
+  --accent-contrast: #101319;
+  --accent-soft:     rgb(154 143 255 / 0.13);
+  --accent-line:     rgb(154 143 255 / 0.36);
+
+  --long:       #2be08f;
+  --long-soft:  rgb(43 224 143 / 0.12);
+  --long-line:  rgb(43 224 143 / 0.34);
+  --short:      #ff6b84;
+  --short-soft: rgb(255 107 132 / 0.12);
+  --short-line: rgb(255 107 132 / 0.34);
+  --warn:       #e8a13c;
+  --warn-soft:  rgb(232 161 60 / 0.12);
+  --info:       #5cb0d6;
+  --info-soft:  rgb(92 176 214 / 0.12);
+  --flat:       #949cab;
+  --flat-soft:  rgb(148 156 171 / 0.12);
+
+  --tier-free:  #949cab;
+  --tier-pro:   #5cb0d6;
+  --tier-elite: #9a8fff;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--surface-base);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    color: var(--text-strong);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* Prices, levels and ratios are read in columns and compared line to line,
+     so digits must not change width between values. */
+  [data-numeric] {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--accent-soft);
+    color: var(--text-strong);
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Uppercase micro-labels need tracking to stay legible at small sizes. */
+  .label-caps {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

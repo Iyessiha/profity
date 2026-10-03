@@ -1,15 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import { createClient as adminClient } from "@supabase/supabase-js";
+import { getAdminClient } from "@/lib/supabase/server-admin";
 import Link from "next/link";
 
 export const metadata = { title: "Admin — Profity" };
 
-const admin = adminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
-
 export default async function AdminPage() {
+  const admin = getAdminClient();
   const [
     { count: totalUsers },
     { count: activeSubsCount },
@@ -139,7 +135,7 @@ function KpiCard({ label, value, color = "text-text-strong" }: { label: string; 
   );
 }
 
-function Th({ children }: { children: React.ReactNode }) {
+function Th({ children }: { children?: React.ReactNode }) {
   return (
     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-text-muted">
       {children}

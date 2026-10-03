@@ -6,8 +6,9 @@ import { useState, useEffect } from 'react'
 import { supabasePublic } from '@/lib/supabase'
 import { useTheme } from '@/lib/theme'
 import { useMenu } from '@/lib/menu-context'
+import { setLang } from '@/lib/i18n'
 
-type Tab = 'chart' | 'calendar' | 'history'
+type Tab = 'chart' | 'calendar' | 'history' | 'journal'
 interface Props { tab: Tab; setTab: (t: Tab) => void; plan: string; locale: string }
 
 // ── 3 groupes logiques ───────────────────────────────────────
@@ -154,7 +155,7 @@ export default function Sidebar({ plan, locale }: Props) {
           <button
             className="mobile-only"
             onClick={close}
-            aria-label="Fermer le menu"
+            aria-label={locale === 'en' ? 'Close menu' : 'Fermer le menu'}
             style={{
               background: isDark ? 'rgba(255,255,255,0.06)' : '#F3F4F6',
               border: 'none', borderRadius: 8,
@@ -278,15 +279,7 @@ export default function Sidebar({ plan, locale }: Props) {
           {/* Sélecteur langue — mobile uniquement */}
           <div className="mobile-only" style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
             {(['fr', 'en'] as const).map(l => (
-              <button key={l} onClick={async () => {
-                try {
-                  localStorage.setItem('pxLang', l)
-                  const { supabasePublic } = await import('@/lib/supabase')
-                  const { data: { session } } = await supabasePublic.auth.getSession()
-                  if (session) await supabasePublic.from('profiles').update({ locale: l }).eq('id', session.user.id)
-                } catch {}
-                window.location.reload()
-              }} style={{
+              <button key={l} onClick={() => setLang(l)} style={{
                 flex: 1, fontFamily: HUD, fontSize: 9, letterSpacing: 2,
                 padding: '10px 0', borderRadius: 8, cursor: 'pointer',
                 border: `1px solid ${locale === l ? activeBorder : divider}`,

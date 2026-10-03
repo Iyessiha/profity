@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = req.headers.get('authorization')?.replace('Bearer ', '')
   if (!auth) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const { error } = await db
     .from('chart_analyses')
     .update({ is_public: !!is_public })
-    .eq('id', params.id)
+    .eq('id', (await params).id)
     .eq('user_id', user.id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

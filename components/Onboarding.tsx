@@ -7,6 +7,7 @@
 'use client'
 import { useState } from 'react'
 import { supabasePublic } from '@/lib/supabase'
+import { useLang, tr } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -27,11 +28,12 @@ const TIMEFRAMES = ['M1','M5','M15','H1','H4','D1']
 
 // ── Étape 2 : Démo visuelle ───────────────────────────────────
 function DemoStep() {
+  const lang = useLang()
   const [active, setActive] = useState(0)
   const steps = [
-    { n:'01', icon:'📸', title:'Capturez votre chart', desc:'Screenshot plein écran sur TradingView ou Deriv — thème sombre, timeframe H1 ou H4 pour de meilleurs résultats.', color:'#00FFB2' },
-    { n:'02', icon:'⬆️', title:'Uploadez-le',          desc:'Glissez ou sélectionnez l\'image sur la page Analyse IA. L\'IA détecte automatiquement la paire et le timeframe.', color:'#00D4FF' },
-    { n:'03', icon:'🎯', title:'Recevez votre signal', desc:'En 10 secondes : Entrée · Stop Loss · TP1 / TP2 / TP3 et un chart annoté avec les zones Order Block et FVG.', color:'#C9A84C' },
+    { n:'01', icon:'📸', title:tr(lang, 'Capturez votre chart', 'Capture your chart'), desc:tr(lang, "Faites une capture plein écran sur TradingView ou Deriv — thème sombre, timeframe H1 ou H4 pour de meilleurs résultats.", 'Take a full-screen screenshot on TradingView or Deriv — dark theme, H1 or H4 timeframe for the best results.'), color:'#00FFB2' },
+    { n:'02', icon:'⬆️', title:tr(lang, 'Importez-la', 'Upload it'), desc:tr(lang, "Glissez ou sélectionnez l'image sur la page Analyse IA. L'IA détecte automatiquement la paire et le timeframe.", 'Drag or select the image on the AI Analysis page. The AI automatically detects the pair and timeframe.'), color:'#00D4FF' },
+    { n:'03', icon:'🎯', title:tr(lang, 'Recevez votre signal', 'Get your signal'), desc:tr(lang, 'En 10 secondes : Entrée · Stop Loss · TP1 / TP2 / TP3 et un chart annoté avec les zones Order Block et FVG.', 'In 10 seconds: Entry · Stop Loss · TP1 / TP2 / TP3 and an annotated chart with Order Block and FVG zones.'), color:'#C9A84C' },
   ]
   return (
     <div>
@@ -53,8 +55,8 @@ function DemoStep() {
       </div>
       <div style={{ marginTop:12, display:'flex', gap:8 }}>
         {[
-          { icon:'💡', text:'Capture plein écran = tracés plus précis', color:'#C9A84C' },
-          { icon:'⚡', text:'Résultat en moins de 10 secondes', color:'#00FFB2' },
+          { icon:'💡', text:tr(lang, 'Capture plein écran = tracés plus précis', 'Full-screen capture = more accurate drawings'), color:'#C9A84C' },
+          { icon:'⚡', text:tr(lang, 'Résultat en moins de 10 secondes', 'Result in under 10 seconds'), color:'#00FFB2' },
         ].map(t => (
           <div key={t.text} style={{ flex:1, background:`${t.color}08`, border:`1px solid ${t.color}18`, borderRadius:7, padding:'8px 10px', display:'flex', gap:6, alignItems:'flex-start' }}>
             <span style={{ fontSize:13 }}>{t.icon}</span>
@@ -68,22 +70,23 @@ function DemoStep() {
 
 // ── Étape 3 : Premier chart ───────────────────────────────────
 function FirstChartStep({ credits }: { credits: number }) {
+  const lang = useLang()
   return (
     <div>
       <div style={{ background:'linear-gradient(135deg, rgba(0,255,178,0.08), rgba(0,212,255,0.05))', border:'1px solid rgba(0,255,178,0.15)', borderRadius:12, padding:'16px 18px', marginBottom:14 }}>
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
           <span style={{ fontSize:28 }}>🎯</span>
           <div>
-            <div style={{ fontFamily:HUD, fontSize:11, color:'#00FFB2', marginBottom:2 }}>PRÊT À TRADER ?</div>
-            <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.6)' }}>Votre premier signal vous attend</div>
+            <div style={{ fontFamily:HUD, fontSize:11, color:'#00FFB2', marginBottom:2 }}>{tr(lang, 'PRÊT À TRADER ?', 'READY TO TRADE?')}</div>
+            <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.6)' }}>{tr(lang, 'Votre premier signal vous attend', 'Your first signal is waiting')}</div>
           </div>
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
           {[
-            { icon:'🪙', label:`${credits} crédits`, sub:'disponibles maintenant' },
-            { icon:'⏱️', label:'10 secondes', sub:'pour un signal complet' },
-            { icon:'📊', label:'Chart annoté', sub:'Order Blocks + FVG' },
-            { icon:'🎁', label:'+20 crédits', sub:'par ami parrainé' },
+            { icon:'🪙', label:tr(lang, `${credits} crédits`, `${credits} credits`), sub:tr(lang, 'disponibles maintenant', 'available now') },
+            { icon:'⏱️', label:tr(lang, '10 secondes', '10 seconds'), sub:tr(lang, 'pour un signal complet', 'for a full signal') },
+            { icon:'📊', label:tr(lang, 'Chart annoté', 'Annotated chart'), sub:'Order Blocks + FVG' },
+            { icon:'🎁', label:tr(lang, '+20 crédits', '+20 credits'), sub:tr(lang, 'par ami parrainé', 'per referred friend') },
           ].map(c => (
             <div key={c.label} style={{ background:'rgba(0,255,178,0.04)', border:'1px solid rgba(0,255,178,0.08)', borderRadius:7, padding:'8px 10px' }}>
               <div style={{ fontSize:16, marginBottom:3 }}>{c.icon}</div>
@@ -94,7 +97,9 @@ function FirstChartStep({ credits }: { credits: number }) {
         </div>
       </div>
       <div style={{ fontFamily:BODY, fontSize:13, color:'rgba(232,244,248,0.5)', lineHeight:1.6, textAlign:'center' }}>
-        Cliquez sur <strong style={{ color:'#00FFB2' }}>C'EST PARTI !</strong> pour uploader votre premier chart et recevoir votre signal SMC.
+        {lang === 'en'
+          ? <>Click <strong style={{ color:'#00FFB2' }}>LET&apos;S GO!</strong> to upload your first chart and get your SMC signal.</>
+          : <>Cliquez sur <strong style={{ color:'#00FFB2' }}>C&apos;EST PARTI !</strong> pour importer votre premier chart et recevoir votre signal SMC.</>}
       </div>
     </div>
   )
@@ -102,6 +107,7 @@ function FirstChartStep({ credits }: { credits: number }) {
 
 // ── Composant principal ────────────────────────────────────────
 export default function Onboarding({ userId, name = 'Trader', credits = 10, onDone }: Props) {
+  const lang = useLang()
   const [step,        setStep]        = useState(0)
   const [leaving,     setLeaving]     = useState(false)
   const [saving,      setSaving]      = useState(false)
@@ -111,9 +117,9 @@ export default function Onboarding({ userId, name = 'Trader', credits = 10, onDo
   const [timeframe,       setTimeframe]       = useState('')
 
   const STEPS = [
-    { icon:'⚙️', title:`Configurez votre profil, ${name}`, color:'#00FFB2' },
-    { icon:'📊', title:'Comment ça marche',                 color:'#00D4FF' },
-    { icon:'🚀', title:'Lancez votre première analyse',     color:'#C9A84C' },
+    { icon:'⚙️', title:tr(lang, `Configurez votre profil, ${name}`, `Set up your profile, ${name}`), color:'#00FFB2' },
+    { icon:'📊', title:tr(lang, 'Comment ça marche', 'How it works'),                         color:'#00D4FF' },
+    { icon:'🚀', title:tr(lang, 'Lancez votre première analyse', 'Run your first analysis'),   color:'#C9A84C' },
   ]
   const current = STEPS[step]
   const isLast  = step === STEPS.length - 1
@@ -181,7 +187,7 @@ export default function Onboarding({ userId, name = 'Trader', credits = 10, onDo
             </div>
             <div style={{ flex:1 }}>
               <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(232,244,248,0.3)', marginBottom:4 }}>
-                ÉTAPE {step+1} / {STEPS.length}
+                {tr(lang, 'ÉTAPE', 'STEP')} {step+1} / {STEPS.length}
               </div>
               <h2 style={{ fontFamily:HUD, fontSize:13, fontWeight:900, color:'#E8F4F8', lineHeight:1.25, margin:0 }}>
                 {current.title}
@@ -196,7 +202,7 @@ export default function Onboarding({ userId, name = 'Trader', credits = 10, onDo
             {step === 0 && (
               <div>
                 <p style={{ fontFamily:BODY, fontSize:14, color:'rgba(232,244,248,0.6)', lineHeight:1.6, marginBottom:14, marginTop:0 }}>
-                  Quels actifs tradez-vous ? <span style={{ color:'rgba(232,244,248,0.35)' }}>(sélectionnez tout ce qui vous concerne)</span>
+                  {tr(lang, 'Quels actifs tradez-vous ?', 'Which assets do you trade?')} <span style={{ color:'rgba(232,244,248,0.35)' }}>{tr(lang, '(sélectionnez tout ce qui vous concerne)', '(select all that apply)')}</span>
                 </p>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:7, marginBottom:16 }}>
                   {ASSETS.map(a => {
@@ -225,12 +231,12 @@ export default function Onboarding({ userId, name = 'Trader', credits = 10, onDo
                           background: broker===b ? 'rgba(0,255,178,0.15)' : 'rgba(255,255,255,0.04)',
                           border: `1px solid ${broker===b ? 'rgba(0,255,178,0.4)' : 'rgba(255,255,255,0.07)'}`,
                           fontFamily:BODY, fontSize:11, color: broker===b ? '#00FFB2' : 'rgba(232,244,248,0.45)',
-                        }}>{b}</button>
+                        }}>{b === 'Autre' ? tr(lang, 'Autre', 'Other') : b}</button>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'rgba(232,244,248,0.35)', marginBottom:6 }}>TIMEFRAME PRÉFÉRÉ</div>
+                    <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'rgba(232,244,248,0.35)', marginBottom:6 }}>{tr(lang, 'TIMEFRAME PRÉFÉRÉ', 'PREFERRED TIMEFRAME')}</div>
                     <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
                       {TIMEFRAMES.map(tf => (
                         <button key={tf} onClick={() => setTimeframe(tf)} style={{
@@ -257,7 +263,7 @@ export default function Onboarding({ userId, name = 'Trader', credits = 10, onDo
           {/* Actions */}
           <div style={{ marginTop:'1.25rem', display:'flex', gap:10, alignItems:'center' }}>
             <button onClick={skip} style={{ background:'transparent', border:'none', color:'rgba(232,244,248,0.25)', fontFamily:HUD, fontSize:8, letterSpacing:1, cursor:'pointer', padding:'6px 0', flexShrink:0 }}>
-              PASSER
+              {tr(lang, 'PASSER', 'SKIP')}
             </button>
             <div style={{ flex:1, display:'flex', justifyContent:'center', gap:6 }}>
               {STEPS.map((_, i) => (
@@ -271,7 +277,7 @@ export default function Onboarding({ userId, name = 'Trader', credits = 10, onDo
               flexShrink:0, boxShadow:`0 4px 16px ${current.color}30`,
               opacity: saving ? 0.7 : 1, transition:'opacity .2s',
             }}>
-              {saving ? '...' : isLast ? "C'EST PARTI !" : 'SUIVANT →'}
+              {saving ? '...' : isLast ? tr(lang, "C'EST PARTI !", "LET'S GO!") : tr(lang, 'SUIVANT →', 'NEXT →')}
             </button>
           </div>
         </div>

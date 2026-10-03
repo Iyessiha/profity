@@ -47,7 +47,7 @@ export async function subscribeToPush(reg: ServiceWorkerRegistration): Promise<P
 
     const subscription = await reg.pushManager.subscribe({
       userVisibleOnly:      true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC),
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC) as BufferSource,
     })
 
     return subscription
@@ -119,11 +119,12 @@ export async function sendTestNotification(): Promise<void> {
   const reg = await navigator.serviceWorker.ready
   await reg.showNotification('ProfityX — Test', {
     body:  '🎯 Notifications actives ! Vous recevrez les alertes avant chaque annonce.',
-    icon:  '/icons/icon-192.png',
-    badge: '/icons/badge-72.png',
+    icon:  '/icon-192.png',
+    badge: '/favicon-32.png',
     tag:   'profityx-test',
+    // `vibrate` est supporté par les navigateurs mais absent du type DOM
     vibrate: [200, 100, 200],
-  })
+  } as NotificationOptions)
 }
 
 // ─── Utilitaire VAPID ─────────────────────────────────────

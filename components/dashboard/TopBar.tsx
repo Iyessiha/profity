@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTheme } from '@/lib/theme'
 import { useMenu } from '@/lib/menu-context'
 import { supabasePublic } from '@/lib/supabase'
+import { setLang, tr } from '@/lib/i18n'
 import NotificationBell from '@/components/dashboard/NotificationBell'
 import CreditBalance from '@/components/dashboard/CreditBalance'
 
@@ -42,6 +43,8 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
       if (data.session) setToken(data.session.access_token)
     })
   }, [])
+
+  const handleLangChange = (lang: 'fr' | 'en') => setLang(lang)
 
   return (
     <header style={{
@@ -83,7 +86,7 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
         <div className="topbar-hide" style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 3, padding: '4px 8px' }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--ok)' }} />
           <span style={{ fontFamily: HUD, fontSize: 7, color: 'var(--ok)', letterSpacing: 1.5 }}>
-            {locale === 'fr' ? 'MARCHÉ OUVERT' : 'MARKET OPEN'}
+            {tr(locale, 'MARCHÉ OUVERT', 'MARKET OPEN')}
           </span>
         </div>
 
@@ -119,7 +122,7 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
         {/* Toggle thème — desktop seulement */}
         <button onClick={toggleTheme}
           className="topbar-hide"
-          title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+          title={theme === 'dark' ? tr(locale, 'Mode clair', 'Light mode') : tr(locale, 'Mode sombre', 'Dark mode')}
           style={{ display:'flex', alignItems:'center', gap:5, padding:'6px 10px', borderRadius:7,
             border:`1px solid ${theme === 'dark' ? 'rgba(201,168,76,0.3)' : 'rgba(0,166,81,0.3)'}`,
             background: theme === 'dark' ? 'rgba(201,168,76,0.07)' : 'rgba(0,166,81,0.07)',
@@ -131,7 +134,7 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
         {/* Toggle thème mobile — icône seule */}
         <button onClick={toggleTheme}
           className="mobile-only"
-          title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+          title={theme === 'dark' ? tr(locale, 'Mode clair', 'Light mode') : tr(locale, 'Mode sombre', 'Dark mode')}
           style={{ display:'flex', alignItems:'center', justifyContent:'center',
             width:34, height:34, borderRadius:8,
             border:`1px solid ${theme === 'dark' ? 'rgba(201,168,76,0.3)' : 'rgba(0,166,81,0.3)'}`,
@@ -200,7 +203,7 @@ export function QuotaBar({ token, plan, locale }: CreditBarProps) {
           <circle cx="8" cy="8" r="7" fill={color} fillOpacity="0.2" stroke={color} strokeWidth="1.2"/>
           <path d="M8 4v4l2.5 2.5" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
         </svg>
-        <span className="topbar-hide" style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', whiteSpace:'nowrap' }}>CRÉDITS</span>
+        <span className="topbar-hide" style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', whiteSpace:'nowrap' }}>{tr(locale, 'CRÉDITS', 'CREDITS')}</span>
         <div style={{ flex:1, height:3, background:'var(--bd)', borderRadius:2, overflow:'hidden', minWidth:40 }}>
           <div style={{ height:'100%', borderRadius:2, width:`${pct}%`, background:`linear-gradient(90deg, var(--ac), ${color})`, transition:'width .6s ease' }} />
         </div>
@@ -208,12 +211,12 @@ export function QuotaBar({ token, plan, locale }: CreditBarProps) {
           {remaining}
         </span>
         <span className="topbar-hide" style={{ fontFamily:BODY, fontSize:10, color:'var(--tx3)', whiteSpace:'nowrap' }}>
-          {isEmpty ? '— rechargez' : isLow ? '— solde bas' : `restant${remaining > 1 ? 's' : ''}`}
+          {isEmpty ? tr(locale, '— rechargez', '— top up') : isLow ? tr(locale, '— solde bas', '— low balance') : tr(locale, `restant${remaining > 1 ? 's' : ''}`, 'left')}
         </span>
       </div>
       {(isEmpty || isLow) && (
         <a href="/pricing" style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#020408', background:color, borderRadius:3, padding:'3px 10px', textDecoration:'none', whiteSpace:'nowrap', flexShrink:0 }}>
-          RECHARGER →
+          {tr(locale, 'RECHARGER →', 'TOP UP →')}
         </a>
       )}
     </div>

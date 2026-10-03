@@ -3,12 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { createClient as adminClient } from "@supabase/supabase-js";
-
-const admin = adminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+import { getAdminClient } from "@/lib/supabase/server-admin";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -27,6 +22,7 @@ async function requireAdmin() {
 
 export async function suspendUser(userId: string, reason: string) {
   const actor = await requireAdmin();
+  const admin = getAdminClient();
 
   await admin.from("profiles").update({ suspended: true, suspended_reason: reason }).eq("id", userId);
 
@@ -43,6 +39,7 @@ export async function suspendUser(userId: string, reason: string) {
 
 export async function unsuspendUser(userId: string) {
   const actor = await requireAdmin();
+  const admin = getAdminClient();
 
   await admin.from("profiles").update({ suspended: false, suspended_reason: null }).eq("id", userId);
 
@@ -59,6 +56,7 @@ export async function unsuspendUser(userId: string) {
 
 export async function promoteToAdmin(userId: string) {
   const actor = await requireAdmin();
+  const admin = getAdminClient();
 
   await admin.from("profiles").update({ is_admin: true }).eq("id", userId);
 
@@ -75,6 +73,7 @@ export async function promoteToAdmin(userId: string) {
 
 export async function revokeAdmin(userId: string) {
   const actor = await requireAdmin();
+  const admin = getAdminClient();
 
   await admin.from("profiles").update({ is_admin: false }).eq("id", userId);
 
@@ -91,6 +90,7 @@ export async function revokeAdmin(userId: string) {
 
 export async function cancelSubscription(subId: string, userId: string) {
   const actor = await requireAdmin();
+  const admin = getAdminClient();
 
   await admin
     .from("subscriptions")

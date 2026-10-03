@@ -197,7 +197,7 @@ Analyze this chart. READ the visible timeframe (top-left corner or title), exact
   }
 
   // ── Parser le signal ──────────────────────────────────────
-  const parsed = parseClaudeJSON<Record<string,unknown>>(rawText)
+  const parsed = parseClaudeJSON(rawText)
   if (!parsed || parsed['error'])
     return NextResponse.json<ApiResponse<null>>({ success:false, error:parsed?.['error'] as string ?? 'Image non reconnue comme chart.', code:'INVALID_IMAGE' }, { status:422 })
 
@@ -344,7 +344,7 @@ Analyze this chart. READ the visible timeframe (top-left corner or title), exact
           await admin.from('credit_transactions').insert({
             user_id: user.id, amount: 0, type: 'telegram_alert',
             description: `Alerte Telegram PRO — ${signal.pair}`,
-          }).catch(() => {})
+          })
         }
       }
     }

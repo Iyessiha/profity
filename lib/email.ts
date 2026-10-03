@@ -12,18 +12,28 @@ export type EmailTemplate =
   | 'low_credits'
   | 'referral'
   | 'reactivation'
+  | 'invoice'
+  | 'checkout_abandoned'
+  | 'seq_j1'
+  | 'seq_j3'
+  | 'seq_j7'
+  | 'seq_j14'
 
 export async function sendEmail(opts: {
   template: EmailTemplate
   to: string
   name?: string
+  locale?: 'fr' | 'en'
   data?: Record<string, string>
 }): Promise<boolean> {
   try {
     const res = await fetch(EDGE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(opts),
+      body: JSON.stringify({
+        ...opts,
+        locale: opts.locale ?? 'fr', // défaut français
+      }),
     })
     const json = await res.json()
     if (!json.success) console.error('[email]', json.error)
