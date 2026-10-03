@@ -12,6 +12,12 @@ export type EmailTemplate =
   | 'low_credits'
   | 'referral'
   | 'reactivation'
+  | 'invoice'
+  | 'checkout_abandoned'
+  | 'seq_j1'
+  | 'seq_j3'
+  | 'seq_j7'
+  | 'seq_j14'
 
 export async function sendEmail(opts: {
   template: EmailTemplate

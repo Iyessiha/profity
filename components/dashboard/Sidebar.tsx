@@ -7,7 +7,7 @@ import { supabasePublic } from '@/lib/supabase'
 import { useTheme } from '@/lib/theme'
 import { useMenu } from '@/lib/menu-context'
 
-type Tab = 'chart' | 'calendar' | 'history'
+type Tab = 'chart' | 'calendar' | 'history' | 'journal'
 interface Props { tab: Tab; setTab: (t: Tab) => void; plan: string; locale: string }
 
 // ── 3 groupes logiques ───────────────────────────────────────

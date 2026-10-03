@@ -43,6 +43,19 @@ export default function TopBar({ user, profile, locale, currency = 'XOF' }: TopB
     })
   }, [])
 
+  // La locale vient des pages (profil) : on la persiste puis on recharge
+  const handleLangChange = useCallback(async (lang: 'fr' | 'en') => {
+    if (lang === locale) return
+    try {
+      localStorage.setItem('pxLang', lang)
+      const { data: { session } } = await supabasePublic.auth.getSession()
+      if (session) {
+        await supabasePublic.from('profiles').update({ locale: lang }).eq('id', session.user.id)
+      }
+    } catch {}
+    window.location.reload()
+  }, [locale])
+
   return (
     <header style={{
       background: 'var(--bg1)', borderBottom: '1px solid var(--bd)',

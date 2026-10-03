@@ -81,6 +81,7 @@ export default function SettingsPage() {
   const [pushSubscribed, setPushSubscribed] = useState(false)
   const [pushLoading,    setPushLoading]    = useState(false)
   const [swReg,          setSwReg]          = useState<ServiceWorkerRegistration | null>(null)
+  const plan = profile?.user_plan ?? 'free'
 
   const HUD  = "'Orbitron', monospace"
   const BODY = "'Rajdhani', sans-serif"

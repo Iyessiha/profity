@@ -39,12 +39,14 @@ export async function GET(req: NextRequest) {
   for (const intent of intents) {
     try {
       const firstName = (intent.full_name as string)?.split(' ')[0] || 'Trader'
-      await sendEmail({
+      const ok = await sendEmail({
         template: 'checkout_abandoned',
         to: intent.email as string,
         name: firstName,
         data: { plan: intent.plan as string },
       })
+      // sendEmail renvoie false au lieu de lever : ne pas marquer « reminded » si l'envoi a échoué
+      if (!ok) throw new Error('send failed')
       await db
         .from('checkout_intents')
         .update({ status: 'reminded', reminded_at: new Date().toISOString() })

@@ -160,7 +160,7 @@ export default function CalculatorPage() {
 
   return (
     <div style={{ display:'flex', minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY }}>
-      <Sidebar active="calculator" />
+      <Sidebar tab="chart" setTab={() => {}} plan={(profile?.user_plan as string) || 'free'} locale={locale} />
       <main style={{ flex:1, padding:'1.5rem 1rem', maxWidth:640, margin:'0 auto', width:'100%' }}>
         <TopBar locale={locale} profile={profile} />
 

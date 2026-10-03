@@ -5,12 +5,12 @@
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient }              from '@supabase/supabase-js'
-import { sendEmail }                  from '@/lib/email'
+import { sendEmail, type EmailTemplate } from '@/lib/email'
 import { isCronAuthorized }           from '@/lib/internal-auth'
 
 export const dynamic = 'force-dynamic'
 
-const DAY_TEMPLATE: Record<number, string> = {
+const DAY_TEMPLATE: Record<number, EmailTemplate> = {
   1:  'seq_j1',
   3:  'seq_j3',
   7:  'seq_j7',
@@ -47,7 +47,10 @@ export async function GET(req: NextRequest) {
   let skipped = 0
 
   for (const row of pending) {
-    const prof    = row.profiles as { email:string; full_name:string; user_plan:string; analyses_used:number; locale:string }
+    type Prof = { email:string; full_name:string; user_plan:string; analyses_used:number; locale:string }
+    const rel     = row.profiles as unknown as Prof | Prof[] | null
+    const prof    = Array.isArray(rel) ? rel[0] : rel
+    if (!prof?.email) { skipped++; continue }
     const day     = row.sequence_day
     const template = DAY_TEMPLATE[day]
 
@@ -57,23 +60,31 @@ export async function GET(req: NextRequest) {
     if (day === 7 && prof.user_plan !== 'free') shouldSkip = true // J7 : déjà Pro/Elite
     if (day === 14 && prof.user_plan !== 'free') shouldSkip = true // J14 : déjà payant
 
-    await admin.from('email_sequences').update({
-      status:  shouldSkip ? 'skipped' : 'sent',
-      sent_at: new Date().toISOString(),
-    }).eq('id', row.id)
+    if (shouldSkip || !template) {
+      await admin.from('email_sequences').update({
+        status:  'skipped',
+        sent_at: new Date().toISOString(),
+      }).eq('id', row.id)
+      skipped++
+      continue
+    }
 
-    if (shouldSkip) { skipped++; continue }
-    if (!template)  { skipped++; continue }
-
-    try {
-      await sendEmail({
-        template,
-        to:   prof.email,
-        name: prof.full_name ?? 'Trader',
-      })
+    // sendEmail ne lève pas d'exception : il renvoie false en cas d'échec.
+    // On ne marque la ligne « sent » qu'après un envoi réussi, sinon elle
+    // reste « pending » et sera retentée au prochain passage du cron.
+    const ok = await sendEmail({
+      template,
+      to:   prof.email,
+      name: prof.full_name ?? 'Trader',
+    })
+    if (ok) {
+      await admin.from('email_sequences').update({
+        status:  'sent',
+        sent_at: new Date().toISOString(),
+      }).eq('id', row.id)
       sent++
-    } catch (e) {
-      console.error(`[cron] email failed for ${prof.email}:`, e)
+    } else {
+      console.error(`[cron] email failed for ${prof.email}`)
     }
   }
 

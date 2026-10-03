@@ -182,7 +182,7 @@ function TierBadge({ tier }: { tier: string }) {
   const s: Record<string, string> = { elite: "bg-long-soft text-long", pro: "bg-accent-soft text-accent", free: "bg-bg text-text-muted" };
   return <span className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${s[tier] ?? s.free}`}>{tier.toUpperCase()}</span>;
 }
-function Th({ children }: { children: React.ReactNode }) {
+function Th({ children }: { children?: React.ReactNode }) {
   return <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-text-muted">{children}</th>;
 }
 function Td({ children }: { children: React.ReactNode }) {

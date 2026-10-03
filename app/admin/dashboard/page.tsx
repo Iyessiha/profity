@@ -4,7 +4,7 @@
 // ============================================================
 'use client'
 export const dynamic = 'force-dynamic'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Fragment } from 'react'
 import { useRouter }                         from 'next/navigation'
 import { supabasePublic }                    from '@/lib/supabase'
 import { useMenu }                           from '@/lib/menu-context'
@@ -23,6 +23,7 @@ interface Stats {
   active_subscriptions:number
   mrr_total_xof:     number
   online_count:      number
+  push_subscribers:  number
   growth:            { day: string; count: number }[]
   top_pairs:         { pair: string; count: number }[]
   analyses_per_day:  { day: string; count: number }[]
@@ -189,8 +190,6 @@ export default function AdminDashboard() {
     const res  = await fetch('/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } })
     const json = await res.json()
     if (json.success) setStats(json.data)
-    setLastSync(new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit',second:'2-digit'}))
-    setSyncing(false)
   }, [token])
 
   // ── Fetch users ────────────────────────────────────────
@@ -1194,10 +1193,10 @@ function GeniusPayDiag({ token }: { token: string }) {
             <div style={{ background:'var(--bg1)', borderRadius:6, padding:'0.875rem', display:'grid', gridTemplateColumns:'auto 1fr', gap:'6px 16px', alignItems:'center' }}>
               <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', gridColumn:'1/-1', marginBottom:4 }}>VARIABLES D'ENVIRONNEMENT</div>
               {Object.entries(env).map(([k,v]) => (
-                <>
-                  <span key={k+'k'} style={{ fontFamily:HUD, fontSize:8, color:'var(--tx3)' }}>{k}</span>
-                  <span key={k+'v'} style={{ fontFamily:BODY, fontSize:13, color: v.startsWith('✅')?'var(--ok)':'var(--red)' }}>{v}</span>
-                </>
+                <Fragment key={k}>
+                  <span style={{ fontFamily:HUD, fontSize:8, color:'var(--tx3)' }}>{k}</span>
+                  <span style={{ fontFamily:BODY, fontSize:13, color: v.startsWith('✅')?'var(--ok)':'var(--red)' }}>{v}</span>
+                </Fragment>
               ))}
             </div>
           )}
@@ -1217,14 +1216,14 @@ function GeniusPayDiag({ token }: { token: string }) {
           )}
 
           {/* Instruction fix */}
-          {result.fix && (
+          {!!result.fix && (
             <div style={{ background:'rgba(255,153,0,0.08)', border:'1px solid rgba(255,153,0,0.25)', borderRadius:6, padding:'0.875rem', fontFamily:BODY, fontSize:14, color:'var(--ora)', lineHeight:1.6 }}>
               💡 {String(result.fix)}
             </div>
           )}
 
           {/* URL checkout si OK */}
-          {result.checkout_url && (
+          {!!result.checkout_url && (
             <div style={{ background:'rgba(0,230,118,0.08)', border:'1px solid rgba(0,230,118,0.2)', borderRadius:6, padding:'0.875rem' }}>
               <div style={{ fontFamily:HUD, fontSize:8, color:'var(--ok)', marginBottom:4 }}>✅ CHECKOUT URL GÉNÉRÉE</div>
               <a href={String(result.checkout_url)} target="_blank" style={{ fontFamily:BODY, fontSize:12, color:'var(--ok)', wordBreak:'break-all' }}>{String(result.checkout_url)}</a>

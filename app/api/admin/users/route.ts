@@ -105,7 +105,8 @@ export async function PUT(req: NextRequest) {
     .eq('id', userId)
 
   // Forcer les tokens vides (évite le bug de connexion signalé précédemment)
-  await supabaseAdmin.rpc('fix_user_tokens' as never, { uid: userId }).catch(() => {})
+  // Le builder Supabase n'a pas de .catch() : un échec arrive dans `error`, sans throw.
+  await supabaseAdmin.rpc('fix_user_tokens' as never, { uid: userId } as never)
 
   await logAdminAction({
     adminId: auth.userId!, action: 'create_user', targetType: 'user', targetId: userId,

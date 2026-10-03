@@ -272,7 +272,7 @@ Interprete este dado e gere o sinal JSON.`,
   // ----------------------------------------------------------
   // 6. Parser la réponse
   // ----------------------------------------------------------
-  const parsed = parseClaudeJSON<Record<string, unknown>>(rawText)
+  const parsed = parseClaudeJSON(rawText)
   if (!parsed) {
     return NextResponse.json<ApiResponse<null>>(
       { success: false, error: 'Réponse IA invalide', code: 'AI_ERROR' },

@@ -85,7 +85,7 @@ export default function DashboardTour({ locale, onDone }: Props) {
   const [step, setStep]       = useState(0)
   const [rect, setRect]       = useState<DOMRect | null>(null)
   const [visible, setVisible] = useState(false)
-  const rafRef = useRef<number>()
+  const rafRef = useRef<number | undefined>(undefined)
 
   const current = STEPS[step]
 

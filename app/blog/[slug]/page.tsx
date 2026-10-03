@@ -8,8 +8,8 @@ export async function generateStaticParams() {
   return POSTS.map(p => ({ slug: p.slug }))
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = getPostBySlug(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const post = getPostBySlug((await params).slug)
   if (!post) return {}
   return {
     title: `${post.title} | ProfityX Blog`,
@@ -99,8 +99,8 @@ function renderContent(content: string) {
   return elements
 }
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const post = getPostBySlug(params.slug)
+export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const post = getPostBySlug((await params).slug)
   if (!post) notFound()
 
   const related = POSTS.filter(p => p.slug !== post.slug && p.lang === post.lang).slice(0, 3)

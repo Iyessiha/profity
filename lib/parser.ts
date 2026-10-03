@@ -1,7 +1,7 @@
 // ============================================================
 // PROFITYX — Parser de réponses Claude (SMC v3)
 // ============================================================
-import type { ChartSignal, NewsSignal } from '@/types'
+import type { ChartSignal, NewsSignal, ChartAnnotation, SMCPhase } from '@/types'
 
 export function parseClaudeJSON(raw: string): Record<string, unknown> | null {
   let cleaned = raw.trim()
@@ -91,7 +91,7 @@ export function validateChartSignal(obj: Record<string, unknown>): ChartSignal |
     annotations = (obj.annotations as Record<string, unknown>[])
       .filter(a => n(a.price) > 0)
       .map(a => ({
-        type:     s(a.type) as ChartSignal['annotations'][0]['type'],
+        type:     s(a.type) as ChartAnnotation['type'],
         price:    n(a.price),
         label:    s(a.label),
         color:    s(a.color) || '#00FFB2',
@@ -128,7 +128,9 @@ export function validateChartSignal(obj: Record<string, unknown>): ChartSignal |
     trend:      ['BULLISH','BEARISH','RANGING'].includes(s(obj.trend).toUpperCase())
       ? s(obj.trend).toUpperCase() as ChartSignal['trend']
       : null,
-    phase:      s(obj.phase) || null,
+    phase:      ['accumulation','distribution','markup','markdown','ranging'].includes(s(obj.phase).toLowerCase())
+      ? s(obj.phase).toLowerCase() as SMCPhase
+      : null,
     bos_level:  obj.bos_level  != null && n(obj.bos_level)  > 0 ? n(obj.bos_level)  : null,
     choch_level:obj.choch_level != null && n(obj.choch_level)> 0 ? n(obj.choch_level): null,
     order_block: ob,

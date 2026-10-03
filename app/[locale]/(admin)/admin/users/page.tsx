@@ -127,7 +127,7 @@ export default async function UsersPage({
   );
 }
 
-function Th({ children }: { children: React.ReactNode }) {
+function Th({ children }: { children?: React.ReactNode }) {
   return (
     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-text-muted">
       {children}

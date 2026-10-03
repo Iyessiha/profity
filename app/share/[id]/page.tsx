@@ -29,8 +29,8 @@ async function getAnalysis(id: string): Promise<Analysis | null> {
   return data as Analysis | null
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const a = await getAnalysis(params.id)
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const a = await getAnalysis((await params).id)
   if (!a) return { title: 'ProfityX' }
   const result = a.trade_result === 'WIN' ? '✅ WIN' : a.trade_result === 'LOSS' ? '❌ LOSS' : '📊 Signal'
   return {
@@ -45,8 +45,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default async function SharePage({ params }: { params: { id: string } }) {
-  const a = await getAnalysis(params.id)
+export default async function SharePage({ params }: { params: Promise<{ id: string }> }) {
+  const a = await getAnalysis((await params).id)
   if (!a) notFound()
 
   const isWin  = a.trade_result === 'WIN'

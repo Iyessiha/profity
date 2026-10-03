@@ -288,7 +288,7 @@ function EventModal({ ev, isPremium, onClose }: { ev:ScheduledEvent; isPremium:b
                   </div>
                 ))}
               </div>
-              {autoSignal.interpretation && (
+              {!!autoSignal.interpretation && (
                 <p style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)', lineHeight:1.6, margin:0 }}>
                   {String(autoSignal.interpretation)}
                 </p>

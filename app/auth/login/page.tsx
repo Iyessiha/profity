@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
 import { supabasePublic } from '@/lib/supabase'
-import { getLang, t, type Lang } from '@/lib/i18n'
+import { getLang, t, type Locale as Lang } from '@/lib/i18n'
 
 export default function LoginPage() {
   const [mode,     setMode]    = useState<'login' | 'signup'>('login')

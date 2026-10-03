@@ -17,9 +17,9 @@ const db = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
-export async function generateMetadata({ params }: { params: { username: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
   const { data: profile } = await db.from('profiles')
-    .select('full_name, public_id').eq('public_id', params.username.toUpperCase()).single()
+    .select('full_name, public_id').eq('public_id', (await params).username.toUpperCase()).single()
   if (!profile) return { title: 'Trader — ProfityX' }
   return {
     title: `${profile.full_name} — Track Record | ProfityX`,
@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: { params: { username: string 
   }
 }
 
-export default async function PublicProfile({ params }: { params: { username: string } }) {
-  const code = params.username.toUpperCase()
+export default async function PublicProfile({ params }: { params: Promise<{ username: string }> }) {
+  const code = (await params).username.toUpperCase()
 
   // Profil
   const { data: profile } = await db.from('profiles')

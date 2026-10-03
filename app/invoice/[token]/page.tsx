@@ -23,8 +23,8 @@ async function getInvoice(token: string): Promise<Invoice | null> {
   return data
 }
 
-export default async function InvoicePage({ params }: { params: { token: string } }) {
-  const invoice = await getInvoice(params.token)
+export default async function InvoicePage({ params }: { params: Promise<{ token: string }> }) {
+  const invoice = await getInvoice((await params).token)
   if (!invoice) notFound()
 
   const date = new Date(invoice.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' })

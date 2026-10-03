@@ -71,9 +71,9 @@ export default function PropFirmPage() {
 
   // Variables du formulaire — déclarées avant le gate pour éviter les erreurs de prerender
   const selectedFirm = FIRMS.find(f => f.id === firmId) ?? FIRMS[FIRMS.length - 1]
-  const pt  = firmId === 'custom' ? customPT  : selectedFirm.profit_target
-  const mdd = firmId === 'custom' ? customDD  : selectedFirm.max_drawdown
-  const dl  = firmId === 'custom' ? customDL  : selectedFirm.daily_loss
+  const pt  = firmId === 'custom' ? customPT  : selectedFirm.profit
+  const mdd = firmId === 'custom' ? customDD  : selectedFirm.dd
+  const dl  = firmId === 'custom' ? customDL  : selectedFirm.daily
 
   // ── Gate Elite ─────────────────────────────────────────────
   if (!loading && !isPremiumElite) {
@@ -503,6 +503,14 @@ export default function PropFirmPage() {
   )
 }
 
+function Bar({ pct, max, color }: { pct: number; max: number; color: string }) {
+  return (
+    <div style={{ height:4, background:'rgba(255,255,255,0.07)', borderRadius:2, overflow:'hidden', marginTop:4 }}>
+      <div style={{ height:'100%', width:`${Math.min(100,(pct/max)*100)}%`, background:color, borderRadius:2, transition:'width .4s' }} />
+    </div>
+  )
+}
+
 // ── Carte d'un compte prop firm ───────────────────────────────
 function AccountCard({ tool, profitPct, profitNeeded, ddPct, dlPct, ddSafe, dlSafe, riskScore, locale, T, onUpdate }: {
   tool: Tool; profitPct: number; profitNeeded: number; ddPct: number; dlPct: number
@@ -517,12 +525,6 @@ function AccountCard({ tool, profitPct, profitNeeded, ddPct, dlPct, ddSafe, dlSa
   const [newDL,   setNewDL]   = useState(tool.daily_loss_used)
 
   const riskColor = riskScore > 70 ? '#00FFB2' : riskScore > 40 ? '#C9A84C' : '#FF3A5C'
-
-  const Bar = ({ pct, max, color }: { pct: number; max: number; color: string }) => (
-    <div style={{ height:4, background:'rgba(255,255,255,0.07)', borderRadius:2, overflow:'hidden', marginTop:4 }}>
-      <div style={{ height:'100%', width:`${Math.min(100,(pct/max)*100)}%`, background:color, borderRadius:2, transition:'width .4s' }} />
-    </div>
-  )
 
   return (
     <div style={{ background:'var(--bg1)', border:`1px solid ${riskScore < 40 ? 'rgba(255,58,92,0.3)' : 'var(--bd)'}`, borderRadius:10, padding:'1.25rem', position:'relative' }}>
