@@ -20,17 +20,14 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseClient } from "@/lib/supabase/client-safe";
 import {
   Activity, ChevronDown, ChevronRight, Layers,
   LayoutDashboard, LogOut, Menu, Plus,
   Settings, Clock, X, Wifi, WifiOff,
 } from "lucide-react";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+const supabase = getSupabaseClient();
 
 // ─────────────────────────────────────────────────────────────────────
 // Types

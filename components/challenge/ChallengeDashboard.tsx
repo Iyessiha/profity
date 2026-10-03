@@ -18,7 +18,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { createClient, RealtimeChannel } from "@supabase/supabase-js";
+import { RealtimeChannel } from "@supabase/supabase-js";
+import { getSupabaseClient } from "@/lib/supabase/client-safe";
 import {
   ResponsiveContainer, ComposedChart, Area, Line,
   XAxis, YAxis, ReferenceLine, ReferenceArea, Tooltip,
@@ -31,10 +32,7 @@ import {
 // ─────────────────────────────────────────────────────────────────────
 // Client Supabase (singleton)
 // ─────────────────────────────────────────────────────────────────────
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+const supabase = getSupabaseClient();
 
 // ─────────────────────────────────────────────────────────────────────
 // Types — alignés sur le schéma SQL

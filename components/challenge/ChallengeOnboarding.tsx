@@ -20,17 +20,14 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseClient } from "@/lib/supabase/client-safe";
 import {
   AlertTriangle, Check, ChevronRight, ClipboardCopy,
   Download, ExternalLink, ShieldCheck, TrendingUp,
   CalendarDays, Layers, ArrowRight, Loader2,
 } from "lucide-react";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+const supabase = getSupabaseClient();
 
 const INGEST_URL =
   process.env.NEXT_PUBLIC_INGEST_URL ??
