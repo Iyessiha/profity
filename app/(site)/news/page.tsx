@@ -8,6 +8,7 @@ import Sidebar from '@/components/dashboard/Sidebar'
 import TopBar from '@/components/dashboard/TopBar'
 import { QuotaBar } from '@/components/dashboard/TopBar'
 import { RandomAd } from '@/components/AdSlot'
+import { useLang, adoptProfileLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -342,7 +343,7 @@ export default function NewsPage() {
   const [user, setUser]       = useState<{id:string;email?:string}|null>(null)
   const [profile, setProfile] = useState<Record<string,unknown>|null>(null)
   const [plan, setPlan]       = useState('free')
-  const [locale, setLocale]   = useState('fr')
+  const locale = useLang()
   const [events, setEvents]   = useState<ScheduledEvent[]>([])
   const [selected, setSelected] = useState<ScheduledEvent|null>(null)
   const [tab, setTab]         = useState<'calendar'|'upcoming'>('calendar')
@@ -357,7 +358,7 @@ export default function NewsPage() {
         supabasePublic.from('profiles').select('*').eq('id', session.user.id).single(),
         supabasePublic.from('scheduled_events').select('*').gte('event_date', new Date(Date.now() - 86400000*3).toISOString()).order('event_date').limit(40),
       ])
-      if (p) { setProfile(p); setPlan(p.user_plan as string||'free'); setLocale(p.locale as string||'fr') }
+      if (p) { setProfile(p); setPlan(p.user_plan as string||'free'); adoptProfileLang(p.locale) }
       if (ev) setEvents(ev as ScheduledEvent[])
     })()
   }, [])

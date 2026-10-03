@@ -3,6 +3,7 @@ import React from 'react'
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { supabasePublic } from '@/lib/supabase'
+import { useLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -151,12 +152,6 @@ const FAQS = [
   { q: 'Quelles prop firms sont compatibles ?', r: 'Toutes celles qui utilisent MetaTrader 5. L\'EA s\'adapte aux règles de n\'importe quel challenge (objectif, DD max journalier/total, jours minimum) via ses paramètres configurables.' },
 ]
 
-
-function useLang() {
-  const [lang, setLang] = React.useState('fr')
-  React.useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
-  return lang
-}
 
 export default function PricingPage() {
   const lang = useLang()

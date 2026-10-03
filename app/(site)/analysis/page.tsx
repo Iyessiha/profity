@@ -14,6 +14,7 @@ import PopupManager, { usePopups, type PopupPayload } from '@/components/PopupMa
 import { playAnalysisStart, playAnalysisComplete, isSoundEnabled } from '@/lib/notif-sound'
 import { RandomAd } from '@/components/AdSlot'
 import Confetti from '@/components/Confetti'
+import { useLang, adoptProfileLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -49,7 +50,7 @@ export default function AnalysisPage() {
   const [user, setUser]           = useState<{ id:string; email?:string }|null>(null)
   const [profile, setProfile]     = useState<Record<string,unknown>|null>(null)
   const [plan, setPlan]           = useState('free')
-  const [locale, setLocale]       = useState('fr')
+  const locale = useLang()
   const [token, setToken]         = useState('')
   const [balance, setBalance]     = useState<number|undefined>(undefined)
   const [showOnboarding, setOnboarding] = useState(false)
@@ -91,7 +92,7 @@ export default function AnalysisPage() {
       if (p) {
         setProfile(p)
         setPlan(p.user_plan as string || 'free')
-        setLocale((p.locale as string) || (typeof localStorage !== 'undefined' ? localStorage.getItem('pxLang') : null) || 'fr')
+        adoptProfileLang(p.locale)
         if (!p.onboarding_done) setOnboarding(true)
       }
       // Charger le compte prop firm actif

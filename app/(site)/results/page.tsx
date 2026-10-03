@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic'
 // Signaux = uniquement ceux marqués is_public=true par l'utilisateur
 // ============================================================
 import { useEffect, useState } from 'react'
+import { useLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron',monospace"
 const BODY = "'Rajdhani',sans-serif"
@@ -25,9 +26,8 @@ export default function ResultsPage() {
   const [stats,   setStats]   = useState<Stats | null>(null)
   const [signals, setSignals] = useState<Signal[]>([])
   const [loading, setLoading] = useState(true)
-  const [lang,    setLang]    = useState('fr')
+  const lang = useLang()
 
-  useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
 
   useEffect(() => {
     Promise.all([

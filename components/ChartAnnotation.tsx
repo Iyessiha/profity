@@ -5,6 +5,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import type { ChartSignal } from '@/types'
+import { useLang, tr } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -40,6 +41,7 @@ function priceToY(price: number, rangeHigh: number, rangeLow: number, height: nu
 }
 
 export default function ChartAnnotation({ imageFile, imageBase64, signal, plan = 'free' }: Props) {
+  const lang       = useLang()
   const canvasRef  = useRef<HTMLCanvasElement>(null)
   const [imgUrl,   setImgUrl]   = useState<string | null>(null)
   const [showAnnot,setShowAnnot]= useState(true)
@@ -108,7 +110,7 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
   const effectiveAnnotations = annotations.length > 0 ? annotations : (() => {
     if (!chartRange || chartRange.high <= chartRange.low) return []
     const list: typeof annotations = []
-    if (signal.entry)     list.push({ type:'entry', price:signal.entry,     label:'ENTRÉE', color:'#00FFB2', style:'solid' })
+    if (signal.entry)     list.push({ type:'entry', price:signal.entry,     label:lang === 'en' ? 'ENTRY' : 'ENTRÉE', color:'#00FFB2', style:'solid' })
     if (signal.stop_loss) list.push({ type:'sl',    price:signal.stop_loss, label:'STOP',   color:'#FF3A5C', style:'solid' })
     if (signal.tp1)       list.push({ type:'tp1',   price:signal.tp1,       label:'TP1',    color:'#00FFB2', style:'dashed' })
     if (signal.tp2)       list.push({ type:'tp2',   price:signal.tp2!,      label:'TP2',    color:'#00D4FF', style:'dashed' })
@@ -148,24 +150,24 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
         <div style={{ display:'flex', alignItems:'center', gap:6 }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:'#00FFB2' }} />
           <span style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#00FFB2' }}>
-            CHART ANNOTÉ · {signal.pair} {signal.timeframe}
+            {tr(lang, 'CHART ANNOTÉ', 'ANNOTATED CHART')} · {signal.pair} {signal.timeframe}
           </span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:5 }}>
           {showAnnot && (
             <>
-              <button onClick={() => applyNudge(nudge - 1)} title="Monter les tracés (mémorisé)"
+              <button onClick={() => applyNudge(nudge - 1)} title={tr(lang, 'Monter les tracés (mémorisé)', 'Move drawings up (saved)')}
                 style={{ fontFamily:HUD, fontSize:8, padding:'3px 8px', borderRadius:4,
                   border:'1px solid rgba(0,255,178,0.2)', background:'transparent', color:'rgba(0,255,178,0.6)', cursor:'pointer' }}>
                 ▲
               </button>
-              <button onClick={() => applyNudge(nudge + 1)} title="Descendre les tracés (mémorisé)"
+              <button onClick={() => applyNudge(nudge + 1)} title={tr(lang, 'Descendre les tracés (mémorisé)', 'Move drawings down (saved)')}
                 style={{ fontFamily:HUD, fontSize:8, padding:'3px 8px', borderRadius:4,
                   border:'1px solid rgba(0,255,178,0.2)', background:'transparent', color:'rgba(0,255,178,0.6)', cursor:'pointer' }}>
                 ▼
               </button>
               {nudge !== 0 && (
-                <button onClick={() => applyNudge(0)} title="Réinitialiser le calibrage"
+                <button onClick={() => applyNudge(0)} title={tr(lang, 'Réinitialiser le calibrage', 'Reset calibration')}
                   style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'3px 6px', borderRadius:4,
                     border:'1px solid rgba(201,168,76,0.3)', background:'rgba(201,168,76,0.08)', color:'#C9A84C', cursor:'pointer' }}>
                   ↕ {nudge > 0 ? '+' : ''}{nudge}%
@@ -176,7 +178,7 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
           <button onClick={() => setShowAnnot(v => !v)}
             style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, padding:'3px 10px', borderRadius:4,
               border:'1px solid rgba(0,255,178,0.2)', background:'transparent', color:'rgba(0,255,178,0.6)', cursor:'pointer' }}>
-            {showAnnot ? '👁 MASQUER' : '👁 AFFICHER'}
+            {showAnnot ? tr(lang, '👁 MASQUER', '👁 HIDE') : tr(lang, '👁 AFFICHER', '👁 SHOW')}
           </button>
         </div>
       </div>
@@ -290,7 +292,7 @@ export default function ChartAnnotation({ imageFile, imageBase64, signal, plan =
       {plan === 'pro' && !chartRange && (
         <div style={{ padding:'6px 12px', background:'rgba(201,168,76,0.06)',
           fontFamily:HUD, fontSize:7, letterSpacing:1, color:'#C9A84C', textAlign:'center' }}>
-          ⭐ ELITE — Annotations précises basées sur les zones réelles détectées par l'IA
+          {tr(lang, "⭐ ELITE — Annotations précises basées sur les zones réelles détectées par l'IA", '⭐ ELITE — Precise annotations based on the real zones detected by the AI')}
         </div>
       )}
     </div>

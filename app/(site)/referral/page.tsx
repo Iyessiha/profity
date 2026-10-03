@@ -8,6 +8,7 @@ import { supabasePublic } from '@/lib/supabase'
 import Sidebar from '@/components/dashboard/Sidebar'
 import TopBar from '@/components/dashboard/TopBar'
 import QuotaBar from '@/components/dashboard/QuotaBar'
+import { useLang, adoptProfileLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -45,7 +46,7 @@ export default function ReferralPage() {
   const [user,    setUser]    = useState<{ id: string; email?: string } | null>(null)
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null)
   const [plan,    setPlan]    = useState('free')
-  const [locale,  setLocale]  = useState('fr')
+  const locale = useLang()
 
   // i18n
   const T = {
@@ -79,7 +80,7 @@ export default function ReferralPage() {
       setUser(session.user as { id: string; email?: string })
       setToken(session.access_token)
       const { data: p } = await supabasePublic.from('profiles').select('*').eq('id', session.user.id).single()
-      if (p) { setProfile(p); setPlan(p.user_plan as string || 'free'); setLocale(p.locale as string || 'fr') }
+      if (p) { setProfile(p); setPlan(p.user_plan as string || 'free'); adoptProfileLang(p.locale) }
       // Charger les données parrainage
       const res  = await fetch('/api/referral', { headers: { Authorization: `Bearer ${session.access_token}` } })
       const json = await res.json()

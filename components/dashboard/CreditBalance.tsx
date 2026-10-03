@@ -3,6 +3,7 @@
 // ============================================================
 'use client'
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { tr } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -63,13 +64,13 @@ export default function CreditBalance({ token, locale='fr' }: { token:string; lo
     const json = await r.json()
     if (json.success && json.redirectUrl) {
       if (json.fallback) {
-        setToast('💬 Ouverture WhatsApp...')
+        setToast(locale === 'en' ? '💬 Opening WhatsApp...' : '💬 Ouverture de WhatsApp...')
         setTimeout(() => window.open(json.redirectUrl,'_blank'), 800)
       } else {
         window.location.href = json.redirectUrl
       }
     } else {
-      setToast(json.error ?? 'Erreur')
+      setToast(json.error ?? (locale === 'en' ? 'Error' : 'Erreur'))
     }
     setLoading(null)
   }
@@ -119,18 +120,18 @@ export default function CreditBalance({ token, locale='fr' }: { token:string; lo
           {/* En-tête solde + refresh */}
           <div style={{ padding:'1rem', borderBottom:'1px solid var(--bd)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
             <div>
-              <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:4 }}>SOLDE DE CRÉDITS</div>
+              <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:4 }}>{tr(locale, 'SOLDE DE CRÉDITS', 'CREDIT BALANCE')}</div>
               <div style={{ display:'flex', alignItems:'baseline', gap:6 }}>
                 <span style={{ fontFamily:HUD, fontSize:32, fontWeight:900, color, lineHeight:1 }}>{bal}</span>
-                <span style={{ fontFamily:BODY, fontSize:13, color:'var(--tx2)' }}>crédits</span>
+                <span style={{ fontFamily:BODY, fontSize:13, color:'var(--tx2)' }}>{tr(locale, 'crédits', 'credits')}</span>
               </div>
               <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)', marginTop:3 }}>
-                {data.spent > 0 ? `${data.spent} utilisé${data.spent>1?'s':''} · ` : ''}{data.earned} gagnés au total
+                {data.spent > 0 ? tr(locale, `${data.spent} utilisé${data.spent>1?'s':''} · `, `${data.spent} used · `) : ''}{tr(locale, `${data.earned} gagnés au total`, `${data.earned} earned in total`)}
               </div>
             </div>
             <div style={{ display:'flex', gap:8, alignItems:'center' }}>
               {/* Bouton refresh */}
-              <button onClick={()=>loadCredits()} title="Actualiser" style={{ background:'transparent', border:'1px solid var(--bd)', borderRadius:6, width:30, height:30, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'var(--tx3)', fontSize:14 }}>
+              <button onClick={()=>loadCredits()} title={tr(locale, 'Actualiser', 'Refresh')} style={{ background:'transparent', border:'1px solid var(--bd)', borderRadius:6, width:30, height:30, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'var(--tx3)', fontSize:14 }}>
                 <i className={`ti ti-refresh${refreshing?' spin':''}`} />
               </button>
               <button onClick={()=>setOpen(false)} style={{ background:'transparent', border:'none', color:'var(--tx3)', cursor:'pointer', fontSize:18, width:30, height:30 }}>✕</button>
@@ -139,14 +140,14 @@ export default function CreditBalance({ token, locale='fr' }: { token:string; lo
 
           {isEmpty && (
             <div style={{ padding:'0.75rem 1rem', background:'rgba(220,38,38,0.08)', borderBottom:'1px solid var(--bd)' }}>
-              <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'var(--red)', marginBottom:2 }}>🚨 CRÉDITS ÉPUISÉS</div>
-              <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)' }}>Achetez un pack pour continuer à analyser.</div>
+              <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'var(--red)', marginBottom:2 }}>{tr(locale, '🚨 CRÉDITS ÉPUISÉS', '🚨 OUT OF CREDITS')}</div>
+              <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)' }}>{tr(locale, 'Achetez un pack pour continuer à analyser.', 'Buy a pack to keep analyzing.')}</div>
             </div>
           )}
 
           {/* Packs */}
           <div style={{ padding:'0.875rem', maxHeight:'60vh', overflowY:'auto' }}>
-            <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:10 }}>ACHETER DES CRÉDITS</div>
+            <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:10 }}>{tr(locale, 'ACHETER DES CRÉDITS', 'BUY CREDITS')}</div>
             <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               {data.packs.map(pack => (
                 <div key={pack.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'var(--bg2)', border:`1px solid ${pack.badge?'var(--bd2)':'var(--bd)'}`, borderRadius:8, padding:'0.75rem' }}>
@@ -157,7 +158,7 @@ export default function CreditBalance({ token, locale='fr' }: { token:string; lo
                         <span style={{ fontFamily:HUD, fontSize:10, color:'var(--tx0)', letterSpacing:0.5 }}>{pack.name}</span>
                         {pack.badge && <span style={{ fontFamily:HUD, fontSize:6, letterSpacing:1, color:'var(--ac)', background:'color-mix(in srgb, var(--ac) 12%, transparent)', border:'1px solid color-mix(in srgb, var(--ac) 25%, transparent)', borderRadius:2, padding:'2px 6px' }}>{pack.badge}</span>}
                       </div>
-                      <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>{pack.credits} crédits · {(pack.price_xof / pack.credits).toFixed(0)} FCFA/crédit</div>
+                      <div style={{ fontFamily:BODY, fontSize:11, color:'var(--tx3)' }}>{tr(locale, `${pack.credits} crédits · ${(pack.price_xof / pack.credits).toFixed(0)} FCFA/crédit`, `${pack.credits} credits · ${(pack.price_xof / pack.credits).toFixed(0)} FCFA/credit`)}</div>
                     </div>
                   </div>
                   <button onClick={()=>buy(pack)} disabled={loading===pack.id}
@@ -168,7 +169,7 @@ export default function CreditBalance({ token, locale='fr' }: { token:string; lo
               ))}
             </div>
             <div style={{ marginTop:10, fontFamily:BODY, fontSize:11, color:'var(--tx3)', textAlign:'center' }}>
-              1 crédit = 1 analyse chart ou 1 signal news
+              {tr(locale, '1 crédit = 1 analyse de chart ou 1 signal news', '1 credit = 1 chart analysis or 1 news signal')}
             </div>
           </div>
         </div>

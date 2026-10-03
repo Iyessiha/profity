@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
 import { supabasePublic } from '@/lib/supabase'
-import { getLang, t, type Locale as Lang } from '@/lib/i18n'
+import { t, useLang } from '@/lib/i18n'
 
 export default function LoginPage() {
   const [mode,     setMode]    = useState<'login' | 'signup'>('login')
@@ -16,11 +16,9 @@ export default function LoginPage() {
   const [error,    setError]   = useState<string | null>(null)
   const [success,  setSuccess] = useState<string | null>(null)
   const [refCode,  setRefCode] = useState('')
-  const [lang,     setLang]    = useState<Lang>('fr')
+  const lang = useLang()
 
   useEffect(() => {
-    // Lire la langue préférée depuis localStorage
-    setLang(getLang())
     // Capturer le code parrain depuis l'URL et le stocker
     const params = new URLSearchParams(window.location.search)
     const ref = params.get('ref')

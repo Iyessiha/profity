@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Sidebar from '@/components/dashboard/Sidebar'
 import TopBar from '@/components/dashboard/TopBar'
 import { supabasePublic } from '@/lib/supabase'
+import { useLang, adoptProfileLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -96,14 +97,14 @@ export default function CalculatorPage() {
 
   // Profil pour TopBar (navigation mobile)
   const [profile, setProfile] = useState<Record<string,unknown>|null>(null)
-  const [locale,  setLocale]  = useState('fr')
+  const locale = useLang()
 
 
   useEffect(() => {
     supabasePublic.auth.getSession().then(({ data: { session } }) => {
       if (!session?.user) return
       supabasePublic.from('profiles').select('*').eq('id', session.user.id).single()
-        .then(({ data }) => { if (data) { setProfile(data); setLocale((data.locale as string) || 'fr') } })
+        .then(({ data }) => { if (data) { setProfile(data); adoptProfileLang(data.locale) } })
     })
   }, [])
 

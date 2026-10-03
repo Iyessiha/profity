@@ -1,10 +1,12 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import { useLang, tr } from '@/lib/i18n'
 const HUD = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 
 const EMOTIONS = ['CONFIANT','DISCIPLINÉ','NEUTRE','ANXIEUX','FOMO']
 const EMOTION_EMOJI: Record<string,string> = { CONFIANT:'😤', DISCIPLINÉ:'🧘', NEUTRE:'😐', ANXIEUX:'😰', FOMO:'😱' }
+const EMOTION_EN: Record<string,string> = { CONFIANT:'CONFIDENT', DISCIPLINÉ:'DISCIPLINED', NEUTRE:'NEUTRAL', ANXIEUX:'ANXIOUS', FOMO:'FOMO' }
 const PAIRS = ['XAU/USD','EUR/USD','GBP/USD','USD/JPY','BTC/USD','ETH/USD','GBP/JPY','NAS100','V75']
 
 interface Trade {
@@ -15,6 +17,7 @@ interface Trade {
 interface Stats { wins:number; losses:number; winrate:number; total_pnl:number }
 
 export default function TradingJournal({ token }: { token:string }) {
+  const lang = useLang()
   const [trades, setTrades] = useState<Trade[]>([])
   const [stats,  setStats]  = useState<Stats>({ wins:0, losses:0, winrate:0, total_pnl:0 })
   const [open,   setOpen]   = useState(false)
@@ -60,12 +63,12 @@ export default function TradingJournal({ token }: { token:string }) {
               <i className="ti ti-notebook" style={{ fontSize:18, color:'var(--ac2)' }} />
             </div>
             <div>
-              <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', letterSpacing:1 }}>JOURNAL DE TRADING</div>
-              <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>{trades.length} trades logués</div>
+              <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', letterSpacing:1 }}>{tr(lang, 'JOURNAL DE TRADING', 'TRADING JOURNAL')}</div>
+              <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>{trades.length} {tr(lang, 'trades enregistrés', 'trades logged')}</div>
             </div>
           </div>
           <button onClick={() => setOpen(v=>!v)} style={{ background:open?'color-mix(in srgb,var(--ac2) 15%,transparent)':'var(--bg2)', border:'1px solid var(--bd)', borderRadius:6, padding:'7px 12px', cursor:'pointer', color:'var(--ac2)', fontFamily:HUD, fontSize:8, letterSpacing:1 }}>
-            {open ? '✕ FERMER' : '+ TRADE'}
+            {open ? tr(lang, '✕ FERMER', '✕ CLOSE') : '+ TRADE'}
           </button>
         </div>
 
@@ -89,7 +92,7 @@ export default function TradingJournal({ token }: { token:string }) {
           <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:8, padding:'1rem', marginBottom:'1rem' }}>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:10 }}>
               <div>
-                <span style={lbl}>PAIRE</span>
+                <span style={lbl}>{tr(lang, 'PAIRE', 'PAIR')}</span>
                 <select value={form.pair} onChange={e=>setForm(f=>({...f,pair:e.target.value}))} style={inp}>
                   {PAIRS.map(p=><option key={p}>{p}</option>)}
                 </select>
@@ -108,16 +111,16 @@ export default function TradingJournal({ token }: { token:string }) {
             </div>
 
             <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:10 }}>
-              <div><span style={lbl}>ENTRÉE</span><input style={inp} type="number" value={form.entry} onChange={e=>setForm(f=>({...f,entry:e.target.value}))} placeholder="2318.50" /></div>
-              <div><span style={lbl}>SORTIE</span><input style={inp} type="number" value={form.exit}  onChange={e=>setForm(f=>({...f,exit:e.target.value}))}  placeholder="2351.20" /></div>
+              <div><span style={lbl}>{tr(lang, 'ENTRÉE', 'ENTRY')}</span><input style={inp} type="number" value={form.entry} onChange={e=>setForm(f=>({...f,entry:e.target.value}))} placeholder="2318.50" /></div>
+              <div><span style={lbl}>{tr(lang, 'SORTIE', 'EXIT')}</span><input style={inp} type="number" value={form.exit}  onChange={e=>setForm(f=>({...f,exit:e.target.value}))}  placeholder="2351.20" /></div>
               <div><span style={lbl}>STOP LOSS</span><input style={inp} type="number" value={form.stop_loss} onChange={e=>setForm(f=>({...f,stop_loss:e.target.value}))} placeholder="2302.00" /></div>
             </div>
 
             <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:10 }}>
               <div>
-                <span style={lbl}>RÉSULTAT</span>
+                <span style={lbl}>{tr(lang, 'RÉSULTAT', 'RESULT')}</span>
                 <select value={form.result} onChange={e=>setForm(f=>({...f,result:e.target.value}))} style={inp}>
-                  <option value="">En cours...</option>
+                  <option value="">{tr(lang, 'En cours...', 'Open...')}</option>
                   <option value="WIN">✅ WIN</option>
                   <option value="LOSS">❌ LOSS</option>
                   <option value="BREAKEVEN">⚖️ BREAKEVEN</option>
@@ -128,27 +131,27 @@ export default function TradingJournal({ token }: { token:string }) {
             </div>
 
             <div style={{ marginBottom:10 }}>
-              <span style={lbl}>ÉTAT ÉMOTIONNEL</span>
+              <span style={lbl}>{tr(lang, 'ÉTAT ÉMOTIONNEL', 'EMOTIONAL STATE')}</span>
               <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
                 {EMOTIONS.map(em => (
                   <button key={em} onClick={()=>setForm(f=>({...f,emotion:em}))}
                     style={{ padding:'6px 10px', border:`1px solid ${form.emotion===em?'var(--ac2)':'var(--bd)'}`, borderRadius:6, background:form.emotion===em?'color-mix(in srgb,var(--ac2) 12%,transparent)':'transparent', color:form.emotion===em?'var(--ac2)':'var(--tx3)', fontFamily:BODY, fontSize:12, cursor:'pointer' }}>
-                    {EMOTION_EMOJI[em]} {em}
+                    {EMOTION_EMOJI[em]} {lang === 'en' ? EMOTION_EN[em] : em}
                   </button>
                 ))}
               </div>
             </div>
 
             <div style={{ marginBottom:12 }}>
-              <span style={lbl}>NOTES / LEÇONS</span>
+              <span style={lbl}>{tr(lang, 'NOTES / LEÇONS', 'NOTES / LESSONS')}</span>
               <textarea value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} rows={2}
-                placeholder="Pourquoi ce trade ? Qu'est-ce que j'aurais dû faire différemment ?"
+                placeholder={tr(lang, "Pourquoi ce trade ? Qu'est-ce que j'aurais dû faire différemment ?", 'Why this trade? What should I have done differently?')}
                 style={{ ...inp, resize:'vertical', fontFamily:BODY }} />
             </div>
 
             <button onClick={save} disabled={saving || !form.pair || !form.entry}
               style={{ width:'100%', background:saving||!form.entry?'var(--bd)':'var(--ac2)', border:'none', borderRadius:6, padding:'11px', color:saving||!form.entry?'var(--tx3)':'#020408', fontFamily:HUD, fontSize:9, letterSpacing:2, fontWeight:700, cursor:'pointer' }}>
-              {saving ? '...' : editing ? '✏️ MODIFIER LE TRADE' : '💾 ENREGISTRER LE TRADE'}
+              {saving ? '...' : editing ? tr(lang, '✏️ MODIFIER LE TRADE', '✏️ UPDATE TRADE') : tr(lang, '💾 ENREGISTRER LE TRADE', '💾 SAVE TRADE')}
             </button>
           </div>
         )}
@@ -188,8 +191,8 @@ export default function TradingJournal({ token }: { token:string }) {
         {trades.length === 0 && !open && (
           <div style={{ textAlign:'center', padding:'1.5rem 0', color:'var(--tx3)' }}>
             <i className="ti ti-notebook-off" style={{ fontSize:28, display:'block', marginBottom:8 }} />
-            <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, marginBottom:4 }}>JOURNAL VIDE</div>
-            <div style={{ fontFamily:BODY, fontSize:12 }}>Enregistrez vos trades pour suivre vos performances.</div>
+            <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, marginBottom:4 }}>{tr(lang, 'JOURNAL VIDE', 'EMPTY JOURNAL')}</div>
+            <div style={{ fontFamily:BODY, fontSize:12 }}>{tr(lang, 'Enregistrez vos trades pour suivre vos performances.', 'Log your trades to track your performance.')}</div>
           </div>
         )}
       </div>

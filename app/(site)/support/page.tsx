@@ -2,14 +2,14 @@
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useTheme } from '@/lib/theme'
+import { useLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
 
 export default function SupportPage() {
   const { toggleTheme, theme } = useTheme()
-  const [lang, setLang] = useState('fr')
-  useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
+  const lang = useLang()
   return (
     <div style={{ minHeight:'100vh', background:'var(--bg0)', color:'var(--tx0)', fontFamily:BODY, display:'flex', flexDirection:'column' }}>
       {/* Header */}

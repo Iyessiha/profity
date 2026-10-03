@@ -3,6 +3,7 @@
 // ============================================================
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import { useLang, tr } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -26,6 +27,7 @@ function fmt(n: number) {
 }
 
 export default function AlertsPanel({ token, plan }: { token:string; plan:string }) {
+  const lang = useLang()
   const [alerts, setAlerts]   = useState<Alert[]>([])
   const [limit,  setLimit]    = useState(2)
   const [pair,   setPair]     = useState('XAU/USD')
@@ -48,7 +50,7 @@ export default function AlertsPanel({ token, plan }: { token:string; plan:string
   useEffect(() => { load() }, [load])
 
   const create = async () => {
-    if (!price || isNaN(Number(price))) { setError('Prix invalide'); return }
+    if (!price || isNaN(Number(price))) { setError(tr(lang, 'Prix invalide', 'Invalid price')); return }
     setSaving(true); setError(null)
     const r = await fetch('/api/alerts', {
       method:'POST',
@@ -78,16 +80,16 @@ export default function AlertsPanel({ token, plan }: { token:string; plan:string
               <i className="ti ti-bell-ringing" style={{ fontSize:18, color:'var(--ac3)' }} />
             </div>
             <div>
-              <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', letterSpacing:1 }}>ALERTES DE PRIX</div>
+              <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', letterSpacing:1 }}>{tr(lang, 'ALERTES DE PRIX', 'PRICE ALERTS')}</div>
               <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx3)' }}>
-                {active.length}/{limit} alertes actives
-                {!isPro && <span style={{ color:'var(--ac3)', marginLeft:6 }}>· Free : 2 max</span>}
+                {active.length}/{limit} {tr(lang, 'alertes actives', 'active alerts')}
+                {!isPro && <span style={{ color:'var(--ac3)', marginLeft:6 }}>{tr(lang, '· Free : 2 max', '· Free: 2 max')}</span>}
               </div>
             </div>
           </div>
           <button onClick={() => setOpen(v => !v)}
             style={{ background:open?'color-mix(in srgb,var(--ac) 12%,transparent)':'var(--bg2)', border:'1px solid var(--bd)', borderRadius:6, padding:'7px 12px', cursor:'pointer', color:'var(--ac)', fontFamily:HUD, fontSize:8, letterSpacing:1 }}>
-            {open ? '✕ FERMER' : '+ AJOUTER'}
+            {open ? tr(lang, '✕ FERMER', '✕ CLOSE') : tr(lang, '+ AJOUTER', '+ ADD')}
           </button>
         </div>
 
@@ -96,7 +98,7 @@ export default function AlertsPanel({ token, plan }: { token:string; plan:string
           <div style={{ background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:8, padding:'1rem', marginBottom:'1rem' }}>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:10 }}>
               <div>
-                <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)', marginBottom:5 }}>PAIRE</div>
+                <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)', marginBottom:5 }}>{tr(lang, 'PAIRE', 'PAIR')}</div>
                 <select value={pair} onChange={e => setPair(e.target.value)}
                   style={{ width:'100%', background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:5, padding:'9px 10px', color:'var(--tx0)', fontFamily:HUD, fontSize:10 }}>
                   {PAIRS.map(p => <option key={p.label} value={p.label}>{p.label}</option>)}
@@ -108,14 +110,14 @@ export default function AlertsPanel({ token, plan }: { token:string; plan:string
                   {(['above','below'] as const).map(c => (
                     <button key={c} onClick={() => setCond(c)}
                       style={{ flex:1, padding:'9px 6px', border:`1px solid ${cond===c?c==='above'?'rgba(0,255,178,0.4)':'rgba(255,58,92,0.4)':'var(--bd)'}`, borderRadius:5, background:cond===c?c==='above'?'rgba(0,255,178,0.08)':'rgba(255,58,92,0.08)':'transparent', color:cond===c?c==='above'?'#00FFB2':'#FF3A5C':'var(--tx3)', fontFamily:HUD, fontSize:8, cursor:'pointer' }}>
-                      {c === 'above' ? '▲ AU-DESSUS' : '▼ EN-DESSOUS'}
+                      {c === 'above' ? tr(lang, '▲ AU-DESSUS', '▲ ABOVE') : tr(lang, '▼ EN DESSOUS', '▼ BELOW')}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
             <div style={{ marginBottom:10 }}>
-              <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)', marginBottom:5 }}>PRIX CIBLE</div>
+              <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:1, color:'var(--tx3)', marginBottom:5 }}>{tr(lang, 'PRIX CIBLE', 'TARGET PRICE')}</div>
               <input type="number" value={price} onChange={e => setPrice(e.target.value)}
                 placeholder={pair.includes('BTC') ? '90000' : pair === 'XAU/USD' ? '2400.00' : '1.1050'}
                 style={{ width:'100%', background:'var(--bg1)', border:'1px solid var(--bd)', borderRadius:5, padding:'9px 12px', color:'var(--tx0)', fontFamily:HUD, fontSize:14, outline:'none', boxSizing:'border-box' }} />
@@ -123,12 +125,12 @@ export default function AlertsPanel({ token, plan }: { token:string; plan:string
             {error && <div style={{ fontFamily:BODY, fontSize:13, color:'var(--red)', marginBottom:8 }}>{error}</div>}
             {!isPro && active.length >= limit ? (
               <a href="/pricing" style={{ display:'block', background:'var(--ac)', color:'#020408', textAlign:'center', textDecoration:'none', fontFamily:HUD, fontSize:9, letterSpacing:2, padding:'10px', borderRadius:5, fontWeight:700 }}>
-                PASSER PRO POUR + D'ALERTES →
+                {tr(lang, "PASSEZ PRO POUR PLUS D'ALERTES →", 'GO PRO FOR MORE ALERTS →')}
               </a>
             ) : (
               <button onClick={create} disabled={saving || !price}
                 style={{ width:'100%', background:saving||!price?'var(--bd)':'var(--ac)', border:'none', borderRadius:5, padding:'10px', color:saving||!price?'var(--tx3)':'#020408', fontFamily:HUD, fontSize:9, letterSpacing:2, fontWeight:700, cursor:'pointer' }}>
-                {saving ? '...' : `🔔 CRÉER L'ALERTE ${pair} ${cond==='above'?'▲':'▼'} ${price}`}
+                {saving ? '...' : `🔔 ${tr(lang, "CRÉER L'ALERTE", 'CREATE ALERT')} ${pair} ${cond==='above'?'▲':'▼'} ${price}`}
               </button>
             )}
           </div>
@@ -144,7 +146,7 @@ export default function AlertsPanel({ token, plan }: { token:string; plan:string
                   <div>
                     <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)' }}>{a.pair}</div>
                     <div style={{ fontFamily:BODY, fontSize:12, color:a.condition==='above'?'#00FFB2':'#FF3A5C' }}>
-                      {a.condition === 'above' ? '▲ au-dessus de' : '▼ en-dessous de'} <strong>{fmt(a.target_price)}</strong>
+                      {a.condition === 'above' ? tr(lang, '▲ au-dessus de', '▲ above') : tr(lang, '▼ en dessous de', '▼ below')} <strong>{fmt(a.target_price)}</strong>
                     </div>
                   </div>
                 </div>
@@ -157,7 +159,7 @@ export default function AlertsPanel({ token, plan }: { token:string; plan:string
         {/* Alertes déclenchées */}
         {triggered.length > 0 && (
           <>
-            <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', marginBottom:6 }}>DÉCLENCHÉES</div>
+            <div style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'var(--tx3)', marginBottom:6 }}>{tr(lang, 'DÉCLENCHÉES', 'TRIGGERED')}</div>
             <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
               {triggered.slice(0,3).map(a => (
                 <div key={a.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:10, background:'rgba(0,230,118,0.04)', border:'1px solid rgba(0,230,118,0.12)', borderRadius:7, padding:'8px 12px', opacity:0.6 }}>
@@ -175,8 +177,8 @@ export default function AlertsPanel({ token, plan }: { token:string; plan:string
         {alerts.length === 0 && !open && (
           <div style={{ textAlign:'center', padding:'1.5rem 0', color:'var(--tx3)' }}>
             <i className="ti ti-bell-off" style={{ fontSize:28, display:'block', marginBottom:8 }} />
-            <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, marginBottom:4 }}>AUCUNE ALERTE</div>
-            <div style={{ fontFamily:BODY, fontSize:12 }}>Cliquez sur "+ AJOUTER" pour être notifié quand un prix est atteint.</div>
+            <div style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, marginBottom:4 }}>{tr(lang, 'AUCUNE ALERTE', 'NO ALERTS')}</div>
+            <div style={{ fontFamily:BODY, fontSize:12 }}>{tr(lang, 'Cliquez sur « + AJOUTER » pour être notifié quand un prix est atteint.', 'Click “+ ADD” to be notified when a price is reached.')}</div>
           </div>
         )}
       </div>

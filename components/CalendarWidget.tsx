@@ -99,8 +99,8 @@ function EventRow({
   if (event.actual != null && event.forecast != null) {
     const a = parseFloat(event.actual), f = parseFloat(event.forecast)
     if (!isNaN(a) && !isNaN(f)) {
-      if (a > f) interpretation = locale === 'fr' ? `Résultat SUPÉRIEUR aux attentes (${event.actual} vs ${event.forecast} prévu) — généralement haussier pour ${event.country}.` : `Result ABOVE forecast — typically bullish for ${event.country}.`
-      else if (a < f) interpretation = locale === 'fr' ? `Résultat INFÉRIEUR aux attentes (${event.actual} vs ${event.forecast} prévu) — généralement baissier pour ${event.country}.` : `Result BELOW forecast — typically bearish for ${event.country}.`
+      if (a > f) interpretation = locale === 'fr' ? `Résultat SUPÉRIEUR aux attentes (${event.actual} vs ${event.forecast} prévu) — généralement haussier pour ${event.country}.` : `Result ABOVE forecast (${event.actual} vs ${event.forecast} expected) — typically bullish for ${event.country}.`
+      else if (a < f) interpretation = locale === 'fr' ? `Résultat INFÉRIEUR aux attentes (${event.actual} vs ${event.forecast} prévu) — généralement baissier pour ${event.country}.` : `Result BELOW forecast (${event.actual} vs ${event.forecast} expected) — typically bearish for ${event.country}.`
       else interpretation = locale === 'fr' ? 'Résultat CONFORME aux attentes — impact neutre attendu.' : 'Result IN LINE with forecast — neutral impact expected.'
     }
   }
@@ -286,9 +286,10 @@ export default function CalendarWidget({ locale = 'fr' }: Props) {
         } catch {}
         // Notification browser si autorisée
         if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-          new Notification(`⚠️ ANNONCE IMMINENTE — ${e.country}`, {
-            body: `${e.title} dans ${Math.abs(e.minutes_until)} min${e.forecast ? ` | Prévu: ${e.forecast}` : ''}`,
-            icon: '/favicon.ico',
+          const en = locale === 'en'
+          new Notification(`⚠️ ${en ? 'IMMINENT RELEASE' : 'ANNONCE IMMINENTE'} — ${e.country}`, {
+            body: `${e.title} ${en ? 'in' : 'dans'} ${Math.abs(e.minutes_until)} min${e.forecast ? ` | ${en ? 'Forecast' : 'Prévu'} : ${e.forecast}` : ''}`,
+            icon: '/icon-192.png',
             tag:  id,
           })
         }
@@ -472,8 +473,8 @@ export default function CalendarWidget({ locale = 'fr' }: Props) {
               }} />
               <span style={{ fontFamily: HUD_FONT, fontSize: 7, letterSpacing: 1,
                 color: nextPoll <= 30_000 ? '#FF6B35' : 'rgba(0,255,178,0.6)' }}>
-                {nextPoll <= 30_000 ? '⚡ IMMINENT · MAJ 30s' :
-                 nextPoll <= 60_000 ? '🔄 MAJ 1 MIN' : '🔄 MAJ 2 MIN'}
+                {nextPoll <= 30_000 ? (locale === 'en' ? '⚡ IMMINENT · REFRESH 30s' : '⚡ IMMINENT · MAJ 30s') :
+                 nextPoll <= 60_000 ? (locale === 'en' ? '🔄 REFRESH 1 MIN' : '🔄 MAJ 1 MIN') : (locale === 'en' ? '🔄 REFRESH 2 MIN' : '🔄 MAJ 2 MIN')}
               </span>
             </div>
             <span style={{ fontFamily: HUD_FONT, fontSize: 7, letterSpacing: 1,

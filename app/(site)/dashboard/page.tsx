@@ -22,6 +22,7 @@ import DashboardTour from '@/components/dashboard/DashboardTour'
 import { useRealtimeSync } from '@/lib/useRealtime'
 import Onboarding from '@/components/Onboarding'
 import StreakToast from '@/components/StreakToast'
+import { useLang, adoptProfileLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -32,7 +33,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null)
   const [plan,    setPlan]    = useState('free')
   const [loading, setLoading] = useState(true)
-  const [locale,  setLocale]  = useState('fr')
+  const locale = useLang()
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showTour, setShowTour] = useState(false)
   const [streakReward, setStreakReward] = useState<{ streak:number; reward:number; milestone:number } | null>(null)
@@ -59,7 +60,7 @@ export default function DashboardPage() {
       if (p) {
         setProfile(p)
         setPlan(p.user_plan as string || 'free')
-        setLocale((p.locale as string) || (typeof localStorage !== 'undefined' ? localStorage.getItem('pxLang') : null) || 'fr')
+        adoptProfileLang(p.locale)
         if (!p.onboarding_done) setShowOnboarding(true)
         // Tour interactif : affiché pour tout user qui n'a pas encore vu le tour
         if (!p.tour_done) {

@@ -5,6 +5,7 @@
 // ============================================================
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
+import { setLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -69,7 +70,7 @@ export default function LandingEN() {
   const [spotted,   setSpotted]   = useState(false)
 
   useEffect(() => {
-    if (typeof localStorage !== 'undefined') localStorage.setItem('pxLang', 'en')
+    setLang('en', false)
     fetch('/api/stats').then(r => r.json()).then(d => {
       if (d.analyses_24h) setAnalyses(d.analyses_24h)
       if (d.total_users)  setUsers(d.total_users)

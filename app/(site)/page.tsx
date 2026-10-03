@@ -4,6 +4,7 @@
 // ============================================================
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
+import { setLang } from '@/lib/i18n'
 import { useTheme }            from '@/lib/theme'
 import LangModal               from '@/components/LangModal'
 
@@ -90,7 +91,7 @@ export default function LandingPage() {
   const [billing,  setBilling]  = useState<'monthly'|'annual'>('monthly')
 
   const handleLangChoice = (lang: 'fr' | 'en') => {
-    try { localStorage.setItem('pxLang', lang) } catch {}
+    setLang(lang, false)
     if (lang === 'en') window.location.href = '/en'
   }
 

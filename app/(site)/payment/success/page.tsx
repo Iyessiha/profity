@@ -2,6 +2,7 @@
 export const dynamic = 'force-dynamic'
 import { useEffect, useState } from 'react'
 import { supabasePublic } from '@/lib/supabase'
+import { useLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -11,10 +12,9 @@ export default function PaymentSuccess() {
   const [credits, setCredits] = useState(0)
   const [name,    setName]    = useState('Trader')
   const [confetti, setConfetti] = useState(true)
-  const [lang, setLang] = useState('fr')
+  const lang = useLang()
 
 
-  useEffect(() => { setLang(localStorage.getItem('pxLang') || 'fr') }, [])
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     ;(async () => {

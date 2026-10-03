@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useLang, tr } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -50,9 +51,9 @@ const ALL: Record<string, { name:string; category:Category; flag:string }> = {
   frxEURGBP: { name:'EUR/GBP', category:'Forex', flag:'🇪🇺' },
   frxEURJPY: { name:'EUR/JPY', category:'Forex', flag:'🇯🇵' },
   frxGBPJPY: { name:'GBP/JPY', category:'Forex', flag:'🇬🇧' },
-  frxXAUUSD: { name:'Or (XAU/USD)', category:'Forex', flag:'🥇' },
+  frxXAUUSD: { name:'XAU/USD', category:'Forex', flag:'🥇' },
   // Commodités
-  frxXAGUSD: { name:'Argent (XAG)', category:'Commodités', flag:'🥈' },
+  frxXAGUSD: { name:'XAG/USD', category:'Commodités', flag:'🥈' },
   frxBROUSD: { name:'Brent (OIL)',  category:'Commodités', flag:'🛢️' },
   // Crypto
   cryBTCUSD: { name:'Bitcoin',  category:'Crypto', flag:'₿'  },
@@ -83,6 +84,7 @@ export default function DerivWidget() {
     Object.entries(ALL).forEach(([s,m]) => { r[s]={ symbol:s, ...m, price:null, prev:null } })
     return r
   })
+  const lang = useLang()
   const [cat, setCat]         = useState<Category>('Boom/Crash')
   const [loading, setLoading] = useState(true)
   const [flash, setFlash]     = useState<Record<string,'up'|'down'>>({})
@@ -125,7 +127,7 @@ export default function DerivWidget() {
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <div style={{ width:8, height:8, borderRadius:'50%', background: loading ? '#C9A84C' : '#00FFB2',
             boxShadow: loading ? '0 0 5px #C9A84C' : '0 0 6px #00FFB2' }} />
-          <span style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'var(--tx0)' }}>PRIX DERIV LIVE</span>
+          <span style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'var(--tx0)' }}>{tr(lang, 'PRIX DERIV EN DIRECT', 'DERIV LIVE PRICES')}</span>
           {ts && <span style={{ fontFamily:BODY, fontSize:10, color:'var(--tx3)' }}>{ts}</span>}
         </div>
         {/* Tabs */}
@@ -147,7 +149,7 @@ export default function DerivWidget() {
       <div>
         {loading ? (
           <div style={{ padding:'2rem', textAlign:'center', fontFamily:BODY, fontSize:13, color:'var(--tx3)' }}>
-            Connexion Indices Synthétiques…
+            {tr(lang, 'Connexion à Deriv…', 'Connecting to Deriv…')}
           </div>
         ) : shown.map(item => {
           const change  = pct(item.price, item.prev)

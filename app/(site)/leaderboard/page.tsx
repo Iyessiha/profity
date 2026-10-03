@@ -2,6 +2,7 @@
 export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -20,10 +21,9 @@ export default function LeaderboardPage() {
   const [leaders, setLeaders] = useState<Leader[]>([])
   const [loading, setLoading] = useState(true)
   const [period, setPeriod]   = useState<'all'|'month'>('month')
-  const [lang,   setLang]     = useState('fr')
+  const lang = useLang()
 
   useEffect(() => {
-    try { setLang(localStorage.getItem('pxLang') || 'fr') } catch {}
     setLoading(true)
     fetch(`/api/leaderboard?period=${period}`)
       .then(r => r.json()).then(d => { setLeaders(d.leaders ?? []); setLoading(false) })

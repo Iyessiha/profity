@@ -9,6 +9,7 @@ import Sidebar from '@/components/dashboard/Sidebar'
 import TopBar from '@/components/dashboard/TopBar'
 import { QuotaBar } from '@/components/dashboard/TopBar'
 import { supabasePublic } from '@/lib/supabase'
+import { useLang, adoptProfileLang } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -34,7 +35,7 @@ export default function PropFirmPage() {
   const [token,   setToken]   = useState('')
   const [profile, setProfile] = useState<Record<string,unknown>|null>(null)
   const [plan,    setPlan]    = useState('free')
-  const [locale,  setLocale]  = useState('fr')
+  const locale = useLang()
   const [tools,   setTools]   = useState<Tool[]>([])
   const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
@@ -56,7 +57,7 @@ export default function PropFirmPage() {
       if (!session) { window.location.href = '/auth/login'; return }
       setToken(session.access_token)
       const { data: p } = await supabasePublic.from('profiles').select('*').eq('id', session.user.id).single()
-      if (p) { setProfile(p); setPlan(p.user_plan as string || 'free'); setLocale(p.locale as string || 'fr') }
+      if (p) { setProfile(p); setPlan(p.user_plan as string || 'free'); adoptProfileLang(p.locale) }
       const [{ data: t }, { data: analyses }] = await Promise.all([
         supabasePublic.from('propfirm_tools').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }),
         supabasePublic.from('chart_analyses').select('id,pair,direction,entry,stop_loss,rr_ratio,created_at').eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(10),

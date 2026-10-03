@@ -4,6 +4,7 @@
 'use client'
 import { useState } from 'react'
 import { supabasePublic } from '@/lib/supabase'
+import { tr } from '@/lib/i18n'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
@@ -11,30 +12,31 @@ const BODY = "'Rajdhani', sans-serif"
 interface Props { userId: string; locale?: string; onClose: () => void }
 
 const TRADING_TYPES = [
-  { v:'forex',     icon:'ti-currency-dollar', label:'Forex (EUR/USD, GBP/USD…)' },
-  { v:'crypto',    icon:'ti-currency-bitcoin', label:'Crypto (BTC, ETH, BNB…)' },
-  { v:'synthetic', icon:'ti-chart-line',       label:'Indices Synthétiqueseriv)' },
-  { v:'commodities',icon:'ti-oil',             label:'Matières premières (Or, Pétrole)' },
-  { v:'indices',   icon:'ti-chart-bar',        label:'Indices (NAS100, SP500…)' },
-  { v:'stocks',    icon:'ti-building-store',   label:'Actions (AAPL, TSLA…)' },
+  { v:'forex',     icon:'ti-currency-dollar', label:{ fr:'Forex (EUR/USD, GBP/USD…)', en:'Forex (EUR/USD, GBP/USD…)' } },
+  { v:'crypto',    icon:'ti-currency-bitcoin', label:{ fr:'Crypto (BTC, ETH, BNB…)', en:'Crypto (BTC, ETH, BNB…)' } },
+  { v:'synthetic', icon:'ti-chart-line',       label:{ fr:'Indices synthétiques (Deriv)', en:'Synthetic indices (Deriv)' } },
+  { v:'commodities',icon:'ti-oil',             label:{ fr:'Matières premières (or, pétrole)', en:'Commodities (gold, oil)' } },
+  { v:'indices',   icon:'ti-chart-bar',        label:{ fr:'Indices (NAS100, SP500…)', en:'Indices (NAS100, SP500…)' } },
+  { v:'stocks',    icon:'ti-building-store',   label:{ fr:'Actions (AAPL, TSLA…)', en:'Stocks (AAPL, TSLA…)' } },
 ]
 
 const BROKERS = [
-  { v:'deriv',    label:'Indices Synthétiques',  logo:'DV' },
+  { v:'deriv',    label:'Deriv',                 logo:'DV' },
   { v:'weltrade', label:'WelTrade',              logo:'WT' },
   { v:'exness',   label:'Exness',                logo:'EX' },
   { v:'binance',  label:'Binance',               logo:'BNB' },
   { v:'hfm',      label:'HF Markets (HFM)',       logo:'HFM' },
-  { v:'other',    label:'Autre broker',          logo:'??' },
+  { v:'other',    label:'',                      logo:'??' },
 ]
 
 const RISKS = [
-  { v:'conservative', icon:'ti-shield-check', label:'Conservateur', desc:'Petites positions, peu de trades' },
-  { v:'moderate',     icon:'ti-balance',       label:'Modéré',       desc:'Equilibre risque/rendement' },
-  { v:'aggressive',   icon:'ti-flame',         label:'Agressif',     desc:'Gros rendements, gros risques' },
+  { v:'conservative', icon:'ti-shield-check', label:{ fr:'Conservateur', en:'Conservative' }, desc:{ fr:'Petites positions, peu de trades', en:'Small positions, few trades' } },
+  { v:'moderate',     icon:'ti-balance',       label:{ fr:'Modéré', en:'Moderate' },           desc:{ fr:'Équilibre risque/rendement', en:'Balanced risk/reward' } },
+  { v:'aggressive',   icon:'ti-flame',         label:{ fr:'Agressif', en:'Aggressive' },       desc:{ fr:'Gros rendements, gros risques', en:'High returns, high risk' } },
 ]
 
 export default function OnboardingModal({ userId, locale = 'fr', onClose }: Props) {
+  const L = locale === 'en' ? 'en' : 'fr'
   const [step, setStep]          = useState(0)
   const [tradingType, setType]   = useState<string[]>([])
   const [broker, setBroker]      = useState('')
@@ -58,9 +60,9 @@ export default function OnboardingModal({ userId, locale = 'fr', onClose }: Prop
   }
 
   const steps = [
-    { title:'Quel marché tradez-vous ?', subtitle:'Sélectionnez un ou plusieurs' },
-    { title:'Votre broker principal', subtitle:'Pour personnaliser vos suggestions' },
-    { title:'Votre profil de risque', subtitle:'Pour adapter les signaux' },
+    { title:tr(L, 'Quel marché tradez-vous ?', 'Which market do you trade?'), subtitle:tr(L, 'Sélectionnez-en un ou plusieurs', 'Select one or more') },
+    { title:tr(L, 'Votre broker principal', 'Your main broker'), subtitle:tr(L, 'Pour personnaliser vos suggestions', 'To personalize your suggestions') },
+    { title:tr(L, 'Votre profil de risque', 'Your risk profile'), subtitle:tr(L, 'Pour adapter les signaux', 'To tailor the signals') },
   ]
 
   return (
@@ -71,7 +73,7 @@ export default function OnboardingModal({ userId, locale = 'fr', onClose }: Prop
 
         {/* En-tête */}
         <div style={{ marginBottom:'1.5rem' }}>
-          <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:8 }}>ÉTAPE {step+1}/3</div>
+          <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'var(--tx3)', marginBottom:8 }}>{tr(L, 'ÉTAPE', 'STEP')} {step+1}/3</div>
           <div style={{ height:4, background:'var(--bd)', borderRadius:2, marginBottom:'1rem', overflow:'hidden' }}>
             <div style={{ width:`${((step+1)/3)*100}%`, height:'100%', background:'var(--ac)', transition:'width .3s' }} />
           </div>
@@ -86,7 +88,7 @@ export default function OnboardingModal({ userId, locale = 'fr', onClose }: Prop
               <button key={t.v} onClick={() => toggleType(t.v)}
                 style={{ background: tradingType.includes(t.v) ? 'color-mix(in srgb, var(--ac) 12%, transparent)' : 'var(--bg1)', border:`1px solid ${tradingType.includes(t.v)?'var(--ac2)':'var(--bd)'}`, borderRadius:8, padding:'0.875rem', cursor:'pointer', textAlign:'left', transition:'all .2s' }}>
                 <i className={'ti '+t.icon} style={{ fontSize:20, color: tradingType.includes(t.v)?'var(--ac)':'var(--tx3)', display:'block', marginBottom:6 }} />
-                <span style={{ fontFamily:BODY, fontSize:13, color:tradingType.includes(t.v)?'var(--tx0)':'var(--tx2)' }}>{t.label}</span>
+                <span style={{ fontFamily:BODY, fontSize:13, color:tradingType.includes(t.v)?'var(--tx0)':'var(--tx2)' }}>{t.label[L]}</span>
               </button>
             ))}
           </div>
@@ -99,7 +101,7 @@ export default function OnboardingModal({ userId, locale = 'fr', onClose }: Prop
               <button key={b.v} onClick={() => setBroker(b.v)}
                 style={{ background: broker===b.v ? 'color-mix(in srgb, var(--ac) 12%, transparent)' : 'var(--bg1)', border:`1px solid ${broker===b.v?'var(--ac2)':'var(--bd)'}`, borderRadius:8, padding:'0.875rem', cursor:'pointer', display:'flex', alignItems:'center', gap:10, transition:'all .2s' }}>
                 <div style={{ width:34, height:34, borderRadius:6, background:'color-mix(in srgb, var(--ac) 10%, transparent)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:HUD, fontSize:9, color:'var(--ac)', flexShrink:0 }}>{b.logo}</div>
-                <span style={{ fontFamily:BODY, fontSize:13, color:'var(--tx1)', textAlign:'left' }}>{b.label}</span>
+                <span style={{ fontFamily:BODY, fontSize:13, color:'var(--tx1)', textAlign:'left' }}>{b.v === 'other' ? tr(L, 'Autre broker', 'Other broker') : b.label}</span>
               </button>
             ))}
           </div>
@@ -113,8 +115,8 @@ export default function OnboardingModal({ userId, locale = 'fr', onClose }: Prop
                 style={{ background: risk===r.v ? 'color-mix(in srgb, var(--ac) 10%, transparent)' : 'var(--bg1)', border:`1px solid ${risk===r.v?'var(--ac2)':'var(--bd)'}`, borderRadius:8, padding:'1rem', cursor:'pointer', display:'flex', alignItems:'center', gap:12, transition:'all .2s' }}>
                 <i className={'ti '+r.icon} style={{ fontSize:24, color: risk===r.v?'var(--ac)':'var(--tx3)', flexShrink:0 }} />
                 <div style={{ textAlign:'left' }}>
-                  <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', letterSpacing:1, marginBottom:2 }}>{r.label}</div>
-                  <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)' }}>{r.desc}</div>
+                  <div style={{ fontFamily:HUD, fontSize:11, color:'var(--tx0)', letterSpacing:1, marginBottom:2 }}>{r.label[L]}</div>
+                  <div style={{ fontFamily:BODY, fontSize:12, color:'var(--tx2)' }}>{r.desc[L]}</div>
                 </div>
               </button>
             ))}
@@ -126,18 +128,18 @@ export default function OnboardingModal({ userId, locale = 'fr', onClose }: Prop
           {step > 0 && (
             <button onClick={() => setStep(s => s-1)}
               style={{ flex:1, padding:'11px', background:'transparent', border:'1px solid var(--bd)', color:'var(--tx2)', fontFamily:HUD, fontSize:9, letterSpacing:1, borderRadius:4, cursor:'pointer' }}>
-              ← RETOUR
+              {tr(L, '← RETOUR', '← BACK')}
             </button>
           )}
           {step < 2 ? (
             <button onClick={() => setStep(s => s+1)} disabled={step===0 && tradingType.length===0}
               style={{ flex:2, padding:'11px', background: step===0&&tradingType.length===0?'var(--bd)':'var(--ac)', border:'none', color:'#020408', fontFamily:HUD, fontSize:10, letterSpacing:2, fontWeight:700, borderRadius:4, cursor: step===0&&tradingType.length===0?'not-allowed':'pointer' }}>
-              SUIVANT →
+              {tr(L, 'SUIVANT →', 'NEXT →')}
             </button>
           ) : (
             <button onClick={save} disabled={saving}
               style={{ flex:2, padding:'11px', background:'var(--ac)', border:'none', color:'#020408', fontFamily:HUD, fontSize:10, letterSpacing:2, fontWeight:700, borderRadius:4, cursor:'pointer' }}>
-              {saving ? 'ENREGISTREMENT...' : '✓ TERMINER'}
+              {saving ? tr(L, 'ENREGISTREMENT...', 'SAVING...') : tr(L, '✓ TERMINER', '✓ FINISH')}
             </button>
           )}
         </div>
