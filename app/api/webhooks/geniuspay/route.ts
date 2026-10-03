@@ -10,18 +10,14 @@
    ============================================================================ */
 
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { getAdminClient } from "@/lib/supabase/server-admin";
 import {
   verifyWebhookSignature,
   type GpWebhookPayload,
 } from "@/lib/payments/geniuspay";
 
-const admin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
-
 export async function POST(req: NextRequest) {
+  const admin = getAdminClient();
   const rawBody   = await req.text();
   const signature = req.headers.get("x-webhook-signature") ?? "";
   const timestamp = req.headers.get("x-webhook-timestamp") ?? "";
@@ -73,7 +69,7 @@ export async function POST(req: NextRequest) {
   try {
     const event = eventType || payload.event;
     if (event === "payment.success" && payload.data?.status === "completed") {
-      await handlePaymentSuccess(payload);
+      await handlePaymentSuccess(payload, admin);
     }
     // payment.failed / payment.cancelled / payment.expired → no subscription
   } catch (err) {
@@ -99,7 +95,7 @@ export async function POST(req: NextRequest) {
 
 // ── Business logic ────────────────────────────────────────────────────────────
 
-async function handlePaymentSuccess(payload: GpWebhookPayload): Promise<void> {
+async function handlePaymentSuccess(payload: GpWebhookPayload, admin: ReturnType<typeof getAdminClient>): Promise<void> {
   // Our checkout_intent UUID is stored in metadata.checkout_id
   const checkoutId = payload.data?.metadata?.checkout_id;
   if (!checkoutId) {
