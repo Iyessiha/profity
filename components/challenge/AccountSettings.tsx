@@ -15,6 +15,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase/client-safe";
+import { TradingAccount, Challenge } from "@/types";
 import {
   AlertTriangle, Check, ChevronDown, ChevronUp,
   ClipboardCopy, Eye, EyeOff, Loader2,
@@ -27,41 +28,7 @@ const supabase = getSupabaseClient();
 // ─────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────
-type ChallengeStatus = "in_progress" | "passed" | "failed";
-
-interface Account {
-  id: string;
-  label: string | null;
-  connect_token: string;
-  mt5_login: number | null;
-  broker_server: string | null;
-  broker_company: string | null;
-  currency: string | null;
-  leverage: number | null;
-  is_active: boolean;
-  last_seen_at: string | null;
-  created_at: string;
-}
-
-interface Challenge {
-  id: string;
-  preset_id: string | null;
-  starting_balance: number;
-  profit_target_pct: number;
-  max_total_dd_pct: number;
-  dd_type: "static" | "trailing";
-  max_daily_dd_pct: number | null;
-  min_trading_days: number;
-  status: ChallengeStatus;
-  failed_reason: string | null;
-  started_at: string;
-  completed_at: string | null;
-  challenge_metrics?: {
-    profit_pct: number;
-    total_dd_pct: number;
-    trading_days: number;
-  } | null;
-}
+type Account = TradingAccount;
 
 interface Props { accountId: string; }
 
@@ -96,17 +63,17 @@ export default function AccountSettings({ accountId }: Props) {
     setLoading(true); setError(null);
     try {
       const { data: acc, error: e } = await supabase
-        .from("accounts").select("*").eq("id", accountId).single();
+        .from("trading_accounts" as any).select("*").eq("id", accountId).single() as any;
       if (e) throw e;
-      setAccount(acc);
-      setEditLabel(acc.label ?? "");
+      setAccount(acc as Account);
+      setEditLabel((acc as any)?.label ?? "");
 
       const { data: chs } = await supabase
-        .from("challenges")
-        .select("*, challenge_metrics(profit_pct, total_dd_pct, trading_days)")
-        .eq("account_id", accountId)
-        .order("started_at", { ascending: false });
-      if (chs) setChallenges(chs);
+        .from("challenges" as any)
+        .select("*")
+        .eq("account_id" as any, accountId)
+        .order("created_at" as any, { ascending: false }) as any;
+      if (chs) setChallenges(chs as Challenge[]);
     } catch (e: any) {
       setError(e?.message ?? "Erreur de chargement");
     } finally {

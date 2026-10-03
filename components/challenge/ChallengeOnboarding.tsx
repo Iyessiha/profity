@@ -21,6 +21,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase/client-safe";
+import { ChallengePres } from "@/types";
 import {
   AlertTriangle, Check, ChevronRight, ClipboardCopy,
   Download, ExternalLink, ShieldCheck, TrendingUp,
@@ -36,15 +37,7 @@ const INGEST_URL =
 // ─────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────
-interface Preset {
-  id: string;
-  name: string;
-  description: string | null;
-  account_size: number | null;
-  profit_target_pct: number;
-  max_total_dd_pct: number;
-  dd_type: "static" | "trailing";
-  max_daily_dd_pct: number | null;
+type Preset = ChallengePres;
   min_trading_days: number;
   phase: string | null;
 }
