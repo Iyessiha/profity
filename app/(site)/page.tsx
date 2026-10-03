@@ -146,7 +146,7 @@ export default function LandingPage() {
 
         {/* Brand — logo */}
         <a href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
-          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height: 'clamp(28px, 5vw, 36px)', width: 'auto', objectFit: 'contain' }} />
+          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height: 'clamp(28px, 5vw, 36px)', width: 'auto', objectFit: 'contain' }} loading="eager" decoding="async" />
         </a>
 
         {/* Liens desktop */}
@@ -186,8 +186,8 @@ export default function LandingPage() {
       {/* Drawer menu mobile */}
       {menuOpen && (
         <div style={{ position:'fixed', top:'clamp(54px, 10vw, 60px)', left:0, right:0, bottom:0, background:'rgba(2,4,8,0.98)', borderBottom:'1px solid rgba(0,255,178,0.12)', zIndex:99, padding:'clamp(1rem, 3vw, 1.5rem)', paddingBottom:'clamp(1rem, 3vw, 1.5rem)', paddingTop: 'max(1rem, env(safe-area-inset-top))', paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))', overflowY:'auto', display:'flex', flexDirection:'column', gap:4 }}>
-          {[['#how','Comment ça marche'],['#features','Fonctionnalités'],['#pricing','Tarifs'],['/results','Résultats live'],['/blog','Blog'],['/auth/login','Se connecter']].map(([href,label]) => (
-            <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ fontFamily:HUD, fontSize:'clamp(9px, 1.1vw, 10px)', letterSpacing:2, color:'rgba(240,248,255,0.6)', textDecoration:'none', padding:'clamp(12px, 2vw, 14px) 0', borderBottom:'1px solid rgba(255,255,255,0.04)', minHeight: '44px', display: 'flex', alignItems: 'center', transition: 'color .2s ease' }} onMouseEnter={(e) => e.currentTarget.style.color = '#00FFB2'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(240,248,255,0.6)'}>
+          {[['#how','Comment ça marche'],['#features','Fonctionnalités'],['#pricing','Tarifs'],['/results','Résultats live'],['/blog','Blog'],['/auth/login','Se connecter']].map(([href,label], i) => (
+            <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{ fontFamily:HUD, fontSize:'clamp(9px, 1.1vw, 10px)', letterSpacing:2, color:'rgba(240,248,255,0.6)', textDecoration:'none', padding:'clamp(12px, 2vw, 14px) 0', borderBottom:'1px solid rgba(255,255,255,0.04)', minHeight: '44px', display: 'flex', alignItems: 'center', transition: 'color .2s ease', transitionDelay: `${i * 50}ms` }} onMouseEnter={(e) => e.currentTarget.style.color = '#00FFB2'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(240,248,255,0.6)'}>
               {label}
             </a>
           ))}
@@ -518,7 +518,7 @@ export default function LandingPage() {
             { src: '/logos/geniuspay.png',    alt: 'GeniusPay',    bg: '#FFFFFF',                 bd: 'rgba(0,0,0,0.1)'       },
           ].map(l => (
             <div key={l.alt} style={{ background: l.bg, border: `1px solid ${l.bd}`, borderRadius: 8, padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2vw, 14px)', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 'clamp(80px, 18vw, 100px)', minHeight: 'clamp(44px, 8vw, 50px)', transition: 'all .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
-              <img src={l.src} alt={l.alt} style={{ height: 'clamp(24px, 4vw, 30px)', maxWidth: '110px', objectFit: 'contain' }} />
+              <img src={l.src} alt={l.alt} style={{ height: 'clamp(24px, 4vw, 30px)', maxWidth: '110px', objectFit: 'contain' }} loading="lazy" decoding="async" />
             </div>
           ))}
         </div>
@@ -604,7 +604,7 @@ export default function LandingPage() {
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: 'clamp(2rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem)', maxWidth: 1100, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 'clamp(12px, 2vw, 16px)', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <a href="/" style={{ textDecoration:'none', flexShrink: 0 }}>
-            <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:'clamp(28px, 4vw, 36px)', width:'auto', objectFit:'contain' }} />
+            <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:'clamp(28px, 4vw, 36px)', width:'auto', objectFit:'contain' }} loading="lazy" decoding="async" />
           </a>
           <div style={{ fontFamily: BODY, fontSize: 'clamp(10px, 1vw, 11px)', color: 'rgba(240,248,255,0.25)' }}>By MonWe Infinity LLC</div>
         </div>
@@ -628,45 +628,19 @@ export default function LandingPage() {
 
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        @keyframes orbFloat1 {
-          0%,100% { transform:translate(0,0) scale(1); }
-          33%     { transform:translate(30px,-40px) scale(1.1); }
-          66%     { transform:translate(-20px,20px) scale(0.95); }
-        }
-        @keyframes orbFloat2 {
-          0%,100% { transform:translate(0,0) scale(1); }
-          40%     { transform:translate(-40px,30px) scale(1.08); }
-          70%     { transform:translate(25px,-20px) scale(0.92); }
-        }
-        @keyframes orbFloat3 {
-          0%,100% { transform:translate(0,0) scale(1); }
-          50%     { transform:translate(-30px,40px) scale(1.15); }
-        }
-        @keyframes gridPulse {
-          0%,100% { opacity:0.6; }
-          50%     { opacity:1; }
-        }
-        @keyframes candleFloat {
-          0%     { opacity:0; transform:translateY(0px); }
-          15%    { opacity:1; }
-          85%    { opacity:1; }
-          100%   { opacity:0; transform:translateY(-30px); }
-        }
-        @keyframes linePulse {
-          0%,100% { opacity:0.4; }
-          50%     { opacity:1; }
-        }
-        @keyframes scrollTicker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-        @keyframes slideDown {
-          from { opacity:0; transform:translateY(-20px); }
-          to { opacity:1; transform:translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity:0; }
-          to { opacity:1; }
-        }
+        @keyframes orbFloat1 { 0%,100% { transform:translate(0,0) scale(1); will-change:transform; } 33%{ transform:translate(30px,-40px) scale(1.1); } 66% { transform:translate(-20px,20px) scale(0.95); } }
+        @keyframes orbFloat2 { 0%,100% { transform:translate(0,0) scale(1); } 40% { transform:translate(-40px,30px) scale(1.08); } 70% { transform:translate(25px,-20px) scale(0.92); } }
+        @keyframes orbFloat3 { 0%,100% { transform:translate(0,0) scale(1); } 50% { transform:translate(-30px,40px) scale(1.15); } }
+        @keyframes gridPulse { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+        @keyframes candleFloat { 0% { opacity:0; transform:translateY(0); } 15% { opacity:1; } 85% { opacity:1; } 100% { opacity:0; transform:translateY(-30px); } }
+        @keyframes linePulse { 0%,100% { opacity:0.4; } 50% { opacity:1; } }
+        @keyframes scrollTicker { 0% { transform:translateX(0); } 100% { transform:translateX(-50%); } }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
         * { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        img { display: block; }
+        a, button { text-decoration-skip-ink: auto; }
         .nav-desktop { display: flex !important; }
         .nav-mobile-btn { display: none !important; }
         a[href], button { -webkit-tap-highlight-color: transparent; }
