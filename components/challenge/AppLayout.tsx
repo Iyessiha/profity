@@ -21,6 +21,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase/client-safe";
+import { TradingAccount } from "@/types";
 import {
   Activity, ChevronDown, ChevronRight, Layers,
   LayoutDashboard, LogOut, Menu, Plus,
@@ -32,16 +33,7 @@ const supabase = getSupabaseClient();
 // ─────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────
-interface Account {
-  id: string;
-  label: string | null;
-  mt5_login: number | null;
-  broker_server: string | null;
-  currency: string | null;
-  is_active: boolean;
-  last_seen_at: string | null;
-  challenges?: { status: string }[];
-}
+type Account = TradingAccount;
 
 interface NavItem {
   key: string;
