@@ -1,15 +1,30 @@
 'use client'
 // ============================================================
-// PROFITYX — Landing Page v3 — Conversion-first
+// PROFITYX — Landing Page v3 — Conversion-first + Design/UI v2
+// Enhanced: animations, mobile design, visual hierarchy
 // ============================================================
 export const dynamic = 'force-dynamic'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { setLang } from '@/lib/i18n'
 import { useTheme }            from '@/lib/theme'
 import LangModal               from '@/components/LangModal'
 
 const HUD  = "'Orbitron', monospace"
 const BODY = "'Rajdhani', sans-serif"
+
+// Scroll-triggered fade-in hook
+function useScrollReveal() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  useEffect(() => {
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setIsVisible(true); obs.unobserve(entry.target) }
+    }, { threshold: 0.15 })
+    if (ref.current) obs.observe(ref.current)
+    return () => obs.disconnect()
+  }, [])
+  return { ref, isVisible }
+}
 
 const PLANS = [
   {
@@ -74,11 +89,11 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false)
   return (
     <div style={{ borderBottom: '1px solid rgba(0,255,178,0.08)' }}>
-      <button onClick={() => setOpen(o => !o)} style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '1.25rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, textAlign: 'left' }}>
-        <span style={{ fontFamily: BODY, fontSize: 16, color: '#F0F8FF', fontWeight: 600 }}>{q}</span>
-        <span style={{ color: '#00FFB2', fontSize: 20, flexShrink: 0, transition: 'transform .2s', transform: open ? 'rotate(45deg)' : 'none' }}>+</span>
+      <button onClick={() => setOpen(o => !o)} style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 'clamp(1rem, 2vw, 1.5rem) 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, textAlign: 'left', transition: 'all .2s ease' }} onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')} onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}>
+        <span style={{ fontFamily: BODY, fontSize: 'clamp(14px, 1.2vw, 16px)', color: '#F0F8FF', fontWeight: 600 }}>{q}</span>
+        <span style={{ color: '#00FFB2', fontSize: 'clamp(18px, 2vw, 20px)', flexShrink: 0, transition: 'transform .25s ease-out', transform: open ? 'rotate(45deg) scale(1.15)' : 'rotate(0deg) scale(1)' }}>+</span>
       </button>
-      {open && <p style={{ fontFamily: BODY, fontSize: 15, color: 'rgba(240,248,255,0.55)', lineHeight: 1.7, paddingBottom: '1.25rem', margin: 0 }}>{a}</p>}
+      {open && <p style={{ fontFamily: BODY, fontSize: 'clamp(13px, 1vw, 15px)', color: 'rgba(240,248,255,0.55)', lineHeight: 1.8, paddingBottom: '1.25rem', margin: 0, animation: 'fadeIn .25s ease-out' }}>{a}</p>}
     </div>
   )
 }
@@ -89,6 +104,15 @@ export default function LandingPage() {
   const [users,    setUsers]    = useState(7)
   const [menuOpen, setMenuOpen] = useState(false)
   const [billing,  setBilling]  = useState<'monthly'|'annual'>('monthly')
+
+  // Scroll reveal sections
+  const heroRef = useRef<HTMLDivElement>(null)
+  const howRef = useRef<HTMLDivElement>(null)
+  const featuresRef = useRef<HTMLDivElement>(null)
+  const pricingRef = useRef<HTMLDivElement>(null)
+  const { ref: howReveal, isVisible: howVis } = useScrollReveal()
+  const { ref: featuresReveal, isVisible: featuresVis } = useScrollReveal()
+  const { ref: pricingReveal, isVisible: pricingVis } = useScrollReveal()
 
   const handleLangChoice = (lang: 'fr' | 'en') => {
     setLang(lang, false)
@@ -109,42 +133,42 @@ export default function LandingPage() {
       <LangModal onChoice={handleLangChoice} />
 
       {/* ── NAVBAR ────────────────────────────────────────────── */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(0,255,178,0.07)', background: 'rgba(2,4,8,0.95)', backdropFilter: 'blur(16px)', padding: '0 1.5rem', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(0,255,178,0.07)', background: 'rgba(2,4,8,0.95)', backdropFilter: 'blur(16px)', padding: '0 clamp(1rem, 3vw, 1.5rem)', height: 'clamp(54px, 10vw, 60px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
         {/* Brand — logo */}
         <a href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
-          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
+          <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height: 'clamp(28px, 5vw, 36px)', width: 'auto', objectFit: 'contain' }} />
         </a>
 
         {/* Liens desktop */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }} className="nav-desktop">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(16px, 3vw, 28px)' }} className="nav-desktop">
           {[['#how','Comment'],['#features','Features'],['#pricing','Tarifs'],['/results','Résultats'],['/blog','Blog']].map(([href,label]) => (
-            <a key={href} href={href} style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.45)', textDecoration:'none' }}>{label}</a>
+            <a key={href} href={href} style={{ fontFamily:HUD, fontSize:'clamp(7px, 0.9vw, 8px)', letterSpacing:2, color:'rgba(240,248,255,0.45)', textDecoration:'none', transition: 'color .2s ease' }} onMouseEnter={(e) => e.currentTarget.style.color = '#00FFB2'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(240,248,255,0.45)'}>{label}</a>
           ))}
         </div>
 
         {/* CTA desktop + hamburger mobile */}
-        <div style={{ display:'flex', gap:10, alignItems:'center', flexShrink:0 }}>
+        <div style={{ display:'flex', gap:'clamp(6px, 1.5vw, 10px)', alignItems:'center', flexShrink:0 }}>
 
           {/* Sélecteur de langue — visible desktop */}
           <div className="nav-desktop" style={{ display:'flex', alignItems:'center', gap:3 }}>
             <a href="/" style={{
-              fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'5px 9px', borderRadius:5,
+              fontFamily:HUD, fontSize:'clamp(7px, 0.9vw, 8px)', letterSpacing:1, padding:'5px 9px', borderRadius:5,
               textDecoration:'none', border:'1px solid rgba(0,255,178,0.35)',
-              background:'rgba(0,255,178,0.1)', color:'#00FFB2', fontWeight:700,
-            }}>FR</a>
+              background:'rgba(0,255,178,0.1)', color:'#00FFB2', fontWeight:700, minHeight: '32px', display: 'flex', alignItems: 'center', transition: 'all .2s ease'
+            }} onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,255,178,0.15)' }} onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,255,178,0.1)' }}>FR</a>
             <a href="/en" style={{
-              fontFamily:HUD, fontSize:8, letterSpacing:1, padding:'5px 9px', borderRadius:5,
+              fontFamily:HUD, fontSize:'clamp(7px, 0.9vw, 8px)', letterSpacing:1, padding:'5px 9px', borderRadius:5,
               textDecoration:'none', border:'1px solid rgba(255,255,255,0.1)',
-              background:'transparent', color:'rgba(240,248,255,0.4)',
-            }}>EN</a>
+              background:'transparent', color:'rgba(240,248,255,0.4)', minHeight: '32px', display: 'flex', alignItems: 'center', transition: 'all .2s ease', cursor: 'pointer'
+            }} onMouseEnter={(e) => { e.currentTarget.style.color = '#00FFB2'; e.currentTarget.style.borderColor = 'rgba(0,255,178,0.3)' }} onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(240,248,255,0.4)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}>EN</a>
           </div>
 
-          <a href="/auth/login" className="nav-desktop" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.5)', textDecoration:'none' }}>CONNEXION</a>
-          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'9px 18px', borderRadius:4, textDecoration:'none', fontWeight:700, whiteSpace:'nowrap' }}>ESSAI GRATUIT</a>
+          <a href="/auth/login" className="nav-desktop" style={{ fontFamily:HUD, fontSize:'clamp(7px, 0.9vw, 8px)', letterSpacing:2, color:'rgba(240,248,255,0.5)', textDecoration:'none', transition: 'color .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.color = '#00FFB2'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(240,248,255,0.5)'}>CONNEXION</a>
+          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:'clamp(7px, 0.9vw, 8px)', letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'clamp(8px, 1.5vw, 9px) clamp(14px, 2.5vw, 18px)', borderRadius:4, textDecoration:'none', fontWeight:700, whiteSpace:'nowrap', minHeight: '36px', display: 'flex', alignItems: 'center', transition: 'all .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>ESSAI GRATUIT</a>
 
           {/* Hamburger — mobile seulement */}
-          <button onClick={() => setMenuOpen(o => !o)} className="nav-mobile-btn" aria-label="Menu" style={{ background:'transparent', border:'1px solid rgba(0,255,178,0.2)', borderRadius:6, color:'#00FFB2', padding:'7px 10px', cursor:'pointer', fontSize:18, lineHeight:1, display:'none' }}>
+          <button onClick={() => setMenuOpen(o => !o)} className="nav-mobile-btn" aria-label="Menu" style={{ background:'transparent', border:'1px solid rgba(0,255,178,0.2)', borderRadius:6, color:'#00FFB2', padding:'clamp(6px, 1vw, 8px) clamp(8px, 1.5vw, 10px)', cursor:'pointer', fontSize:'clamp(16px, 2vw, 18px)', lineHeight:1, display:'none', minHeight: '40px', minWidth: '40px', transition: 'all .2s ease' }}>
             {menuOpen ? '✕' : '☰'}
           </button>
         </div>
@@ -238,34 +262,34 @@ export default function LandingPage() {
       </div>
 
       {/* ── HERO ──────────────────────────────────────────────── */}
-      <section style={{ padding: 'clamp(4rem,8vw,7rem) 2rem clamp(3rem,6vw,5rem)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+      <section ref={heroRef} style={{ padding: 'clamp(3rem, 7vw, 6rem) clamp(1rem, 4vw, 2rem) clamp(2.5rem, 5vw, 4.5rem)', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
 
         {/* Pill live */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.18)', borderRadius: 100, padding: '6px 16px', marginBottom: '2rem' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.18)', borderRadius: 100, padding: 'clamp(6px, 1vw, 8px) clamp(12px, 2vw, 16px)', marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)', animation: 'slideDown .5s ease-out' }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00E676', animation: 'pulse 1.5s infinite', display: 'inline-block' }} />
-          <span style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: '#00FFB2' }}>{users} TRADERS · {analyses} ANALYSES AUJOURD'HUI</span>
+          <span style={{ fontFamily: HUD, fontSize: 'clamp(7px, 0.8vw, 8px)', letterSpacing: 2, color: '#00FFB2' }}>{users} TRADERS · {analyses} ANALYSES AUJOURD'HUI</span>
         </div>
 
         {/* Headline */}
-        <h1 style={{ fontFamily: HUD, fontSize: 'clamp(32px,5.5vw,68px)', fontWeight: 900, lineHeight: 1.1, letterSpacing: 1, marginBottom: '1.5rem' }}>
+        <h1 style={{ fontFamily: HUD, fontSize: 'clamp(28px, 6vw, 68px)', fontWeight: 900, lineHeight: 1.1, letterSpacing: 1, marginBottom: 'clamp(1.2rem, 2vw, 2rem)', animation: 'slideDown .6s ease-out .1s both' }}>
           TRADEZ PLUS<br />
           <span style={{ color: '#00FFB2' }}>INTELLIGENT.</span>
         </h1>
 
-        <p style={{ fontSize: 'clamp(16px,1.8vw,20px)', color: 'rgba(240,248,255,0.55)', lineHeight: 1.7, maxWidth: 580, margin: '0 auto 2.5rem', fontWeight: 300 }}>
+        <p style={{ fontSize: 'clamp(15px, 2vw, 20px)', color: 'rgba(240,248,255,0.55)', lineHeight: 1.8, maxWidth: 600, margin: '0 auto clamp(1.5rem, 3vw, 2.5rem)', fontWeight: 300, animation: 'slideDown .6s ease-out .2s both' }}>
           Uploade ton chart → reçois ton <strong style={{ color: '#F0F8FF' }}>entrée, Stop Loss et Take Profit</strong> en 10 secondes. Analyse SMC propulsée par l'IA.
         </p>
 
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3rem' }}>
-          <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '16px 36px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, boxShadow: '0 0 40px rgba(0,255,178,0.25)' }}>
+        <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)', justifyContent: 'center', flexWrap: 'wrap', marginBottom: 'clamp(2rem, 4vw, 3rem)', animation: 'slideDown .6s ease-out .3s both' }}>
+          <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 'clamp(9px, 1.1vw, 11px)', letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: 'clamp(13px, 2vw, 16px) clamp(28px, 4vw, 36px)', borderRadius: 4, textDecoration: 'none', fontWeight: 700, boxShadow: '0 0 40px rgba(0,255,178,0.25)', minHeight: '44px', display: 'flex', alignItems: 'center', cursor: 'pointer', transition: 'all .3s cubic-bezier(.4, 0, .2, 1)', border: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 0 60px rgba(0,255,178,0.35)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 40px rgba(0,255,178,0.25)' }}>
             COMMENCER GRATUITEMENT →
           </a>
-          <a href="/results" style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 2, color: 'rgba(240,248,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', padding: '14px 24px', borderRadius: 4, textDecoration: 'none' }}>
+          <a href="/results" style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 2, color: 'rgba(240,248,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', padding: 'clamp(13px, 2vw, 14px) clamp(20px, 3vw, 24px)', borderRadius: 4, textDecoration: 'none', minHeight: '44px', display: 'flex', alignItems: 'center', cursor: 'pointer', transition: 'all .2s ease', backgroundColor: 'transparent' }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(0,255,178,0.4)'; e.currentTarget.style.color = '#00FFB2' }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(240,248,255,0.5)' }}>
             VOIR LES RÉSULTATS
           </a>
         </div>
 
-        <p style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(240,248,255,0.3)' }}>
+        <p style={{ fontFamily: BODY, fontSize: 'clamp(11px, 1vw, 13px)', color: 'rgba(240,248,255,0.3)', animation: 'slideDown .6s ease-out .4s both' }}>
           ✓ Sans carte bancaire &nbsp;·&nbsp; ✓ 10 crédits offerts &nbsp;·&nbsp; ✓ Annulable à tout moment
         </p>
       </section>
@@ -283,33 +307,33 @@ export default function LandingPage() {
       </div>
 
       {/* ── COMMENT ÇA MARCHE ─────────────────────────────────── */}
-      <section id="how" style={{ padding: 'clamp(4rem,7vw,6rem) 2rem', maxWidth: 1000, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>COMMENT ÇA MARCHE</div>
-          <h2 style={{ fontFamily: HUD, fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 900 }}>3 étapes, 10 secondes</h2>
+      <section ref={howReveal} id="how" style={{ padding: 'clamp(3rem, 7vw, 6rem) clamp(1rem, 4vw, 2rem)', maxWidth: 1000, margin: '0 auto', opacity: howVis ? 1 : 0.5, transform: howVis ? 'translateY(0)' : 'translateY(20px)', transition: 'all .6s cubic-bezier(.4, 0, .2, 1)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 3.5rem)' }}>
+          <div style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>COMMENT ÇA MARCHE</div>
+          <h2 style={{ fontFamily: HUD, fontSize: 'clamp(20px, 4vw, 40px)', fontWeight: 900 }}>3 étapes, 10 secondes</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 20 }}>
-          {STEPS.map(s => (
-            <div key={s.n} style={{ background: '#08111F', border: '1px solid rgba(0,255,178,0.08)', borderRadius: 12, padding: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(240px, 100%, 300px), 1fr))', gap: 'clamp(12px, 2vw, 20px)' }}>
+          {STEPS.map((s, i) => (
+            <div key={s.n} style={{ background: '#08111F', border: '1px solid rgba(0,255,178,0.08)', borderRadius: 12, padding: 'clamp(1.5rem, 3vw, 2rem)', transition: 'all .3s ease', transform: howVis ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)', opacity: howVis ? 1 : 0, transitionDelay: `${i * 0.1}s`, cursor: 'pointer' }} onMouseEnter={(e) => { if (howVis) { e.currentTarget.style.background = 'rgba(0,255,178,0.04)'; e.currentTarget.style.borderColor = 'rgba(0,255,178,0.2)'; e.currentTarget.style.transform = 'translateY(-4px)' } }} onMouseLeave={(e) => { if (howVis) { e.currentTarget.style.background = '#08111F'; e.currentTarget.style.borderColor = 'rgba(0,255,178,0.08)'; e.currentTarget.style.transform = 'translateY(0)' } }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <span style={{ fontFamily: HUD, fontSize: 11, color: 'rgba(0,255,178,0.3)' }}>{s.n}</span>
-                <span style={{ fontSize: 28 }}>{s.icon}</span>
+                <span style={{ fontFamily: HUD, fontSize: 'clamp(10px, 1.2vw, 11px)', color: 'rgba(0,255,178,0.3)' }}>{s.n}</span>
+                <span style={{ fontSize: 'clamp(24px, 4vw, 28px)' }}>{s.icon}</span>
               </div>
-              <div style={{ fontFamily: HUD, fontSize: 12, letterSpacing: 1, color: '#F0F8FF', marginBottom: 10 }}>{s.title}</div>
-              <p style={{ fontFamily: BODY, fontSize: 14, color: 'rgba(240,248,255,0.5)', lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
+              <div style={{ fontFamily: HUD, fontSize: 'clamp(11px, 1.2vw, 12px)', letterSpacing: 1, color: '#F0F8FF', marginBottom: 10 }}>{s.title}</div>
+              <p style={{ fontFamily: BODY, fontSize: 'clamp(13px, 1vw, 14px)', color: 'rgba(240,248,255,0.5)', lineHeight: 1.7, margin: 0 }}>{s.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── FEATURES ──────────────────────────────────────────── */}
-      <section id="features" style={{ padding: 'clamp(3rem,6vw,5rem) 2rem', background: 'rgba(8,17,31,0.5)' }}>
+      <section ref={featuresReveal} id="features" style={{ padding: 'clamp(3rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem)', background: 'rgba(8,17,31,0.5)', opacity: featuresVis ? 1 : 0.5, transform: featuresVis ? 'translateY(0)' : 'translateY(20px)', transition: 'all .6s cubic-bezier(.4, 0, .2, 1)' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>FONCTIONNALITÉS</div>
-            <h2 style={{ fontFamily: HUD, fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 900 }}>Tout pour trader intelligemment</h2>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 5vw, 3.5rem)' }}>
+            <div style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>FONCTIONNALITÉS</div>
+            <h2 style={{ fontFamily: HUD, fontSize: 'clamp(20px, 4vw, 40px)', fontWeight: 900 }}>Tout pour trader intelligemment</h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(200px, 100%, 250px), 1fr))', gap: 'clamp(12px, 2vw, 16px)' }}>
             {[
               { icon: '🧠', title: 'Analyse SMC', desc: 'Order Block, Fair Value Gap, BOS, CHoCH, Liquidité détectés automatiquement.' },
               { icon: '⚡', title: '10 secondes', desc: 'Signal complet en moins de 10 secondes après upload du chart.' },
@@ -317,11 +341,11 @@ export default function LandingPage() {
               { icon: '🌍', title: 'Indices Synthétiques + Forex', desc: 'Boom, Crash, GainX, Volatility, EUR/USD, XAU/USD et plus.' },
               { icon: '📱', title: 'Mobile first', desc: 'Interface optimisée pour mobile. Installe l\'app PWA en 1 clic.' },
               { icon: '🔒', title: 'Sécurisé', desc: 'Données chiffrées SSL. Paiements via GeniusPay certifié.' },
-            ].map(f => (
-              <div key={f.title} style={{ background: '#020408', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '1.5rem' }}>
-                <div style={{ fontSize: 28, marginBottom: 12 }}>{f.icon}</div>
-                <div style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 1, color: '#F0F8FF', marginBottom: 8 }}>{f.title}</div>
-                <p style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(240,248,255,0.45)', lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
+            ].map((f, i) => (
+              <div key={f.title} style={{ background: '#020408', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: 'clamp(1.2rem, 2.5vw, 1.5rem)', transition: 'all .3s ease', transform: featuresVis ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)', opacity: featuresVis ? 1 : 0, transitionDelay: `${i * 0.08}s`, cursor: 'pointer' }} onMouseEnter={(e) => { if (featuresVis) { e.currentTarget.style.background = 'rgba(0,255,178,0.04)'; e.currentTarget.style.borderColor = 'rgba(0,255,178,0.15)'; e.currentTarget.style.transform = 'translateY(-4px)' } }} onMouseLeave={(e) => { if (featuresVis) { e.currentTarget.style.background = '#020408'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'translateY(0)' } }}>
+                <div style={{ fontSize: 'clamp(24px, 4vw, 28px)', marginBottom: 12 }}>{f.icon}</div>
+                <div style={{ fontFamily: HUD, fontSize: 'clamp(10px, 1.1vw, 11px)', letterSpacing: 1, color: '#F0F8FF', marginBottom: 8 }}>{f.title}</div>
+                <p style={{ fontFamily: BODY, fontSize: 'clamp(12px, 1vw, 13px)', color: 'rgba(240,248,255,0.45)', lineHeight: 1.7, margin: 0 }}>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -341,28 +365,29 @@ export default function LandingPage() {
       </section>
 
       {/* ── PRICING ───────────────────────────────────────────── */}
-      <section id="pricing" style={{ padding: 'clamp(4rem,7vw,6rem) 2rem', background: 'rgba(8,17,31,0.5)' }}>
+      <section ref={pricingReveal} id="pricing" style={{ padding: 'clamp(4rem, 7vw, 6rem) clamp(1rem, 4vw, 2rem)', background: 'rgba(8,17,31,0.5)', opacity: pricingVis ? 1 : 0.5, transform: pricingVis ? 'translateY(0)' : 'translateY(20px)', transition: 'all .6s cubic-bezier(.4, 0, .2, 1)' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>TARIFS</div>
-            <h2 style={{ fontFamily: HUD, fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 900 }}>Choisissez votre plan</h2>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+            <div style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 3, color: 'rgba(0,255,178,0.6)', marginBottom: 12 }}>TARIFS</div>
+            <h2 style={{ fontFamily: HUD, fontSize: 'clamp(20px, 4vw, 40px)', fontWeight: 900 }}>Choisissez votre plan</h2>
           </div>
 
           {/* Toggle mensuel / annuel */}
-          <div style={{ display:'flex', justifyContent:'center', marginBottom:32 }}>
+          <div style={{ display:'flex', justifyContent:'center', marginBottom:'clamp(20px, 4vw, 32px)' }}>
             <div style={{ display:'inline-flex', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:4, gap:4 }}>
               {(['monthly','annual'] as const).map(b => (
                 <button key={b} onClick={() => setBilling(b)} style={{
-                  fontFamily:HUD, fontSize:8, letterSpacing:2, padding:'8px 16px', borderRadius:6,
-                  border:'none', cursor:'pointer', transition:'all .2s',
+                  fontFamily:HUD, fontSize:'clamp(7px, 1vw, 8px)', letterSpacing:2, padding:'clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px)', borderRadius:6,
+                  border:'none', cursor:'pointer', transition:'all .2s ease',
                   background: billing === b ? '#00FFB2' : 'transparent',
                   color: billing === b ? '#020408' : 'rgba(240,248,255,0.5)',
                   fontWeight: billing === b ? 700 : 400,
+                  minHeight: '36px', display: 'flex', alignItems: 'center'
                 }}>
                   {b === 'monthly' ? 'MENSUEL' : (
                     <span style={{ display:'flex', alignItems:'center', gap:5 }}>
                       ANNUEL
-                      <span style={{ fontSize:6, background:'rgba(0,255,178,0.15)', color:'#00FFB2', padding:'2px 6px', borderRadius:3 }}>-2 MOIS</span>
+                      <span style={{ fontSize:'clamp(5px, 0.8vw, 6px)', background:'rgba(0,255,178,0.15)', color:'#00FFB2', padding:'2px 6px', borderRadius:3 }}>-2 MOIS</span>
                     </span>
                   )}
                 </button>
@@ -370,33 +395,38 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 20, alignItems: 'start' }}>
-            {PLANS.map(plan => (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(240px, 100%, 300px), 1fr))', gap: 'clamp(12px, 2vw, 20px)', alignItems: 'start' }}>
+            {PLANS.map((plan, i) => (
               <div key={plan.key} style={{
                 background: plan.highlight ? 'rgba(0,255,178,0.04)' : '#08111F',
                 border: `1px solid ${plan.highlight ? 'rgba(0,255,178,0.35)' : 'rgba(255,255,255,0.06)'}`,
-                borderRadius: 12, padding: '2rem', position: 'relative',
-              }}>
+                borderRadius: 12, padding: 'clamp(1.5rem, 3vw, 2rem)', position: 'relative',
+                transition: 'all .3s ease',
+                transform: pricingVis ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)',
+                opacity: pricingVis ? 1 : 0,
+                transitionDelay: `${i * 0.1}s`,
+                cursor: 'pointer'
+              }} onMouseEnter={(e) => { if (pricingVis) { e.currentTarget.style.borderColor = plan.highlight ? 'rgba(0,255,178,0.5)' : 'rgba(255,255,255,0.15)'; e.currentTarget.style.transform = 'translateY(-6px)' } }} onMouseLeave={(e) => { if (pricingVis) { e.currentTarget.style.borderColor = plan.highlight ? 'rgba(0,255,178,0.35)' : 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)' } }}>
                 {plan.highlight && (
-                  <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: '#00FFB2', color: '#020408', fontFamily: HUD, fontSize: 8, letterSpacing: 2, padding: '4px 16px', borderRadius: 100, fontWeight: 900, whiteSpace: 'nowrap' }}>
+                  <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: '#00FFB2', color: '#020408', fontFamily: HUD, fontSize: 'clamp(7px, 0.9vw, 8px)', letterSpacing: 2, padding: '4px 16px', borderRadius: 100, fontWeight: 900, whiteSpace: 'nowrap' }}>
                     LE PLUS POPULAIRE
                   </div>
                 )}
-                <div style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: plan.color, marginBottom: 8 }}>{plan.name}</div>
+                <div style={{ fontFamily: HUD, fontSize: 'clamp(10px, 1.2vw, 11px)', letterSpacing: 2, color: plan.color, marginBottom: 8 }}>{plan.name}</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
-                  <span style={{ fontFamily: HUD, fontSize: 30, fontWeight: 900, color: '#F0F8FF' }}>{plan.price}</span>
-                  <span style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(240,248,255,0.4)' }}>{billing === 'annual' && (plan as any).currencyYear ? (plan as any).currencyYear : plan.currency}</span>
+                  <span style={{ fontFamily: HUD, fontSize: 'clamp(24px, 5vw, 30px)', fontWeight: 900, color: '#F0F8FF' }}>{plan.price}</span>
+                  <span style={{ fontFamily: BODY, fontSize: 'clamp(12px, 1vw, 13px)', color: 'rgba(240,248,255,0.4)' }}>{billing === 'annual' && (plan as any).currencyYear ? (plan as any).currencyYear : plan.currency}</span>
                 </div>
-                <div style={{ fontFamily: BODY, fontSize: 13, color: plan.color, marginBottom: 24 }}>{plan.credits} · {plan.analyses}</div>
+                <div style={{ fontFamily: BODY, fontSize: 'clamp(12px, 1vw, 13px)', color: plan.color, marginBottom: 24 }}>{plan.credits} · {plan.analyses}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
                   {plan.features.map(f => (
-                    <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ color: plan.color, fontSize: 12, flexShrink: 0 }}>✓</span>
-                      <span style={{ fontFamily: BODY, fontSize: 14, color: 'rgba(240,248,255,0.6)' }}>{f}</span>
+                    <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                      <span style={{ color: plan.color, fontSize: 'clamp(11px, 1vw, 12px)', flexShrink: 0, marginTop: 2 }}>✓</span>
+                      <span style={{ fontFamily: BODY, fontSize: 'clamp(13px, 1vw, 14px)', color: 'rgba(240,248,255,0.6)', lineHeight: 1.5 }}>{f}</span>
                     </div>
                   ))}
                 </div>
-                <a href={plan.href} style={{ display: 'block', textAlign: 'center', fontFamily: HUD, fontSize: 9, letterSpacing: 2, textDecoration: 'none', padding: '13px', borderRadius: 6, fontWeight: 700, background: plan.highlight ? '#00FFB2' : 'transparent', color: plan.highlight ? '#020408' : plan.color, border: `1px solid ${plan.color}40` }}>
+                <a href={plan.href} style={{ display: 'block', textAlign: 'center', fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 2, textDecoration: 'none', padding: 'clamp(11px, 2vw, 13px)', borderRadius: 6, fontWeight: 700, background: plan.highlight ? '#00FFB2' : 'transparent', color: plan.highlight ? '#020408' : plan.color, border: `1px solid ${plan.color}40`, minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.transform = plan.highlight ? 'scale(1.03)' : 'translateY(-2px)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
                   {plan.cta}
                 </a>
               </div>
@@ -406,9 +436,9 @@ export default function LandingPage() {
       </section>
 
       {/* ── PAIEMENT ──────────────────────────────────────────── */}
-      <section style={{ padding: '3rem 2rem', maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-        <div style={{ fontFamily: HUD, fontSize: 9, letterSpacing: 3, color: 'rgba(240,248,255,0.3)', marginBottom: 24 }}>PAYEZ COMME VOUS VOULEZ</div>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+      <section style={{ padding: 'clamp(2.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem)', maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
+        <div style={{ fontFamily: HUD, fontSize: 'clamp(8px, 1vw, 9px)', letterSpacing: 3, color: 'rgba(240,248,255,0.3)', marginBottom: 'clamp(16px, 3vw, 24px)' }}>PAYEZ COMME VOUS VOULEZ</div>
+        <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)', justifyContent: 'center', flexWrap: 'wrap' }}>
           {[
             { src: '/logos/wave.png',         alt: 'Wave',         bg: 'rgba(13,197,255,0.06)',   bd: 'rgba(13,197,255,0.2)'  },
             { src: '/logos/orange_money.png', alt: 'Orange Money', bg: '#1A0A00',                 bd: 'rgba(255,140,0,0.3)'   },
@@ -418,14 +448,14 @@ export default function LandingPage() {
             { src: '/logos/mastercard.png',   alt: 'Mastercard',   bg: 'rgba(255,255,255,0.95)',  bd: 'rgba(0,0,0,0.1)'       },
             { src: '/logos/geniuspay.png',    alt: 'GeniusPay',    bg: '#FFFFFF',                 bd: 'rgba(0,0,0,0.1)'       },
           ].map(l => (
-            <div key={l.alt} style={{ background: l.bg, border: `1px solid ${l.bd}`, borderRadius: 8, padding: '8px 14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 100, height: 50 }}>
-              <img src={l.src} alt={l.alt} style={{ height: 30, maxWidth: 110, objectFit: 'contain' }} />
+            <div key={l.alt} style={{ background: l.bg, border: `1px solid ${l.bd}`, borderRadius: 8, padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2vw, 14px)', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 'clamp(80px, 18vw, 100px)', minHeight: 'clamp(44px, 8vw, 50px)', transition: 'all .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+              <img src={l.src} alt={l.alt} style={{ height: 'clamp(24px, 4vw, 30px)', maxWidth: '110px', objectFit: 'contain' }} />
             </div>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginTop: 20 }}>
+        <div style={{ display: 'flex', gap: 'clamp(10px, 2vw, 16px)', justifyContent: 'center', flexWrap: 'wrap', marginTop: 'clamp(14px, 3vw, 20px)' }}>
           {['🔒 SSL 256 bits', '🏦 Données non stockées', '↩️ Annulable', '✓ Sans engagement'].map(b => (
-            <span key={b} style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(240,248,255,0.35)' }}>{b}</span>
+            <span key={b} style={{ fontFamily: BODY, fontSize: 'clamp(11px, 1vw, 12px)', color: 'rgba(240,248,255,0.35)' }}>{b}</span>
           ))}
         </div>
       </section>
@@ -440,44 +470,44 @@ export default function LandingPage() {
       </section>
 
       {/* ── CTA FINAL ─────────────────────────────────────────── */}
-      <section style={{ padding: 'clamp(4rem,7vw,6rem) 2rem', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
-        <h2 style={{ fontFamily: HUD, fontSize: 'clamp(26px,4vw,44px)', fontWeight: 900, lineHeight: 1.15, marginBottom: 16 }}>
+      <section style={{ padding: 'clamp(4rem, 7vw, 6rem) clamp(1rem, 4vw, 2rem)', textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+        <h2 style={{ fontFamily: HUD, fontSize: 'clamp(22px, 4.5vw, 44px)', fontWeight: 900, lineHeight: 1.2, marginBottom: 'clamp(12px, 2vw, 16px)' }}>
           TON PROCHAIN TRADE<br />
           <span style={{ color: '#00FFB2' }}>COMMENCE MAINTENANT</span>
         </h2>
-        <p style={{ fontFamily: BODY, fontSize: 16, color: 'rgba(240,248,255,0.45)', marginBottom: 32 }}>
+        <p style={{ fontFamily: BODY, fontSize: 'clamp(14px, 1.5vw, 16px)', color: 'rgba(240,248,255,0.45)', marginBottom: 'clamp(20px, 4vw, 32px)', lineHeight: 1.7 }}>
           Rejoins {users}+ traders qui utilisent l'IA pour analyser leurs charts.
         </p>
-        <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 12, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '18px 48px', borderRadius: 4, textDecoration: 'none', fontWeight: 700, display: 'inline-block', boxShadow: '0 0 50px rgba(0,255,178,0.2)' }}>
+        <a href="/auth/login" style={{ fontFamily: HUD, fontSize: 'clamp(10px, 1.2vw, 12px)', letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: 'clamp(14px, 2.5vw, 18px) clamp(32px, 6vw, 48px)', borderRadius: 4, textDecoration: 'none', fontWeight: 700, display: 'inline-block', boxShadow: '0 0 50px rgba(0,255,178,0.2)', minHeight: '48px', cursor: 'pointer', transition: 'all .3s cubic-bezier(.4, 0, .2, 1)', border: 'none' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 70px rgba(0,255,178,0.3)' }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 50px rgba(0,255,178,0.2)' }}>
           CRÉER MON COMPTE GRATUIT →
         </a>
-        <p style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(240,248,255,0.25)', marginTop: 14 }}>Sans carte bancaire · 10 crédits offerts</p>
+        <p style={{ fontFamily: BODY, fontSize: 'clamp(11px, 1vw, 13px)', color: 'rgba(240,248,255,0.25)', marginTop: 'clamp(10px, 2vw, 14px)' }}>Sans carte bancaire · 10 crédits offerts</p>
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────────── */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '2.5rem 2rem', maxWidth: 1100, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: 'clamp(2rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem)', maxWidth: 1100, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 'clamp(12px, 2vw, 16px)', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <a href="/" style={{ textDecoration:'none' }}>
-            <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:36, width:'auto', objectFit:'contain' }} />
+          <a href="/" style={{ textDecoration:'none', flexShrink: 0 }}>
+            <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:'clamp(28px, 4vw, 36px)', width:'auto', objectFit:'contain' }} />
           </a>
-          <div style={{ fontFamily: BODY, fontSize: 11, color: 'rgba(240,248,255,0.25)' }}>By MonWe Infinity LLC</div>
+          <div style={{ fontFamily: BODY, fontSize: 'clamp(10px, 1vw, 11px)', color: 'rgba(240,248,255,0.25)' }}>By MonWe Infinity LLC</div>
         </div>
-        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 'clamp(12px, 2vw, 20px)', flexWrap: 'wrap' }}>
           {[['#pricing','Tarifs'],['#how','Comment'],['#features','Features'],['/results','Résultats'],['/blog','Blog'],['/legal/cgu','CGU'],['/legal/confidentialite','Confidentialité']].map(([href,label]) => (
-            <a key={href} href={href} style={{ fontFamily: BODY, fontSize: 13, color: 'rgba(240,248,255,0.3)', textDecoration: 'none' }}>{label}</a>
+            <a key={href} href={href} style={{ fontFamily: BODY, fontSize: 'clamp(11px, 1vw, 13px)', color: 'rgba(240,248,255,0.3)', textDecoration: 'none', transition: 'color .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.color = '#00FFB2'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(240,248,255,0.3)'}>{label}</a>
           ))}
         </div>
                 {/* Switcher de langue */}
-        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <span style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.3)' }}>🌐</span>
-          <a href="/" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, textDecoration:'none',
+        <div style={{ display:'flex', alignItems:'center', gap:'clamp(6px, 1.5vw, 8px)' }}>
+          <span style={{ fontFamily:BODY, fontSize:'clamp(11px, 1.2vw, 12px)', color:'rgba(240,248,255,0.3)' }}>🌐</span>
+          <a href="/" style={{ fontFamily:HUD, fontSize:'clamp(7px, 0.9vw, 8px)', letterSpacing:2, textDecoration:'none',
             color:'#00FFB2', background:'rgba(0,255,178,0.1)', border:'1px solid rgba(0,255,178,0.3)',
-            padding:'5px 12px', borderRadius:4 }}>FR</a>
-          <a href="/en" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, textDecoration:'none',
+            padding:'5px 12px', borderRadius:4, minHeight: '32px', display: 'flex', alignItems: 'center', transition: 'all .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,255,178,0.15)' }} onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,255,178,0.1)' }}>FR</a>
+          <a href="/en" style={{ fontFamily:HUD, fontSize:'clamp(7px, 0.9vw, 8px)', letterSpacing:2, textDecoration:'none',
             color:'rgba(240,248,255,0.35)', border:'1px solid rgba(255,255,255,0.1)',
-            padding:'5px 12px', borderRadius:4 }}>EN</a>
+            padding:'5px 12px', borderRadius:4, minHeight: '32px', display: 'flex', alignItems: 'center', transition: 'all .2s ease', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.color = '#00FFB2'; e.currentTarget.style.borderColor = 'rgba(0,255,178,0.3)' }} onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(240,248,255,0.35)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}>EN</a>
         </div>
-        <div style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(240,248,255,0.2)' }}>© 2026 MonWe Infinity LLC</div>
+        <div style={{ fontFamily: BODY, fontSize: 'clamp(11px, 1vw, 12px)', color: 'rgba(240,248,255,0.2)' }}>© 2026 MonWe Infinity LLC</div>
       </footer>
 
       <style>{`
@@ -511,6 +541,14 @@ export default function LandingPage() {
           50%     { opacity:1; }
         }
         @keyframes scrollTicker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes slideDown {
+          from { opacity:0; transform:translateY(-20px); }
+          to { opacity:1; transform:translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity:0; }
+          to { opacity:1; }
+        }
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         .nav-desktop { display: flex !important; }
@@ -518,6 +556,7 @@ export default function LandingPage() {
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
           .nav-mobile-btn { display: flex !important; }
+          section { margin-left: -1rem !important; margin-right: -1rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
         }
       `}</style>
     </div>
