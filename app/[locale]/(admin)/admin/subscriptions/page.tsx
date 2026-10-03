@@ -1,17 +1,13 @@
-import { createClient as adminClient } from "@supabase/supabase-js";
+import { getAdminClient } from "@/lib/supabase/server-admin";
 
 export const metadata = { title: "Abonnements — Admin Profity" };
-
-const admin = adminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
 
 export default async function SubscriptionsPage({
   searchParams,
 }: {
   searchParams: Promise<{ tier?: string; status?: string }>;
 }) {
+  const admin = getAdminClient();
   const { tier, status } = await searchParams;
 
   let query = admin

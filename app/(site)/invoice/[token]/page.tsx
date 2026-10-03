@@ -2,8 +2,8 @@
 // PROFITYX — /invoice/[token] : Facture publique imprimable
 // MonWe Infinity LLC — EIN 38-4396094
 // ============================================================
-import { createClient } from '@supabase/supabase-js'
-import { notFound }     from 'next/navigation'
+import { getAdminClient } from '@/lib/supabase/server-admin'
+import { notFound } from 'next/navigation'
 
 interface Invoice {
   invoice_number: string; client_name: string; client_email: string
@@ -13,10 +13,7 @@ interface Invoice {
 }
 
 async function getInvoice(token: string): Promise<Invoice | null> {
-  const admin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+  const admin = getAdminClient()
   const { data } = await admin.from('invoices')
     .select('invoice_number, client_name, client_email, client_address, plan, description, amount_xof, amount_usd, payment_method, payment_ref, status, created_at')
     .eq('token', token).single()

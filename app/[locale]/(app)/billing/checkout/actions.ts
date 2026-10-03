@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { createClient as adminClient } from "@supabase/supabase-js";
+import { getAdminClient } from "@/lib/supabase/server-admin";
 import { createCheckout } from "@/lib/payments/geniuspay";
 
 // Prices in XOF (no minor unit — 1 XOF = 1 unit)
@@ -24,10 +24,7 @@ export async function startCheckout(tier: "pro" | "elite") {
   if (!amount) throw new Error(`Unknown tier: ${tier}`);
 
   // Create checkout_intent (service-role to bypass RLS on insert)
-  const admin = adminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
+  const admin = getAdminClient();
 
   const expiresAt = new Date();
   expiresAt.setHours(expiresAt.getHours() + 2);

@@ -1,18 +1,14 @@
 import { notFound } from "next/navigation";
-import { createClient as adminClient } from "@supabase/supabase-js";
+import { getAdminClient } from "@/lib/supabase/server-admin";
 import { suspendUser, unsuspendUser, promoteToAdmin, revokeAdmin, cancelSubscription } from "../../actions";
 
 export const metadata = { title: "Profil utilisateur — Admin Profity" };
-
-const admin = adminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function UserDetailPage({ params }: Props) {
   const { id } = await params;
+  const admin = getAdminClient();
 
   const [
     { data: profile },
