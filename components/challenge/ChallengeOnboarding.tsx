@@ -37,10 +37,10 @@ const INGEST_URL =
 // ─────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────
-type Preset = ChallengePres;
+type Preset = ChallengePres & {
   min_trading_days: number;
   phase: string | null;
-}
+};
 
 interface Props {
   userId: string;
