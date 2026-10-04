@@ -18,9 +18,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { RealtimeChannel } from "@supabase/supabase-js";
-import { getSupabaseClient } from "@/lib/supabase/client-safe";
-import { Challenge, ChallengeEvent, EquitySnapshot } from "@/types";
+import { createClient, RealtimeChannel } from "@supabase/supabase-js";
 import {
   ResponsiveContainer, ComposedChart, Area, Line,
   XAxis, YAxis, ReferenceLine, ReferenceArea, Tooltip,
@@ -33,14 +31,25 @@ import {
 // ─────────────────────────────────────────────────────────────────────
 // Client Supabase (singleton)
 // ─────────────────────────────────────────────────────────────────────
-const supabase = getSupabaseClient();
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
 
 // ─────────────────────────────────────────────────────────────────────
 // Types — alignés sur le schéma SQL
 // ─────────────────────────────────────────────────────────────────────
+type DdType = "static" | "trailing";
+type ChallengeStatus = "in_progress" | "passed" | "failed";
+
 type EventKind =
   | "day_started" | "target_hit" | "daily_breach" | "total_breach"
   | "passed" | "failed" | "connected" | "disconnected" | "trade";
+
+interface Challenge {
+  id: string;
+  account_id: string;
+  starting_balance: number;
   profit_target_pct: number;
   max_total_dd_pct: number;
   dd_type: DdType;

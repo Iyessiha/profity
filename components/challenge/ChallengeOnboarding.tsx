@@ -20,15 +20,17 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { getSupabaseClient } from "@/lib/supabase/client-safe";
-import { ChallengePres } from "@/types";
+import { createClient } from "@supabase/supabase-js";
 import {
   AlertTriangle, Check, ChevronRight, ClipboardCopy,
   Download, ExternalLink, ShieldCheck, TrendingUp,
   CalendarDays, Layers, ArrowRight, Loader2,
 } from "lucide-react";
 
-const supabase = getSupabaseClient();
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
 
 const INGEST_URL =
   process.env.NEXT_PUBLIC_INGEST_URL ??
@@ -37,7 +39,15 @@ const INGEST_URL =
 // ─────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────
-type Preset = ChallengePres;
+interface Preset {
+  id: string;
+  name: string;
+  description: string | null;
+  account_size: number | null;
+  profit_target_pct: number;
+  max_total_dd_pct: number;
+  dd_type: string;
+  max_daily_dd_pct: number | null;
   min_trading_days: number;
   phase: string | null;
 }
