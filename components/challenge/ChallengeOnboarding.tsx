@@ -28,7 +28,8 @@ import {
   CalendarDays, Layers, ArrowRight, Loader2,
 } from "lucide-react";
 
-const supabase = getSupabaseClient();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = getSupabaseClient() as any;
 
 const INGEST_URL =
   process.env.NEXT_PUBLIC_INGEST_URL ??
