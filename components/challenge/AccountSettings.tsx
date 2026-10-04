@@ -97,7 +97,7 @@ export default function AccountSettings({ accountId }: Props) {
     try {
       // génère un nouveau token côté serveur via une RPC (à créer en SQL)
       // fallback : update avec gen_random_bytes
-      const { data, error: e } = await supabase.rpc("regenerate_connect_token", {
+      const { data, error: e } = await (supabase.rpc as any)("regenerate_connect_token", {
         p_account_id: accountId,
       });
       if (e) throw e;
@@ -117,8 +117,8 @@ export default function AccountSettings({ accountId }: Props) {
     setPauseLoading(true);
     try {
       const { error: e } = await supabase
-        .from("accounts")
-        .update({ is_active: !account.is_active })
+        .from("accounts" as any)
+        .update({ is_active: !account.is_active } as any)
         .eq("id", accountId);
       if (e) throw e;
       setAccount((a) => a ? { ...a, is_active: !a.is_active } : a);
@@ -133,7 +133,7 @@ export default function AccountSettings({ accountId }: Props) {
   const saveAccountLabel = async () => {
     if (!account || editLabel.trim() === account.label) return;
     setSaveLabel(true);
-    await supabase.from("accounts").update({ label: editLabel.trim() }).eq("id", accountId);
+    await supabase.from("accounts" as any).update({ label: editLabel.trim() } as any).eq("id", accountId);
     setAccount((a) => a ? { ...a, label: editLabel.trim() } : a);
     setSaveLabel(false);
   };
@@ -141,8 +141,8 @@ export default function AccountSettings({ accountId }: Props) {
   if (loading) return <LoadingBlock />;
   if (error || !account) return <ErrorBlock msg={error} onRetry={load} />;
 
-  const activeChallenge = challenges.find((c) => c.status === "in_progress");
-  const pastChallenges = challenges.filter((c) => c.status !== "in_progress");
+  const activeChallenge = challenges.find((c) => c.status === "in_progress" || c.status === "active");
+  const pastChallenges = challenges.filter((c) => c.status !== "in_progress" && c.status !== "active");
 
   return (
     <div className="as-root">
@@ -318,21 +318,27 @@ function ChallengeRow({ ch, expanded, onToggle, active = false }: {
   ch: Challenge; expanded: boolean; onToggle: () => void; active?: boolean;
 }) {
   const m = ch.challenge_metrics;
-  const statusColor = {
-    in_progress: "#2DD4A7", passed: "#E8B339", failed: "#FB5566",
-  }[ch.status];
-  const statusLabel = {
-    in_progress: "En cours", passed: "Validé ✓", failed: "Échoué",
-  }[ch.status];
+  const statusColor: Record<string, string> = {
+    in_progress: "#2DD4A7", active: "#2DD4A7",
+    passed: "#E8B339",
+    failed: "#FB5566", breached: "#FB5566",
+    abandoned: "#69748C",
+  };
+  const statusLabel: Record<string, string> = {
+    in_progress: "En cours", active: "En cours",
+    passed: "Validé ✓",
+    failed: "Échoué", breached: "Échoué",
+    abandoned: "Abandonné",
+  };
 
   return (
     <div className={`as-ch-row ${expanded || active ? "expanded" : ""}`}>
       <button className="as-ch-summary" onClick={onToggle}>
-        <span className="as-ch-status-dot" style={{ background: statusColor }} />
+        <span className="as-ch-status-dot" style={{ background: statusColor[ch.status] ?? "#69748C" }} />
         <span className="as-ch-info">
           <span className="as-ch-name">
             {fmt(ch.starting_balance)} {" · "}
-            <span style={{ color: statusColor }}>{statusLabel}</span>
+            <span style={{ color: statusColor[ch.status] ?? "#69748C" }}>{statusLabel[ch.status] ?? ch.status}</span>
           </span>
           <span className="as-ch-dates">
             {dateStr(ch.started_at)}
