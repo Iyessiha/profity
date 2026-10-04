@@ -33,7 +33,8 @@ import {
 // ─────────────────────────────────────────────────────────────────────
 // Client Supabase (singleton)
 // ─────────────────────────────────────────────────────────────────────
-const supabase = getSupabaseClient();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = getSupabaseClient() as any;
 
 // ─────────────────────────────────────────────────────────────────────
 // Types — alignés sur le schéma SQL
