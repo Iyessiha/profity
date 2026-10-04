@@ -96,7 +96,7 @@ export default function AppLayout({
 
   // charger les comptes de l'utilisateur
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }: any) => {
       if (!user) return;
       const { data } = await supabase
         .from("accounts")
