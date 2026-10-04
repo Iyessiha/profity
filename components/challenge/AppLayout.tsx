@@ -28,7 +28,8 @@ import {
   Settings, Clock, X, Wifi, WifiOff,
 } from "lucide-react";
 
-const supabase = getSupabaseClient();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = getSupabaseClient() as any;
 
 // ─────────────────────────────────────────────────────────────────────
 // Types
