@@ -1,13 +1,11 @@
 "use client";
 import { Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseClient } from "@/lib/supabase/client-safe";
 import AppLayout from "@/components/challenge/AppLayout";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = getSupabaseClient() as any;
 
 function ShellInner({ children }: { children: React.ReactNode }) {
   const router = useRouter();
