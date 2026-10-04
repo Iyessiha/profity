@@ -20,7 +20,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { getSupabaseClient } from "@/lib/supabase/client-safe";
-import { ChallengeEvent, EquitySnapshot } from "@/types";
+import { EquitySnapshot } from "@/types";
 import {
   ResponsiveContainer, ComposedChart, Area, Line,
   XAxis, YAxis, ReferenceLine, ReferenceArea, Tooltip,
