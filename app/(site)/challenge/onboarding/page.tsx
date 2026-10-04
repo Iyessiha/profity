@@ -11,7 +11,7 @@ export default function ChallengeOnboardingPage() {
   const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => { if (user) setUserId(user.id); });
+    supabase.auth.getUser().then(({ data: { user } }: any) => { if (user) setUserId(user.id); });
   }, []);
   if (!userId) return null;
   return (
