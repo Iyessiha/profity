@@ -2,13 +2,11 @@
 import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseClient } from "@/lib/supabase/client-safe";
 import ChallengeDashboard from "@/components/challenge/ChallengeDashboard";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = getSupabaseClient() as any;
 
 function DashboardInner() {
   const searchParams = useSearchParams();
@@ -17,7 +15,7 @@ function DashboardInner() {
 
   useEffect(() => {
     if (accountId) return;
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }: any) => {
       if (!user) return;
       const { data } = await supabase
         .from("mt5_accounts").select("id").eq("user_id", user.id)
