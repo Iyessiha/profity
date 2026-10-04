@@ -76,7 +76,7 @@ export default function ChallengeOnboarding({ userId, onDone }: Props) {
       .select("*")
       .eq("is_public", true)
       .order("account_size")
-      .then(({ data }) => { if (data) setPresets(data); });
+      .then(({ data }: any) => { if (data) setPresets(data); });
   }, []);
 
   // ── Étape 1 → 2 : validation du nom
