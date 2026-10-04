@@ -127,6 +127,7 @@ export interface TradingAccount {
   is_active: boolean
   last_seen_at: string | null
   created_at: string
+  challenges?: Challenge[]
 }
 
 export interface ChallengePres {
@@ -140,21 +141,42 @@ export interface ChallengePres {
   max_daily_dd_pct: number | null
 }
 
+export interface ChallengeMetrics {
+  profit_pct: number
+  total_dd_pct: number
+  trading_days: number
+  [key: string]: any
+}
+
 export interface Challenge {
   id: string
-  account_id: string
-  preset_id: string
-  status: "active" | "passed" | "breached" | "abandoned"
+  account_id: string | null
+  preset_id: string | null
+  user_id?: string
+  status: "active" | "in_progress" | "passed" | "failed" | "breached" | "abandoned"
+  // rule fields (denormalized from preset)
   starting_balance: number
-  current_equity: number
-  profit: number
-  loss: number
-  max_dd: number
-  current_dd: number
-  days_elapsed: number
-  starting_at: string
-  ended_at: string | null
+  profit_target_pct: number
+  max_total_dd_pct: number
+  dd_type: "static" | "trailing"
+  max_daily_dd_pct: number | null
+  min_trading_days: number
+  failed_reason: string | null
+  // timestamps
+  started_at: string
+  completed_at: string | null
   created_at: string
+  // optional joined data
+  challenge_metrics?: ChallengeMetrics | null
+  // legacy compat fields
+  current_equity?: number
+  profit?: number
+  loss?: number
+  max_dd?: number
+  current_dd?: number
+  days_elapsed?: number
+  starting_at?: string
+  ended_at?: string | null
 }
 
 export interface ChallengeEvent {
