@@ -23,7 +23,8 @@ import {
   TrendingUp, CalendarDays, Clock,
 } from "lucide-react";
 
-const supabase = getSupabaseClient();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const supabase = getSupabaseClient() as any;
 
 // ─────────────────────────────────────────────────────────────────────
 // Types
@@ -97,7 +98,7 @@ export default function AccountSettings({ accountId }: Props) {
     try {
       // génère un nouveau token côté serveur via une RPC (à créer en SQL)
       // fallback : update avec gen_random_bytes
-      const { data, error: e } = await (supabase.rpc as any)("regenerate_connect_token", {
+      const { data, error: e } = await supabase.rpc("regenerate_connect_token", {
         p_account_id: accountId,
       });
       if (e) throw e;
@@ -117,8 +118,8 @@ export default function AccountSettings({ accountId }: Props) {
     setPauseLoading(true);
     try {
       const { error: e } = await supabase
-        .from("accounts" as any)
-        .update({ is_active: !account.is_active } as any)
+        .from("accounts")
+        .update({ is_active: !account.is_active })
         .eq("id", accountId);
       if (e) throw e;
       setAccount((a) => a ? { ...a, is_active: !a.is_active } : a);
@@ -133,7 +134,7 @@ export default function AccountSettings({ accountId }: Props) {
   const saveAccountLabel = async () => {
     if (!account || editLabel.trim() === account.label) return;
     setSaveLabel(true);
-    await supabase.from("accounts" as any).update({ label: editLabel.trim() } as any).eq("id", accountId);
+    await supabase.from("accounts").update({ label: editLabel.trim() }).eq("id", accountId);
     setAccount((a) => a ? { ...a, label: editLabel.trim() } : a);
     setSaveLabel(false);
   };
