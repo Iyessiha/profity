@@ -154,7 +154,7 @@ export default function ChallengeDashboard({ accountId }: Props) {
         .eq("challenge_id", ch.id)
         .order("ts", { ascending: false }).limit(80);
       if (snaps) {
-        const pts = snaps.reverse().map((s, i) => {
+        const pts = (snaps as any[]).reverse().map((s: any, i: number) => {
           seriesIdx.current = i + 1;
           return { i, equity: Number(s.equity) };
         });
@@ -187,12 +187,12 @@ export default function ChallengeDashboard({ accountId }: Props) {
       .on("postgres_changes", {
         event: "UPDATE", schema: "public", table: "challenge_metrics",
         filter: `challenge_id=eq.${challengeId}`,
-      }, (payload) => {
+      }, (payload: any) => {
         setMetrics(payload.new as Metrics);
         // si le challenge vient de changer de statut, recharger
         if ((payload.new as any).updated_at !== (payload.old as any).updated_at) {
           supabase.from("challenges").select("*").eq("id", challengeId).single()
-            .then(({ data }) => { if (data) setChallenge(data); });
+            .then(({ data }: any) => { if (data) setChallenge(data); });
         }
       }).subscribe();
     channels.current.push(metricsChannel);
@@ -202,7 +202,7 @@ export default function ChallengeDashboard({ accountId }: Props) {
       .on("postgres_changes", {
         event: "INSERT", schema: "public", table: "equity_snapshots",
         filter: `challenge_id=eq.${challengeId}`,
-      }, (payload) => {
+      }, (payload: any) => {
         const pt: EquityPoint = {
           i: seriesIdx.current++,
           equity: Number((payload.new as any).equity),
@@ -216,13 +216,13 @@ export default function ChallengeDashboard({ accountId }: Props) {
       .on("postgres_changes", {
         event: "INSERT", schema: "public", table: "challenge_events",
         filter: `challenge_id=eq.${challengeId}`,
-      }, (payload) => {
+      }, (payload: any) => {
         setEvents((prev) => [payload.new as ChallengeEvent, ...prev.slice(0, 7)]);
         // si événement terminal, mettre à jour le statut
         const t = (payload.new as ChallengeEvent).type;
         if (t === "passed" || t === "failed") {
           supabase.from("challenges").select("*").eq("id", challengeId).single()
-            .then(({ data }) => { if (data) setChallenge(data); });
+            .then(({ data }: any) => { if (data) setChallenge(data); });
         }
       }).subscribe();
     channels.current.push(eventsChannel);
