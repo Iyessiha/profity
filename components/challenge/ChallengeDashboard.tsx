@@ -20,7 +20,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { getSupabaseClient } from "@/lib/supabase/client-safe";
-import { Challenge, ChallengeEvent, EquitySnapshot } from "@/types";
+import { ChallengeEvent, EquitySnapshot } from "@/types";
 import {
   ResponsiveContainer, ComposedChart, Area, Line,
   XAxis, YAxis, ReferenceLine, ReferenceArea, Tooltip,
@@ -41,6 +41,15 @@ const supabase = getSupabaseClient();
 type EventKind =
   | "day_started" | "target_hit" | "daily_breach" | "total_breach"
   | "passed" | "failed" | "connected" | "disconnected" | "trade";
+
+type DdType = "static" | "trailing";
+type ChallengeStatus = "in_progress" | "passed" | "failed";
+
+interface LocalChallenge {
+  id: string;
+  account_id: string;
+  preset_id: string;
+  starting_balance: number;
   profit_target_pct: number;
   max_total_dd_pct: number;
   dd_type: DdType;
@@ -105,7 +114,7 @@ const MAX_SERIES = 120; // points max sur la courbe
 export default function ChallengeDashboard({ accountId }: Props) {
   // ── état
   const [account, setAccount] = useState<Account | null>(null);
-  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [challenge, setChallenge] = useState<LocalChallenge | null>(null);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [series, setSeries] = useState<EquityPoint[]>([]);
   const [events, setEvents] = useState<ChallengeEvent[]>([]);
