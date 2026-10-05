@@ -1,6 +1,18 @@
 import { getAdminClient } from "@/lib/supabase/server-admin";
 
-export const metadata = { title: "Abonnements — Admin Profity" };
+export const metadata = { title: "Abonnements — Admin ProfityX" };
+
+const HUD    = "'Orbitron', monospace";
+const BODY   = "'Rajdhani', sans-serif";
+const SURFACE = "#0a0f1a";
+const BORDER  = "rgba(0,255,178,0.08)";
+const BORDER2 = "rgba(0,255,178,0.15)";
+const GREEN   = "#00FFB2";
+const BLUE    = "#00D4FF";
+const GOLD    = "#C9A84C";
+const RED     = "#FF4444";
+const TEXT    = "#c8d8e8";
+const MUTED   = "rgba(200,216,232,0.45)";
 
 export default async function SubscriptionsPage({
   searchParams,
@@ -21,7 +33,7 @@ export default async function SubscriptionsPage({
     .order("created_at", { ascending: false })
     .limit(50);
 
-  if (tier) query = query.eq("tier", tier);
+  if (tier)   query = query.eq("tier", tier);
   if (status) query = query.eq("status", status);
 
   const { data: subs, count } = await query;
@@ -30,77 +42,154 @@ export default async function SubscriptionsPage({
     .filter((s) => ["active", "trialing"].includes(s.status))
     .reduce((sum, s) => sum + s.amount_minor, 0);
 
+  const tierStats = { free: 0, pro: 0, elite: 0 } as Record<string, number>;
+  for (const s of subs ?? []) {
+    if (["active", "trialing"].includes(s.status)) {
+      tierStats[s.tier] = (tierStats[s.tier] ?? 0) + 1;
+    }
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-text-strong">
-          Abonnements <span className="text-base font-normal text-text-muted">({count ?? 0})</span>
-        </h1>
-        <div className="flex gap-2 text-sm">
-          <span className="text-text-muted">MRR estimé :</span>
-          <span className="font-semibold text-long tabular-nums">
-            {revenue.toLocaleString("fr")} XOF
-          </span>
+    <div style={{ padding: "36px 40px", maxWidth: 1200, margin: "0 auto" }}>
+
+      {/* Header */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontFamily: BODY, fontSize: 11, color: MUTED, letterSpacing: 3, marginBottom: 6 }}>
+          ADMINISTRATION
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+          <h1 style={{ fontFamily: HUD, fontSize: 22, fontWeight: 900, color: TEXT, margin: 0, letterSpacing: 1 }}>
+            Abonnements{" "}
+            <span style={{ fontFamily: BODY, fontSize: 14, fontWeight: 400, color: MUTED }}>({count ?? 0})</span>
+          </h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontFamily: BODY, fontSize: 13, color: MUTED }}>MRR estimé</span>
+            <span style={{
+              fontFamily: HUD, fontSize: 16, fontWeight: 900, color: GREEN,
+              padding: "4px 14px", borderRadius: 10,
+              background: "rgba(0,255,178,0.08)", border: `1px solid ${BORDER2}`,
+            }}>
+              {revenue.toLocaleString("fr")} XOF
+            </span>
+          </div>
         </div>
       </div>
 
+      {/* KPI mini-row */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 28 }}>
+        {[
+          { label: "Pro actifs",   value: tierStats.pro,   color: GREEN, bg: "rgba(0,255,178,0.08)" },
+          { label: "Elite actifs", value: tierStats.elite, color: GOLD,  bg: "rgba(201,168,76,0.08)" },
+          { label: "Total actifs", value: (tierStats.pro ?? 0) + (tierStats.elite ?? 0), color: BLUE, bg: "rgba(0,212,255,0.08)" },
+        ].map(k => (
+          <div key={k.label} style={{
+            background: SURFACE, borderRadius: 12,
+            border: `1px solid ${BORDER}`,
+            padding: "16px 20px",
+            boxShadow: `0 0 16px ${k.bg}`,
+          }}>
+            <div style={{ fontFamily: BODY, fontSize: 10, color: MUTED, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>
+              {k.label}
+            </div>
+            <div style={{ fontFamily: HUD, fontSize: 28, fontWeight: 900, color: k.color }}>{k.value}</div>
+          </div>
+        ))}
+      </div>
+
       {/* Filters */}
-      <form method="GET" className="flex gap-3">
-        <select name="tier" defaultValue={tier ?? ""} className="rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text focus:outline-none">
+      <form method="GET" style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+        <select name="tier" defaultValue={tier ?? ""} style={{
+          background: SURFACE, border: `1px solid ${BORDER}`,
+          borderRadius: 10, padding: "9px 14px",
+          fontFamily: BODY, fontSize: 13, color: TEXT, outline: "none",
+        }}>
           <option value="">Tous les tiers</option>
           <option value="free">Free</option>
           <option value="pro">Pro</option>
           <option value="elite">Elite</option>
         </select>
-        <select name="status" defaultValue={status ?? ""} className="rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text focus:outline-none">
+        <select name="status" defaultValue={status ?? ""} style={{
+          background: SURFACE, border: `1px solid ${BORDER}`,
+          borderRadius: 10, padding: "9px 14px",
+          fontFamily: BODY, fontSize: 13, color: TEXT, outline: "none",
+        }}>
           <option value="">Tous les statuts</option>
           <option value="active">Actif</option>
           <option value="trialing">Trialing</option>
           <option value="cancelled">Annulé</option>
           <option value="expired">Expiré</option>
         </select>
-        <button type="submit" className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-bg">Filtrer</button>
+        <button type="submit" style={{
+          background: `linear-gradient(135deg, ${GREEN}22, ${BLUE}11)`,
+          border: `1px solid ${BORDER2}`,
+          borderRadius: 10, padding: "9px 20px", cursor: "pointer",
+          fontFamily: HUD, fontSize: 11, fontWeight: 700,
+          color: GREEN, letterSpacing: 1,
+        }}>
+          Filtrer
+        </button>
       </form>
 
-      <div className="rounded-xl border border-border bg-surface overflow-x-auto">
-        <table className="w-full text-sm">
+      {/* Table */}
+      <div style={{
+        background: SURFACE, borderRadius: 16,
+        border: `1px solid ${BORDER}`, overflow: "hidden",
+      }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr className="border-b border-border">
-              <Th>Utilisateur</Th>
-              <Th>Tier</Th>
-              <Th>Statut</Th>
-              <Th>Montant</Th>
-              <Th>Fin de période</Th>
-              <Th>Provider</Th>
+            <tr style={{ borderBottom: `1px solid ${BORDER}` }}>
+              {["Utilisateur", "Tier", "Statut", "Montant", "Fin de période", "Provider"].map(h => (
+                <th key={h} style={{
+                  padding: "12px 20px", textAlign: "left",
+                  fontFamily: BODY, fontSize: 10, fontWeight: 700,
+                  color: MUTED, letterSpacing: 2, textTransform: "uppercase",
+                }}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {(subs ?? []).map((s) => {
               const profile = s.profiles as any;
               return (
-                <tr key={s.id} className="border-b border-border last:border-0 hover:bg-bg-soft">
-                  <Td>
-                    <div>
-                      <p className="font-mono text-xs text-accent">@{profile?.public_id}</p>
-                      <p className="text-xs text-text-muted">{profile?.email}</p>
+                <tr key={s.id} style={{ borderBottom: `1px solid ${BORDER}` }}>
+                  <td style={{ padding: "13px 20px" }}>
+                    <div style={{ fontFamily: HUD, fontSize: 11, color: GREEN, marginBottom: 2 }}>
+                      @{profile?.public_id}
                     </div>
-                  </Td>
-                  <Td>
+                    <div style={{ fontFamily: BODY, fontSize: 11, color: MUTED }}>
+                      {profile?.email}
+                    </div>
+                  </td>
+                  <td style={{ padding: "13px 20px" }}>
                     <TierBadge tier={s.tier} />
-                  </Td>
-                  <Td>
+                  </td>
+                  <td style={{ padding: "13px 20px" }}>
                     <StatusBadge status={s.status} />
-                  </Td>
-                  <Td>
-                    <span className="font-mono tabular-nums">
+                  </td>
+                  <td style={{ padding: "13px 20px" }}>
+                    <span style={{ fontFamily: HUD, fontSize: 13, color: TEXT, letterSpacing: 0.5 }}>
                       {s.amount_minor.toLocaleString("fr")} {s.currency}
                     </span>
-                  </Td>
-                  <Td>{new Date(s.current_period_end).toLocaleDateString("fr")}</Td>
-                  <Td>{s.provider}</Td>
+                  </td>
+                  <td style={{ padding: "13px 20px", fontFamily: BODY, fontSize: 12, color: MUTED }}>
+                    {new Date(s.current_period_end).toLocaleDateString("fr")}
+                  </td>
+                  <td style={{ padding: "13px 20px", fontFamily: BODY, fontSize: 12, color: MUTED }}>
+                    {s.provider}
+                  </td>
                 </tr>
               );
             })}
+            {(subs ?? []).length === 0 && (
+              <tr>
+                <td colSpan={6} style={{
+                  padding: "48px 24px", textAlign: "center",
+                  fontFamily: BODY, fontSize: 14, color: MUTED,
+                }}>
+                  Aucun abonnement trouvé
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -108,23 +197,42 @@ export default async function SubscriptionsPage({
   );
 }
 
-function Th({ children }: { children: React.ReactNode }) {
-  return <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-text-muted">{children}</th>;
-}
-function Td({ children }: { children: React.ReactNode }) {
-  return <td className="px-4 py-3">{children}</td>;
-}
 function TierBadge({ tier }: { tier: string }) {
-  const s: Record<string, string> = { elite: "bg-long-soft text-long", pro: "bg-accent-soft text-accent", free: "bg-bg text-text-muted" };
-  return <span className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${s[tier] ?? s.free}`}>{tier.toUpperCase()}</span>;
-}
-function StatusBadge({ status }: { status: string }) {
-  const s: Record<string, string> = {
-    active:    "bg-long-soft text-long",
-    trialing:  "bg-accent-soft text-accent",
-    cancelled: "bg-short-soft text-short",
-    expired:   "bg-bg text-text-muted",
-    past_due:  "bg-short-soft text-short",
+  const map: Record<string, { color: string; bg: string }> = {
+    elite: { color: GOLD,  bg: "rgba(201,168,76,0.1)" },
+    pro:   { color: GREEN, bg: "rgba(0,255,178,0.1)" },
+    free:  { color: MUTED, bg: "rgba(200,216,232,0.06)" },
   };
-  return <span className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${s[status] ?? "bg-bg text-text-muted"}`}>{status}</span>;
+  const s = map[tier] ?? map.free;
+  return (
+    <span style={{
+      fontFamily: HUD, fontSize: 9, fontWeight: 700, letterSpacing: 1.5,
+      color: s.color, background: s.bg,
+      border: `1px solid ${s.color}33`,
+      borderRadius: 20, padding: "2px 10px", display: "inline-block",
+    }}>
+      {tier.toUpperCase()}
+    </span>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, { color: string; bg: string }> = {
+    active:    { color: GREEN, bg: "rgba(0,255,178,0.08)" },
+    trialing:  { color: BLUE,  bg: "rgba(0,212,255,0.08)" },
+    cancelled: { color: RED,   bg: "rgba(255,68,68,0.08)" },
+    expired:   { color: MUTED, bg: "rgba(200,216,232,0.04)" },
+    past_due:  { color: GOLD,  bg: "rgba(201,168,76,0.08)" },
+  };
+  const s = map[status] ?? map.expired;
+  return (
+    <span style={{
+      fontFamily: BODY, fontSize: 11, fontWeight: 600,
+      color: s.color, background: s.bg,
+      border: `1px solid ${s.color}33`,
+      borderRadius: 20, padding: "2px 10px", display: "inline-block",
+    }}>
+      {status}
+    </span>
+  );
 }
