@@ -1,7 +1,7 @@
 // 404 for URLs that match neither app (two root layouts → no shared layout).
 import type { Metadata } from 'next'
 import NotFoundView from '@/components/NotFoundView'
-import './(site)/site.css'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: '404 — ProfityX',
