@@ -5,6 +5,13 @@ import { updateSession } from "@/lib/supabase/middleware";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
+/** Legacy routes that redirect to their i18n equivalents. */
+const LEGACY_REDIRECTS: Record<string, string> = {
+  "/dashboard":       "/fr/dashboard",
+  "/admin/dashboard": "/fr/admin",
+  "/admin":           "/fr/admin",
+};
+
 /** Paths accessible without authentication (relative to locale prefix). */
 const PUBLIC_SEGMENTS = new Set([
   "/login",
@@ -42,6 +49,12 @@ function isV2Path(pathname: string) {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Redirect legacy routes to i18n equivalents
+  const legacyTarget = LEGACY_REDIRECTS[pathname];
+  if (legacyTarget) {
+    return NextResponse.redirect(new URL(legacyTarget, request.url));
+  }
 
   // Historical app: only the admin API needs a bearer token up front.
   if (!isV2Path(pathname)) {
@@ -87,5 +100,8 @@ export const config = {
     "/fr/:path*",
     "/en/:path*",
     "/api/admin/:path*",
+    "/dashboard",
+    "/admin",
+    "/admin/dashboard",
   ],
 };
