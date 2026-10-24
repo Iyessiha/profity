@@ -20,7 +20,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { getSupabaseClient } from "@/lib/supabase/client-safe";
-import { EquitySnapshot } from "@/types";
+import { Challenge, ChallengeEvent, EquitySnapshot } from "@/types";
 import {
   ResponsiveContainer, ComposedChart, Area, Line,
   XAxis, YAxis, ReferenceLine, ReferenceArea, Tooltip,
@@ -33,8 +33,7 @@ import {
 // ─────────────────────────────────────────────────────────────────────
 // Client Supabase (singleton)
 // ─────────────────────────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const supabase = getSupabaseClient() as any;
+const supabase = getSupabaseClient();
 
 // ─────────────────────────────────────────────────────────────────────
 // Types — alignés sur le schéma SQL
@@ -42,26 +41,6 @@ const supabase = getSupabaseClient() as any;
 type EventKind =
   | "day_started" | "target_hit" | "daily_breach" | "total_breach"
   | "passed" | "failed" | "connected" | "disconnected" | "trade";
-
-type DdType = "static" | "trailing";
-type ChallengeStatus = "in_progress" | "passed" | "failed";
-
-interface LocalChallenge {
-  id: string;
-  account_id: string;
-  preset_id: string;
-  starting_balance: number;
-  profit_target_pct: number;
-  max_total_dd_pct: number;
-  dd_type: DdType;
-  max_daily_dd_pct: number | null;
-  min_trading_days: number;
-  max_trading_days: number | null;
-  status: ChallengeStatus;
-  failed_reason: string | null;
-  started_at: string;
-  completed_at: string | null;
-}
 
 interface Account {
   id: string;
@@ -86,13 +65,6 @@ interface Metrics {
 
 interface EquityPoint { i: number; equity: number; }
 
-interface ChallengeEvent {
-  id: string;
-  type: EventKind;
-  message: string | null;
-  created_at: string;
-}
-
 interface Props { accountId: string; }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -115,7 +87,7 @@ const MAX_SERIES = 120; // points max sur la courbe
 export default function ChallengeDashboard({ accountId }: Props) {
   // ── état
   const [account, setAccount] = useState<Account | null>(null);
-  const [challenge, setChallenge] = useState<LocalChallenge | null>(null);
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [series, setSeries] = useState<EquityPoint[]>([]);
   const [events, setEvents] = useState<ChallengeEvent[]>([]);
@@ -154,7 +126,7 @@ export default function ChallengeDashboard({ accountId }: Props) {
         .eq("challenge_id", ch.id)
         .order("ts", { ascending: false }).limit(80);
       if (snaps) {
-        const pts = (snaps as any[]).reverse().map((s: any, i: number) => {
+        const pts = snaps.reverse().map((s, i) => {
           seriesIdx.current = i + 1;
           return { i, equity: Number(s.equity) };
         });
@@ -187,12 +159,12 @@ export default function ChallengeDashboard({ accountId }: Props) {
       .on("postgres_changes", {
         event: "UPDATE", schema: "public", table: "challenge_metrics",
         filter: `challenge_id=eq.${challengeId}`,
-      }, (payload: any) => {
+      }, (payload) => {
         setMetrics(payload.new as Metrics);
         // si le challenge vient de changer de statut, recharger
         if ((payload.new as any).updated_at !== (payload.old as any).updated_at) {
           supabase.from("challenges").select("*").eq("id", challengeId).single()
-            .then(({ data }: any) => { if (data) setChallenge(data); });
+            .then(({ data }) => { if (data) setChallenge(data); });
         }
       }).subscribe();
     channels.current.push(metricsChannel);
@@ -202,7 +174,7 @@ export default function ChallengeDashboard({ accountId }: Props) {
       .on("postgres_changes", {
         event: "INSERT", schema: "public", table: "equity_snapshots",
         filter: `challenge_id=eq.${challengeId}`,
-      }, (payload: any) => {
+      }, (payload) => {
         const pt: EquityPoint = {
           i: seriesIdx.current++,
           equity: Number((payload.new as any).equity),
@@ -216,13 +188,13 @@ export default function ChallengeDashboard({ accountId }: Props) {
       .on("postgres_changes", {
         event: "INSERT", schema: "public", table: "challenge_events",
         filter: `challenge_id=eq.${challengeId}`,
-      }, (payload: any) => {
+      }, (payload) => {
         setEvents((prev) => [payload.new as ChallengeEvent, ...prev.slice(0, 7)]);
         // si événement terminal, mettre à jour le statut
         const t = (payload.new as ChallengeEvent).type;
         if (t === "passed" || t === "failed") {
           supabase.from("challenges").select("*").eq("id", challengeId).single()
-            .then(({ data }: any) => { if (data) setChallenge(data); });
+            .then(({ data }) => { if (data) setChallenge(data); });
         }
       }).subscribe();
     channels.current.push(eventsChannel);

@@ -153,78 +153,79 @@ export default function LoginPage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '12px 14px',
+    width: '100%', padding: 'clamp(11px, 2vw, 12px) clamp(12px, 2vw, 14px)',
     background: '#0A0F1A', border: '1px solid rgba(0,255,178,0.15)',
-    borderRadius: 4, color: '#E8F4F8', fontFamily: BODY, fontSize: 15, outline: 'none',
+    borderRadius: 4, color: '#E8F4F8', fontFamily: BODY, fontSize: 'clamp(13px, 1.5vw, 15px)', outline: 'none', minHeight: '44px',
   }
 
   return (
-    <div className="login-shell" style={{ background: '#020408', fontFamily: BODY, position: 'relative', overflow: 'hidden' }}>
+    <div className="login-shell" style={{ background: '#020408', fontFamily: BODY, position: 'relative', overflow: 'hidden', minHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
 
       {/* Fond grille */}
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(0,255,178,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,178,0.025) 1px,transparent 1px)', backgroundSize: '50px 50px', maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%,black 0%,transparent 100%)' }} />
 
       {/* Panneau gauche — Branding */}
-      <div className="login-brand" style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ marginBottom: '3rem' }}>
+      <div className="login-brand" style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 'clamp(2rem, 5vw, 4rem)', minHeight: '100vh' }}>
+        <div style={{ marginBottom: 'clamp(1.5rem, 3vw, 3rem)' }}>
           {/* Logo cliquable → landing page */}
           <a {...({"href": lang === 'en' ? '/en' : '/'})} style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height: 52, width: 'auto', objectFit: 'contain' }} />
+            <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height: 'clamp(36px, 5vw, 52px)', width: 'auto', objectFit: 'contain' }} />
           </a>
         </div>
-        <h1 style={{ fontFamily: HUD, fontSize: 'clamp(32px,4vw,56px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: 2, color: '#E8F4F8', marginBottom: '1.5rem' }}>
+        <h1 style={{ fontFamily: HUD, fontSize: 'clamp(24px, 3.5vw, 56px)', fontWeight: 900, lineHeight: 1.05, letterSpacing: 2, color: '#E8F4F8', marginBottom: 'clamp(1rem, 2vw, 1.5rem)' }}>
           TRADEZ<br /><span style={{ color: '#00FFB2' }}>PLUS</span><br />
           <span style={{ WebkitTextStroke: '1px rgba(0,255,178,0.4)', color: 'transparent' }}>SMART</span>
         </h1>
-        <p style={{ fontSize: 16, color: 'rgba(232,244,248,0.45)', lineHeight: 1.8, maxWidth: 400, fontWeight: 300 }}>
+        <p style={{ fontSize: 'clamp(13px, 1.5vw, 16px)', color: 'rgba(232,244,248,0.45)', lineHeight: 1.8, maxWidth: 400, fontWeight: 300 }}>
           Signaux IA sur BTC, Forex et annonces économiques. Entrée, Stop Loss, Take Profit — en secondes.
         </p>
-        <div style={{ display: 'flex', gap: '2rem', marginTop: '3rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: 'clamp(1rem, 2vw, 2rem)', marginTop: 'clamp(1.5rem, 3vw, 3rem)' }}>
           {[{ n: '4 800+', l: 'Traders' }, { n: '94%', l: 'Précision' }, { n: '24/7', l: 'Analyse' }].map(s => (
-            <div key={s.l} style={{ borderLeft: '2px solid rgba(0,255,178,0.25)', paddingLeft: '1rem' }}>
-              <div style={{ fontFamily: HUD, fontSize: 22, color: '#00FFB2', fontWeight: 900 }}>{s.n}</div>
-              <div style={{ fontSize: 12, color: 'rgba(232,244,248,0.3)', letterSpacing: 1, marginTop: 2 }}>{s.l}</div>
+            <div key={s.l} style={{ borderLeft: '2px solid rgba(0,255,178,0.25)', paddingLeft: 'clamp(0.5rem, 1.5vw, 1rem)' }}>
+              <div style={{ fontFamily: HUD, fontSize: 'clamp(16px, 2.5vw, 22px)', color: '#00FFB2', fontWeight: 900 }}>{s.n}</div>
+              <div style={{ fontSize: 'clamp(10px, 1.2vw, 12px)', color: 'rgba(232,244,248,0.3)', letterSpacing: 1, marginTop: 2 }}>{s.l}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Séparateur */}
-      <div className="login-sep" style={{ background: 'linear-gradient(to bottom, transparent, rgba(0,255,178,0.15), transparent)', flexShrink: 0 }} />
+      {/* Séparateur — invisible sur mobile */}
+      <div className="login-sep" style={{ background: 'linear-gradient(to bottom, transparent, rgba(0,255,178,0.15), transparent)', flexShrink: 0, width: 1, display: 'none' }} /><style>{`@media (min-width: 768px) { .login-sep { display: block !important } }`}</style>
 
       {/* Panneau droit — Formulaire */}
-      <div className="login-form" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="login-form" style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 'clamp(2rem, 5vw, 4rem)', minHeight: '100vh', maxWidth: 'clamp(300px, 100%, 480px)' }}>
 
         {/* Retour landing — visible surtout sur mobile */}
         <a {...({"href": lang === 'en' ? '/en' : '/'})} style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
-          fontFamily: HUD, fontSize: 8, letterSpacing: 2,
+          fontFamily: HUD, fontSize: 'clamp(7px, 1vw, 8px)', letterSpacing: 2,
           color: 'rgba(232,244,248,0.35)', textDecoration: 'none',
-          marginBottom: '1.5rem',
-          padding: '6px 10px', borderRadius: 4,
+          marginBottom: 'clamp(1rem, 2vw, 1.5rem)',
+          padding: '8px 12px', borderRadius: 4,
           border: '1px solid rgba(255,255,255,0.06)',
           transition: 'all .2s',
+          minHeight: '44px',
         }}
           onMouseEnter={e => { e.currentTarget.style.color = '#00FFB2'; e.currentTarget.style.borderColor = 'rgba(0,255,178,0.25)' }}
           onMouseLeave={e => { e.currentTarget.style.color = 'rgba(232,244,248,0.35)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)' }}>
-          <i className="ti ti-arrow-left" style={{ fontSize: 12 }} />
+          <i className="ti ti-arrow-left" style={{ fontSize: 'clamp(10px, 1.5vw, 12px)' }} />
           {lang === 'en' ? 'BACK TO SITE' : 'RETOUR AU SITE'}
         </a>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: 4, marginBottom: '2rem', background: '#0A0F1A', padding: 4, borderRadius: 6, border: '1px solid rgba(0,255,178,0.08)' }}>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 'clamp(1.5rem, 2vw, 2rem)', background: '#0A0F1A', padding: 4, borderRadius: 6, border: '1px solid rgba(0,255,178,0.08)' }}>
           {(['login', 'signup'] as const).map(m => (
             <button key={m} onClick={() => { setMode(m as 'login'|'signup'); setError(null); setSuccess(null) }}
-              style={{ flex: 1, padding: '9px', border: 'none', borderRadius: 4, background: mode === m ? 'rgba(0,255,178,0.1)' : 'transparent', color: mode === m ? '#00FFB2' : 'rgba(232,244,248,0.3)', fontFamily: HUD, fontSize: 10, letterSpacing: 2, cursor: 'pointer', outline: mode === m ? '1px solid rgba(0,255,178,0.2)' : 'none', transition: 'all .2s' }}>
+              style={{ flex: 1, padding: 'clamp(8px, 1.5vw, 9px)', border: 'none', borderRadius: 4, background: mode === m ? 'rgba(0,255,178,0.1)' : 'transparent', color: mode === m ? '#00FFB2' : 'rgba(232,244,248,0.3)', fontFamily: HUD, fontSize: 'clamp(8px, 1.2vw, 10px)', letterSpacing: 2, cursor: 'pointer', outline: mode === m ? '1px solid rgba(0,255,178,0.2)' : 'none', transition: 'all .2s', minHeight: '44px' }}>
               {m === 'login' ? (lang === 'en' ? 'SIGN IN' : 'CONNEXION') : (lang === 'en' ? 'REGISTER' : 'INSCRIPTION')}
             </button>
           ))}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(10px, 2vw, 14px)' }}>
           {mode === 'signup' && (
             <div>
-              <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 7 }}>{lang === 'en' ? 'FULL NAME' : 'NOM COMPLET'}</label>
+              <label style={{ fontFamily: HUD, fontSize: 'clamp(7px, 1vw, 8px)', letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 'clamp(5px, 1vw, 7px)' }}>{lang === 'en' ? 'FULL NAME' : 'NOM COMPLET'}</label>
               <input type="text" value={name} {...{placeholder: lang === 'en' ? 'John Doe' : 'Jean Kouassi'}} onChange={e => setName(e.target.value)} style={inputStyle}
                 onFocus={e => (e.target.style.borderColor = 'rgba(0,255,178,0.5)')}
                 onBlur={e  => (e.target.style.borderColor = 'rgba(0,255,178,0.15)')} />
@@ -233,22 +234,22 @@ export default function LoginPage() {
 
           {/* Badge code parrain détecté */}
           {mode === 'signup' && refCode && (
-            <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:6, padding:'9px 12px' }}>
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 2l1.5 3H12l-2.5 1.8 1 3L8 10l-2.5 1.8 1-3L4 7h2.5z" fill="#00FFB2"/></svg>
-              <span style={{ fontFamily:"'Orbitron',monospace", fontSize:9, color:'#00FFB2', letterSpacing:1 }}>CODE PARRAIN : {refCode}</span>
-              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:12, color:'rgba(232,244,248,0.5)', marginLeft:'auto' }}>+10 crédits offerts</span>
+            <div style={{ display:'flex', alignItems:'center', gap:'clamp(6px, 1.5vw, 8px)', background:'rgba(0,255,178,0.06)', border:'1px solid rgba(0,255,178,0.2)', borderRadius:6, padding:'clamp(8px, 1.5vw, 9px) clamp(10px, 1.5vw, 12px)', flexWrap: 'wrap' }}>
+              <svg width="clamp(12px, 2vw, 14px)" height="clamp(12px, 2vw, 14px)" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 2l1.5 3H12l-2.5 1.8 1 3L8 10l-2.5 1.8 1-3L4 7h2.5z" fill="#00FFB2"/></svg>
+              <span style={{ fontFamily:"'Orbitron',monospace", fontSize:'clamp(8px, 1vw, 9px)', color:'#00FFB2', letterSpacing:1 }}>CODE PARRAIN : {refCode}</span>
+              <span style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:'clamp(11px, 1.2vw, 12px)', color:'rgba(232,244,248,0.5)', marginLeft:'auto' }}>+10 crédits</span>
             </div>
           )}
 
           <div>
-            <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 7 }}>EMAIL</label>
+            <label style={{ fontFamily: HUD, fontSize: 'clamp(7px, 1vw, 8px)', letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 'clamp(5px, 1vw, 7px)' }}>EMAIL</label>
             <input type="email" value={email} placeholder="trader@profityx.app" onChange={e => setEmail(e.target.value)} style={inputStyle}
               onFocus={e => (e.target.style.borderColor = 'rgba(0,255,178,0.5)')}
               onBlur={e  => (e.target.style.borderColor = 'rgba(0,255,178,0.15)')} />
           </div>
 
           <div>
-            <label style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 7 }}>{lang === 'en' ? 'PASSWORD' : 'MOT DE PASSE'}</label>
+            <label style={{ fontFamily: HUD, fontSize: 'clamp(7px, 1vw, 8px)', letterSpacing: 2, color: 'rgba(232,244,248,0.35)', display: 'block', marginBottom: 'clamp(5px, 1vw, 7px)' }}>{lang === 'en' ? 'PASSWORD' : 'MOT DE PASSE'}</label>
             <input type="password" value={password} placeholder="••••••••" onChange={e => setPassword(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (mode === 'login' ? handleLogin() : handleSignup())} style={inputStyle}
               onFocus={e => (e.target.style.borderColor = 'rgba(0,255,178,0.5)')}
@@ -256,31 +257,31 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div style={{ background: 'rgba(255,58,92,0.08)', border: '1px solid rgba(255,58,92,0.25)', borderRadius: 4, padding: '10px 12px', fontFamily: BODY, fontSize: 13, color: '#FF3A5C' }}>
+            <div style={{ background: 'rgba(255,58,92,0.08)', border: '1px solid rgba(255,58,92,0.25)', borderRadius: 4, padding: 'clamp(8px, 1.5vw, 10px) clamp(10px, 1.5vw, 12px)', fontFamily: BODY, fontSize: 'clamp(12px, 1.2vw, 13px)', color: '#FF3A5C' }}>
               {error}
             </div>
           )}
           {success && (
-            <div style={{ background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 4, padding: '10px 12px', fontFamily: BODY, fontSize: 13, color: '#00FFB2' }}>
+            <div style={{ background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: 4, padding: 'clamp(8px, 1.5vw, 10px) clamp(10px, 1.5vw, 12px)', fontFamily: BODY, fontSize: 'clamp(12px, 1.2vw, 13px)', color: '#00FFB2' }}>
               {success}
             </div>
           )}
 
           <button onClick={mode === 'login' ? handleLogin : handleSignup} disabled={loading}
-            style={{ width: '100%', padding: '13px', background: loading ? 'rgba(0,255,178,0.4)' : '#00FFB2', border: 'none', borderRadius: 4, fontFamily: HUD, fontSize: 11, letterSpacing: 3, color: '#020408', fontWeight: 700, cursor: loading ? 'wait' : 'pointer', transition: 'all .2s', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            style={{ width: '100%', padding: 'clamp(12px, 2vw, 13px)', background: loading ? 'rgba(0,255,178,0.4)' : '#00FFB2', border: 'none', borderRadius: 4, fontFamily: HUD, fontSize: 'clamp(9px, 1.2vw, 11px)', letterSpacing: 3, color: '#020408', fontWeight: 700, cursor: loading ? 'wait' : 'pointer', transition: 'all .2s', marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: '44px' }}>
             {loading ? (
               <><div style={{ width: 14, height: 14, border: '2px solid rgba(0,0,0,0.3)', borderTop: '2px solid #020408', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />{mode === 'login' ? 'CONNEXION...' : 'CRÉATION...'}</>
             ) : mode === 'login' ? (lang === 'en' ? 'SIGN IN →' : 'SE CONNECTER →') : (lang === 'en' ? 'CREATE ACCOUNT →' : 'CRÉER MON COMPTE →')}
           </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px, 1.5vw, 10px)' }}>
             <div style={{ flex: 1, height: 1, background: 'rgba(0,255,178,0.06)' }} />
-            <span style={{ fontFamily: HUD, fontSize: 8, color: 'rgba(232,244,248,0.2)', letterSpacing: 2 }}>OU</span>
+            <span style={{ fontFamily: HUD, fontSize: 'clamp(7px, 1vw, 8px)', color: 'rgba(232,244,248,0.2)', letterSpacing: 2 }}>OU</span>
             <div style={{ flex: 1, height: 1, background: 'rgba(0,255,178,0.06)' }} />
           </div>
 
           <button onClick={handleGoogle}
-            style={{ width: '100%', padding: '12px', background: 'transparent', border: '1px solid rgba(0,255,178,0.12)', borderRadius: 4, color: '#E8F4F8', fontFamily: BODY, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all .2s' }}
+            style={{ width: '100%', padding: 'clamp(11px, 2vw, 12px)', background: 'transparent', border: '1px solid rgba(0,255,178,0.12)', borderRadius: 4, color: '#E8F4F8', fontFamily: BODY, fontSize: 'clamp(13px, 1.2vw, 14px)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all .2s', minHeight: '44px' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,255,178,0.3)'; e.currentTarget.style.background = 'rgba(0,255,178,0.03)' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,255,178,0.12)'; e.currentTarget.style.background = 'transparent' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
@@ -297,7 +298,7 @@ export default function LoginPage() {
               if (!email) { setError('Entrez votre email'); return }
               await supabasePublic.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/auth/reset` })
               setSuccess('Email de réinitialisation envoyé !')
-            }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: HUD, fontSize: 8, letterSpacing: 1, color: 'rgba(0,212,255,0.5)', textAlign: 'center', padding: '4px' }}
+            }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: HUD, fontSize: 'clamp(7px, 1vw, 8px)', letterSpacing: 1, color: 'rgba(0,212,255,0.5)', textAlign: 'center', padding: '8px', minHeight: '44px' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#00D4FF')}
               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,212,255,0.5)')}>
               MOT DE PASSE OUBLIÉ ?
@@ -305,12 +306,32 @@ export default function LoginPage() {
           )}
         </div>
 
-        <p style={{ marginTop: '2.5rem', textAlign: 'center', fontFamily: HUD, fontSize: 7, letterSpacing: 1, color: 'rgba(232,244,248,0.15)', lineHeight: 1.8 }}>
+        <p style={{ marginTop: 'clamp(1.5rem, 3vw, 2.5rem)', textAlign: 'center', fontFamily: HUD, fontSize: 'clamp(6px, 0.9vw, 7px)', letterSpacing: 1, color: 'rgba(232,244,248,0.15)', lineHeight: 1.8 }}>
           © 2026 MonWe Infinity LLC · Albuquerque, NM, USA
         </p>
       </div>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg) } }
+
+        @media (max-width: 767px) {
+          .login-shell {
+            flex-direction: column !important;
+          }
+          .login-brand {
+            min-height: auto !important;
+            padding: clamp(1.5rem, 4vw, 2rem) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+          }
+          .login-form {
+            min-height: auto !important;
+            padding: clamp(1.5rem, 4vw, 2rem) !important;
+            max-width: 100% !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

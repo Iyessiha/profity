@@ -28,8 +28,7 @@ import {
   CalendarDays, Layers, ArrowRight, Loader2,
 } from "lucide-react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const supabase = getSupabaseClient() as any;
+const supabase = getSupabaseClient();
 
 const INGEST_URL =
   process.env.NEXT_PUBLIC_INGEST_URL ??
@@ -38,10 +37,7 @@ const INGEST_URL =
 // ─────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────
-type Preset = ChallengePres & {
-  min_trading_days: number;
-  phase: string | null;
-};
+type Preset = ChallengePres;
 
 interface Props {
   userId: string;
@@ -76,7 +72,7 @@ export default function ChallengeOnboarding({ userId, onDone }: Props) {
       .select("*")
       .eq("is_public", true)
       .order("account_size")
-      .then(({ data }: any) => { if (data) setPresets(data); });
+      .then(({ data }) => { if (data) setPresets(data); });
   }, []);
 
   // ── Étape 1 → 2 : validation du nom
