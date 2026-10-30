@@ -43,6 +43,29 @@ export function AdminNav({
         { label: "Abonnements",    href: `/${locale}/admin/subscriptions`, icon: "◇" },
       ],
     },
+    {
+      label: "Finance",
+      items: [
+        { label: "Trésorerie",     href: `/${locale}/admin/treasury`,      icon: "₣" },
+        { label: "Factures",       href: `/${locale}/admin/invoices`,      icon: "▤" },
+        { label: "Crédits",        href: `/${locale}/admin/credits`,       icon: "◉" },
+      ],
+    },
+    {
+      label: "Produit",
+      items: [
+        { label: "Signaux",        href: `/${locale}/admin/signals`,       icon: "▲" },
+        { label: "Messagerie",     href: `/${locale}/admin/broadcast`,     icon: "✉" },
+        { label: "Export",         href: `/${locale}/admin/export`,        icon: "⤓" },
+      ],
+    },
+    {
+      label: "Système",
+      items: [
+        { label: "Paramètres",     href: `/${locale}/admin/settings`,      icon: "⚙" },
+        { label: "Logs",           href: `/${locale}/admin/logs`,          icon: "≡" },
+      ],
+    },
   ];
 
   return (

@@ -29,6 +29,8 @@ const supabase = getSupabaseClient();
 // Types
 // ─────────────────────────────────────────────────────────────────────
 type Account = TradingAccount;
+type ChallengeMetrics = { profit_pct: number; total_dd_pct: number; trading_days: number };
+type ChallengeRow = Challenge & { challenge_metrics?: ChallengeMetrics | null };
 
 interface Props { accountId: string; }
 
@@ -37,6 +39,7 @@ const fmt = (n: number) =>
 const pct = (n: number) => `${n >= 0 ? "+" : ""}${n.toFixed(2)} %`;
 const dateStr = (iso: string) =>
   new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+const pctOf = (minor: number, size: number) => (size > 0 ? ((minor / size) * 100).toFixed(2) : "0");
 const dur = (a: string, b: string | null) => {
   const ms = (b ? new Date(b) : new Date()).getTime() - new Date(a).getTime();
   return Math.max(1, Math.round(ms / 86_400_000)) + " j";
@@ -47,7 +50,7 @@ const dur = (a: string, b: string | null) => {
 // ─────────────────────────────────────────────────────────────────────
 export default function AccountSettings({ accountId }: Props) {
   const [account, setAccount] = useState<Account | null>(null);
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [challenges, setChallenges] = useState<ChallengeRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tokenVisible, setTokenVisible] = useState(false);
@@ -73,7 +76,7 @@ export default function AccountSettings({ accountId }: Props) {
         .select("*")
         .eq("account_id" as any, accountId)
         .order("created_at" as any, { ascending: false }) as any;
-      if (chs) setChallenges(chs as Challenge[]);
+      if (chs) setChallenges(chs as ChallengeRow[]);
     } catch (e: any) {
       setError(e?.message ?? "Erreur de chargement");
     } finally {
@@ -97,7 +100,8 @@ export default function AccountSettings({ accountId }: Props) {
     try {
       // génère un nouveau token côté serveur via une RPC (à créer en SQL)
       // fallback : update avec gen_random_bytes
-      const { data, error: e } = await supabase.rpc("regenerate_connect_token", {
+      // RPC absente de supabase/schema.sql : l'erreur est affichée par le catch ci-dessous.
+      const { data, error: e } = await (supabase as any).rpc("regenerate_connect_token", {
         p_account_id: accountId,
       });
       if (e) throw e;
@@ -116,8 +120,8 @@ export default function AccountSettings({ accountId }: Props) {
     if (!account) return;
     setPauseLoading(true);
     try {
-      const { error: e } = await supabase
-        .from("accounts")
+      const { error: e } = await (supabase as any)
+        .from("trading_accounts")
         .update({ is_active: !account.is_active })
         .eq("id", accountId);
       if (e) throw e;
@@ -133,7 +137,7 @@ export default function AccountSettings({ accountId }: Props) {
   const saveAccountLabel = async () => {
     if (!account || editLabel.trim() === account.label) return;
     setSaveLabel(true);
-    await supabase.from("accounts").update({ label: editLabel.trim() }).eq("id", accountId);
+    await (supabase as any).from("trading_accounts").update({ label: editLabel.trim() }).eq("id", accountId);
     setAccount((a) => a ? { ...a, label: editLabel.trim() } : a);
     setSaveLabel(false);
   };
@@ -141,8 +145,8 @@ export default function AccountSettings({ accountId }: Props) {
   if (loading) return <LoadingBlock />;
   if (error || !account) return <ErrorBlock msg={error} onRetry={load} />;
 
-  const activeChallenge = challenges.find((c) => c.status === "in_progress");
-  const pastChallenges = challenges.filter((c) => c.status !== "in_progress");
+  const activeChallenge = challenges.find((c) => c.status === "active");
+  const pastChallenges = challenges.filter((c) => c.status !== "active");
 
   return (
     <div className="as-root">
@@ -315,14 +319,14 @@ export default function AccountSettings({ accountId }: Props) {
 // Ligne de challenge (liste + détails dépliables)
 // ─────────────────────────────────────────────────────────────────────
 function ChallengeRow({ ch, expanded, onToggle, active = false }: {
-  ch: Challenge; expanded: boolean; onToggle: () => void; active?: boolean;
+  ch: ChallengeRow; expanded: boolean; onToggle: () => void; active?: boolean;
 }) {
   const m = ch.challenge_metrics;
   const statusColor = {
-    in_progress: "#2DD4A7", passed: "#E8B339", failed: "#FB5566",
+    active: "#2DD4A7", passed: "#E8B339", breached: "#FB5566", abandoned: "#69748C",
   }[ch.status];
   const statusLabel = {
-    in_progress: "En cours", passed: "Validé ✓", failed: "Échoué",
+    active: "En cours", passed: "Validé ✓", breached: "Échoué", abandoned: "Abandonné",
   }[ch.status];
 
   return (
@@ -331,13 +335,13 @@ function ChallengeRow({ ch, expanded, onToggle, active = false }: {
         <span className="as-ch-status-dot" style={{ background: statusColor }} />
         <span className="as-ch-info">
           <span className="as-ch-name">
-            {fmt(ch.starting_balance)} {" · "}
+            {fmt(ch.account_size_minor / 100)} {" · "}
             <span style={{ color: statusColor }}>{statusLabel}</span>
           </span>
           <span className="as-ch-dates">
             {dateStr(ch.started_at)}
-            {ch.completed_at && ` → ${dateStr(ch.completed_at)}`}
-            {" · "}{dur(ch.started_at, ch.completed_at)}
+            {ch.closed_at && ` → ${dateStr(ch.closed_at)}`}
+            {" · "}{dur(ch.started_at, ch.closed_at)}
           </span>
         </span>
         {m && (
@@ -354,12 +358,12 @@ function ChallengeRow({ ch, expanded, onToggle, active = false }: {
         <div className="as-ch-detail">
           <div className="as-ch-rules">
             <Stat icon={<TrendingUp size={12} />} label="Objectif"
-              val={`+${ch.profit_target_pct} %`} color="#2DD4A7" />
+              val={`+${pctOf(ch.profit_target_minor, ch.account_size_minor)} %`} color="#2DD4A7" />
             <Stat icon={<ShieldCheck size={12} />} label="DD total"
-              val={`${ch.max_total_dd_pct} % · ${ch.dd_type}`} />
-            {ch.max_daily_dd_pct && (
+              val={`${pctOf(ch.max_drawdown_minor, ch.account_size_minor)} % · ${ch.drawdown_basis}`} />
+            {ch.daily_loss_limit_minor > 0 && (
               <Stat icon={<AlertTriangle size={12} />} label="DD jour"
-                val={`${ch.max_daily_dd_pct} %`} color="#FB5566" />
+                val={`${pctOf(ch.daily_loss_limit_minor, ch.account_size_minor)} %`} color="#FB5566" />
             )}
             <Stat icon={<CalendarDays size={12} />} label="Jours min."
               val={String(ch.min_trading_days)} />
@@ -370,9 +374,9 @@ function ChallengeRow({ ch, expanded, onToggle, active = false }: {
                 color={m.profit_pct >= 0 ? "#2DD4A7" : "#FB5566"} />
               <ResultStat label="DD max atteint" val={`${m.total_dd_pct.toFixed(2)} %`} />
               <ResultStat label="Jours tradés" val={String(m.trading_days)} />
-              {ch.failed_reason && (
+              {ch.breach_reason && (
                 <ResultStat label="Raison échec"
-                  val={ch.failed_reason.replace("_", " ")} color="#FB5566" />
+                  val={ch.breach_reason.replace("_", " ")} color="#FB5566" />
               )}
             </div>
           )}

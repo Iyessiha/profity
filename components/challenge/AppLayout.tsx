@@ -21,7 +21,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase/client-safe";
-import { TradingAccount } from "@/types";
+import { TradingAccount, type ChallengeStatus } from "@/types";
 import {
   Activity, ChevronDown, ChevronRight, Layers,
   LayoutDashboard, LogOut, Menu, Plus,
@@ -33,7 +33,7 @@ const supabase = getSupabaseClient();
 // ─────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────
-type Account = TradingAccount;
+type Account = TradingAccount & { challenges?: { status: ChallengeStatus }[] };
 
 interface NavItem {
   key: string;
@@ -67,15 +67,16 @@ const connected = (acc: Account) =>
   !!acc.last_seen_at &&
   Date.now() - new Date(acc.last_seen_at).getTime() < 30_000;
 
-const challengeStatus = (acc: Account): "in_progress" | "passed" | "failed" | "none" => {
+const challengeStatus = (acc: Account): ChallengeStatus | "none" => {
   const ch = acc.challenges?.[0];
-  return (ch?.status as any) ?? "none";
+  return ch?.status ?? "none";
 };
 
 const statusDot: Record<string, string> = {
-  in_progress: "#2DD4A7",
+  active:      "#2DD4A7",
   passed:      "#E8B339",
-  failed:      "#FB5566",
+  breached:    "#FB5566",
+  abandoned:   "#69748C",
   none:        "#69748C",
 };
 

@@ -40,7 +40,7 @@ const supabase = createClient(
 // Types — alignés sur le schéma SQL
 // ─────────────────────────────────────────────────────────────────────
 type DdType = "static" | "trailing";
-type ChallengeStatus = "in_progress" | "passed" | "failed";
+type ChallengeStatus = "active" | "passed" | "breached" | "abandoned";
 
 type EventKind =
   | "day_started" | "target_hit" | "daily_breach" | "total_breach"
@@ -303,9 +303,9 @@ export default function ChallengeDashboard({ accountId }: Props) {
         <div className="px-band-left">
           <span className="px-eyebrow">Statut</span>
           <span className="px-status">
-            {challenge.status === "in_progress" && <><Activity size={18} /> En cours</>}
+            {challenge.status === "active" && <><Activity size={18} /> En cours</>}
             {challenge.status === "passed" && <><CheckCircle2 size={18} /> Validé</>}
-            {challenge.status === "failed" && (
+            {challenge.status === "breached" && (
               <><AlertTriangle size={18} /> Échoué{" "}
                 {challenge.failed_reason && (
                   <span className="px-reason">({challenge.failed_reason.replace("_", " ")})</span>
@@ -518,12 +518,12 @@ const CSS = `
 .px-band{display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;
   background:var(--panel); border:1px solid var(--hair); border-left:3px solid var(--climb);
   border-radius:14px; padding:18px 22px; margin-bottom:14px;}
-.px-band.failed{border-left-color:var(--danger);}
+.px-band.breached{border-left-color:var(--danger);}
 .px-band.passed{border-left-color:var(--gold);}
 .px-status{display:flex; align-items:center; gap:8px; font-family:'Space Grotesk';
   font-size:20px; font-weight:600; margin-top:6px;}
-.px-band.in_progress .px-status{color:var(--climb);}
-.px-band.failed .px-status{color:var(--danger);}
+.px-band.active .px-status{color:var(--climb);}
+.px-band.breached .px-status{color:var(--danger);}
 .px-band.passed .px-status{color:var(--gold);}
 .px-reason{font-size:13px; opacity:.75;}
 .px-band-right{flex:1; min-width:260px;}

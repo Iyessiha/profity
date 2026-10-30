@@ -140,21 +140,32 @@ export interface ChallengePres {
   max_daily_dd_pct: number | null
 }
 
+// Miroir de la table `challenges` (supabase/migrations/0006_propfirm.sql).
+// Montants en unités mineures (centimes), comme dans le schéma.
+export type ChallengeStatus = "active" | "passed" | "breached" | "abandoned"
+
 export interface Challenge {
   id: string
-  account_id: string
-  preset_id: string
-  status: "active" | "passed" | "breached" | "abandoned"
-  starting_balance: number
-  current_equity: number
-  profit: number
-  loss: number
-  max_dd: number
-  current_dd: number
-  days_elapsed: number
-  starting_at: string
-  ended_at: string | null
+  user_id: string
+  account_id: string | null
+  preset_id: string | null
+  firm_name: string
+  phase: string
+  status: ChallengeStatus
+  account_size_minor: number
+  currency: string
+  daily_loss_limit_minor: number
+  max_drawdown_minor: number
+  profit_target_minor: number
+  drawdown_basis: "static" | "trailing"
+  min_trading_days: number
+  peak_equity_minor: number
+  breach_reason: string | null
+  started_at: string
+  ends_at: string | null
+  closed_at: string | null
   created_at: string
+  updated_at: string
 }
 
 export interface ChallengeEvent {

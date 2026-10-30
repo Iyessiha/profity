@@ -84,6 +84,7 @@ export default function SettingsPage() {
 
   const HUD  = "'Orbitron', monospace"
   const BODY = "'Rajdhani', sans-serif"
+  const plan = profile?.user_plan ?? 'free'
 
   // ── Chargement initial ────────────────────────────────────
   useEffect(() => {

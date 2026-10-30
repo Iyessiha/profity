@@ -343,7 +343,7 @@ export default async function DashboardPage() {
               <h3 style={{ fontFamily: HUD, fontSize: 10, fontWeight: 700, color: MUTED, letterSpacing: 2, margin: "0 0 16px", textTransform: "uppercase" }}>
                 Profil
               </h3>
-              <InfoRow label="Email" value={user!.email?.split("@")[0] + "@…" ?? "—"} />
+              <InfoRow label="Email" value={user!.email ? user!.email.split("@")[0] + "@…" : "—"} />
               <InfoRow label="Handle" value={`@${profile?.public_id ?? "—"}`} mono />
               <InfoRow label="Langue" value={(prefs?.locale ?? locale).toUpperCase()} />
               <InfoRow label="Devise" value={prefs?.currency ?? "XOF"} />
