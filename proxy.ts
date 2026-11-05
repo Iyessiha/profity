@@ -5,13 +5,6 @@ import { updateSession } from "@/lib/supabase/middleware";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-/** Legacy routes that redirect to their i18n equivalents. */
-const LEGACY_REDIRECTS: Record<string, string> = {
-  "/dashboard":       "/fr/dashboard",
-  "/admin/dashboard": "/fr/admin",
-  "/admin":           "/fr/admin",
-};
-
 /** Paths accessible without authentication (relative to locale prefix). */
 const PUBLIC_SEGMENTS = new Set([
   "/login",
@@ -35,35 +28,7 @@ function isPublicPath(pathname: string) {
   return false;
 }
 
-/**
- * Two apps live in this repo:
- *  - the historical ProfityX app (app/(site), app/api) — unprefixed URLs,
- *    client-side auth, handles its own language (lib/i18n.ts);
- *  - the v2 app (app/[locale]) — /fr/... and /en/... URLs via next-intl.
- * Only v2 URLs go through next-intl and the cookie-based auth gate. `/en`
- * alone is the historical English landing page (app/(site)/en).
- */
-function isV2Path(pathname: string) {
-  return pathname === "/fr" || pathname.startsWith("/fr/") || pathname.startsWith("/en/");
-}
-
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Redirect legacy routes to i18n equivalents
-  const legacyTarget = LEGACY_REDIRECTS[pathname];
-  if (legacyTarget) {
-    return NextResponse.redirect(new URL(legacyTarget, request.url));
-  }
-
-  // Historical app: only the admin API needs a bearer token up front.
-  if (!isV2Path(pathname)) {
-    if (pathname.startsWith("/api/admin") && !request.headers.get("authorization")) {
-      return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
-    }
-    return NextResponse.next();
-  }
-
   // 1. Run next-intl middleware (locale detection, prefix redirect)
   const intlResponse = intlMiddleware(request);
 
@@ -78,6 +43,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // 3. Check auth for protected routes
+  const { pathname } = request.nextUrl;
   if (!isPublicPath(pathname)) {
     const hasSession = request.cookies
       .getAll()
@@ -96,12 +62,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/fr",
-    "/fr/:path*",
-    "/en/:path*",
-    "/api/admin/:path*",
-    "/dashboard",
-    "/admin",
-    "/admin/dashboard",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
