@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
       data: { balance: String(balance) },
     })
     if (ok) sent++
-    await new Promise(r => setTimeout(r, 200)) // Rate limit Brevo
+    await new Promise(r => setTimeout(r, 600)) // Resend : 2 requêtes/s max
   }
 
   return NextResponse.json({ sent, total: inactifs.length, timestamp: new Date().toISOString() })
