@@ -1725,6 +1725,19 @@ begin
 end;
 $$;
 
+-- Ces fonctions modifient is_admin : elles ne doivent JAMAIS être appelables
+-- par l'API (anon / authenticated). Seul le SQL Editor (postgres) les utilise.
+revoke execute on function grant_admin(citext) from public;
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    revoke execute on function grant_admin(citext) from anon;
+  end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    revoke execute on function grant_admin(citext) from authenticated;
+  end if;
+end $$;
+
 -- Helper function to revoke admin by email
 create or replace function revoke_admin(target_email citext)
 returns void
@@ -1739,6 +1752,17 @@ begin
   end if;
 end;
 $$;
+
+revoke execute on function revoke_admin(citext) from public;
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    revoke execute on function revoke_admin(citext) from anon;
+  end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    revoke execute on function revoke_admin(citext) from authenticated;
+  end if;
+end $$;
 
 
 -- ─────────────────────────────────────────────────────────────────────────
@@ -1841,4 +1865,30 @@ begin
     grant execute on function analyses_used_this_month(uuid) to service_role;
   end if;
 end $$;
+
+
+-- ─────────────────────────────────────────────────────────────────────────
+-- 0012_drop_untracked_objects.sql
+-- ─────────────────────────────────────────────────────────────────────────
+
+-- ============================================================================
+-- 0012 — Retirer les objets présents en production mais absents du dépôt
+-- ============================================================================
+-- Ces politiques et index ont été créés à la main sur la base de production.
+-- Ils dupliquent des objets déjà définis dans les migrations 0002 à 0008 :
+--   - "Users can read own …" = "read own …" (même condition, auth.uid()).
+--   - idx_payments_user_id       couvert par payments_user_idx (user_id, …).
+--   - idx_webhook_events_provider_id  identique à webhook_events_identity_idx.
+--   - idx_checkout_intents_user_id, idx_subscriptions_user_id : sans
+--     équivalent dans le dépôt.
+-- IF EXISTS : la migration reste rejouable sur une base construite du dépôt.
+
+drop policy if exists "Users can read own checkout intents" on checkout_intents;
+drop policy if exists "Users can read own payments"         on payments;
+drop policy if exists "Users can read own subscriptions"    on subscriptions;
+
+drop index if exists idx_checkout_intents_user_id;
+drop index if exists idx_payments_user_id;
+drop index if exists idx_subscriptions_user_id;
+drop index if exists idx_webhook_events_provider_id;
 
