@@ -275,6 +275,8 @@ export default function SettingsPage() {
     { key:'security',      icon:'ti-lock',        fr: t.security      },
   ]
 
+  const plan = (profile?.user_plan ?? 'free') as string
+
   return (
     <div style={{ minHeight:'100vh', background:'var(--bg0)', fontFamily:BODY }}>
 

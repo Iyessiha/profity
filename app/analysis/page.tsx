@@ -49,6 +49,7 @@ export default function AnalysisPage() {
   const [user, setUser]           = useState<{ id:string; email?:string }|null>(null)
   const [profile, setProfile]     = useState<Record<string,unknown>|null>(null)
   const [plan, setPlan]           = useState('free')
+  const [isAdmin, setIsAdmin]     = useState(false)
   const [locale, setLocale]       = useState('fr')
   const [token, setToken]         = useState('')
   const [balance, setBalance]     = useState<number|undefined>(undefined)
@@ -72,7 +73,7 @@ export default function AnalysisPage() {
   const [analysisMode, setAnalysisMode] = useState<'swing'|'scalp'>('swing')
   const analysisCount = (profile?.analyses_used as number) ?? 0
   const { popup: activePopup, close: closePopup, showPopup } = usePopups({
-    plan, credits: balance, analysisCount, locale,
+    plan, credits: balance ?? 0, analysisCount, locale,
   })
   const [derivSymbol, setDerivSymbol]   = useState<string>('')   // actif Deriv sélectionné
   const tvRef = useRef<HTMLDivElement>(null)
@@ -91,6 +92,7 @@ export default function AnalysisPage() {
       if (p) {
         setProfile(p)
         setPlan(p.user_plan as string || 'free')
+        setIsAdmin(p.is_admin === true)
         setLocale((p.locale as string) || (typeof localStorage !== 'undefined' ? localStorage.getItem('pxLang') : null) || 'fr')
         if (!p.onboarding_done) setOnboarding(true)
       }
@@ -495,7 +497,7 @@ export default function AnalysisPage() {
 
                     <div style={{ display:'flex', gap:10 }}>
                       <button onClick={analyze} disabled={analyzing||(plan==='free'&&analysesLeft===0)}
-                        style={{ flex:1, background: analyzing||(plan==='free'&&analysesLeft===0)?'var(--bd)': analysisMode==='scalp'?'#FF6B35':'var(--ac)', border:'none', color:'#020408', fontFamily:HUD, fontSize:11, letterSpacing:2, fontWeight:700, padding:'14px', borderRadius:6, cursor: analyzing?'wait':'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, fontSize:12 }}>
+                        style={{ flex:1, background: analyzing||(plan==='free'&&analysesLeft===0)?'var(--bd)': analysisMode==='scalp'?'#FF6B35':'var(--ac)', border:'none', color:'#020408', fontFamily:HUD, letterSpacing:2, fontWeight:700, padding:'14px', borderRadius:6, cursor: analyzing?'wait':'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, fontSize:12 }}>
                         {analyzing ? <><div style={{ width:16, height:16, border:'2px solid rgba(0,0,0,0.2)', borderTop:'2px solid #020408', borderRadius:'50%', animation:'spin .8s linear infinite' }} />ANALYSE EN COURS...</> : <><i className={`ti ${analysisMode==='scalp'?'ti-bolt':'ti-sparkles'}`} style={{ fontSize:16 }} />{analysisMode==='scalp'?'SCALP RAPIDE':'GÉNÉRER LE SIGNAL'}</>}
                       </button>
                       <button onClick={()=>{setPreview(null);setSignal(null);setError(null)}} style={{ background:'transparent', border:'1px solid var(--bd)', color:'var(--tx2)', fontFamily:HUD, fontSize:9, padding:'0 16px', borderRadius:6, cursor:'pointer' }}>✕</button>
@@ -525,7 +527,7 @@ export default function AnalysisPage() {
             ) : (
               <div>
                 <SignalCard
-                  signal={signal as Parameters<typeof SignalCard>[0]['signal']}
+                  signal={signal as unknown as Parameters<typeof SignalCard>[0]['signal']}
                   type="chart"
                   locale={locale}
                   imageFile={(plan === 'pro' || plan === 'elite' || isAdmin) ? imageFile : null}
