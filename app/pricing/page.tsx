@@ -33,7 +33,7 @@ function UrgencyBanner() {
   const s = String(secs % 60).padStart(2,'0')
 
   return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, background:'linear-gradient(135deg,rgba(220,38,38,0.08),rgba(255,58,92,0.05))', border:'1px solid rgba(220,38,38,0.2)', borderRadius:10, padding:'12px 20px', marginBottom:'2rem', flexWrap:'wrap', gap:12 }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', background:'linear-gradient(135deg,rgba(220,38,38,0.08),rgba(255,58,92,0.05))', border:'1px solid rgba(220,38,38,0.2)', borderRadius:10, padding:'12px 20px', marginBottom:'2rem', flexWrap:'wrap', gap:12 }}>
       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
         <span style={{ width:8, height:8, borderRadius:'50%', background:'#FF3A5C', animation:'pulse 1s infinite', display:'inline-block' }} />
         <span style={{ fontFamily:HUD, fontSize:9, letterSpacing:1, color:'#FF3A5C' }}>🔥 {count} traders ont rejoint Pro cette semaine</span>
