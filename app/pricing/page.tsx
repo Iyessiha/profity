@@ -192,7 +192,7 @@ export default function PricingPage() {
   const handleUpgrade = async (planKey:Plan) => {
     if (planKey === 'free') return
     if (planKey === currentPlan) { showToast('Vous êtes déjà sur ce plan', false); return }
-    if (!token) { window.location.href = '/auth/login'; return }
+    if (!token) { window.location.href = '/login'; return }
     setLoading(planKey)
     try {
       const res  = await fetch('/api/payment/checkout', {
@@ -215,7 +215,7 @@ export default function PricingPage() {
   }
 
   const handleCreditPack = async (packKey: string) => {
-    if (!token) { window.location.href = '/auth/login'; return }
+    if (!token) { window.location.href = '/login'; return }
     setLoadingPack(packKey)
     try {
       const res  = await fetch('/api/payment/checkout-pack', {

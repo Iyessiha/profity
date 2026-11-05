@@ -40,7 +40,7 @@ export default function BlogPage() {
         </Link>
         <div style={{ display:'flex', gap:20, alignItems:'center' }}>
           <Link href="/" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.45)', textDecoration:'none' }}>ACCUEIL</Link>
-          <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 16px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>ESSAI GRATUIT</Link>
+          <Link href="/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 16px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>ESSAI GRATUIT</Link>
         </div>
       </nav>
 
@@ -113,7 +113,7 @@ export default function BlogPage() {
         <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(240,248,255,0.5)', marginBottom:28 }}>
           Analysez vos charts Boom 1000, Crash 500 et Forex en 10 secondes avec l&apos;IA SMC.
         </p>
-        <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'16px 40px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+        <Link href="/login" style={{ fontFamily:HUD, fontSize:11, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'16px 40px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
           ESSAI GRATUIT — 10 CRÉDITS →
         </Link>
       </section>

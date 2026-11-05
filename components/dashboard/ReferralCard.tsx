@@ -86,7 +86,7 @@ export default function ReferralCard({ token }: { token: string }) {
           <div style={{ fontFamily:HUD, fontSize:8, letterSpacing:1, color:'var(--tx3)', marginBottom:6 }}>VOTRE LIEN DE PARRAINAGE</div>
           <div style={{ display:'flex', gap:6 }}>
             <div style={{ flex:1, background:'var(--bg2)', border:'1px solid var(--bd)', borderRadius:6, padding:'9px 12px', fontFamily:'monospace', fontSize:11, color:'var(--ac)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-              profity-x.com/auth/login?ref={data.code}
+              profity-x.com/login?ref={data.code}
             </div>
             <button onClick={copyLink} style={{ background: copied ? 'var(--ok)' : 'var(--ac)', border:'none', borderRadius:6, padding:'9px 14px', cursor:'pointer', color:'#020408', fontFamily:HUD, fontSize:8, letterSpacing:1, fontWeight:700, flexShrink:0, whiteSpace:'nowrap' }}>
               {copied ? '✓ COPIÉ' : 'COPIER'}

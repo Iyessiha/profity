@@ -350,7 +350,7 @@ export default function NewsPage() {
   useEffect(() => {
     ;(async () => {
       const { data: { session } } = await supabasePublic.auth.getSession()
-      if (!session) { window.location.href = '/auth/login'; return }
+      if (!session) { window.location.href = '/login'; return }
       setUser(session.user as {id:string;email?:string})
       setToken(session.access_token)
       const [{ data: p }, { data: ev }] = await Promise.all([

@@ -64,7 +64,7 @@ export default async function PublicProfile({ params }: { params: { username: st
         <Link href="/" style={{ textDecoration:'none' }}>
           <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:32, width:'auto', objectFit:'contain' }} />
         </Link>
-        <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 18px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+        <Link href="/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 18px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
           ESSAI GRATUIT
         </Link>
       </nav>
@@ -147,7 +147,7 @@ export default async function PublicProfile({ params }: { params: { username: st
           <p style={{ fontFamily:BODY, fontSize:15, color:'rgba(240,248,255,0.55)', marginBottom:20 }}>
             Signaux SMC IA en 10 secondes — Entrée, Stop Loss, Take Profit
           </p>
-          <Link href={`/auth/login?ref=${code}`} style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'13px 32px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+          <Link href={`/login?ref=${code}`} style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'13px 32px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
             COMMENCER GRATUITEMENT (+10 CRÉDITS OFFERTS)
           </Link>
           <div style={{ fontFamily:BODY, fontSize:12, color:'rgba(240,248,255,0.25)', marginTop:10 }}>

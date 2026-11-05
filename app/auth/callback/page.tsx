@@ -45,7 +45,7 @@ export default function AuthCallbackPage() {
         // Fallback après 5s
         setTimeout(() => {
           subscription.unsubscribe()
-          window.location.href = '/auth/login'
+          window.location.href = '/login'
         }, 5000)
       }
     }

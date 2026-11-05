@@ -74,7 +74,7 @@ export default function ResultsPage() {
         <div style={{ display:'flex', gap:10, alignItems:'center' }}>
           <a href="/" style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(240,248,255,0.4)', textDecoration:'none', padding:'5px 9px', borderRadius:5, border:'1px solid rgba(255,255,255,0.1)' }}>FR</a>
           <a href="/en" style={{ fontFamily:HUD, fontSize:7, letterSpacing:2, color:'rgba(240,248,255,0.4)', textDecoration:'none', padding:'5px 9px', borderRadius:5, border:'1px solid rgba(255,255,255,0.1)' }}>EN</a>
-          <a href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 16px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+          <a href="/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 16px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
             {lang === 'en' ? 'LOGIN' : 'CONNEXION'}
           </a>
         </div>
@@ -182,7 +182,7 @@ export default function ResultsPage() {
         {/* CTA */}
         <div style={{ textAlign:'center', padding:'2.5rem', background:'rgba(8,17,31,0.6)', borderRadius:12, border:'1px solid rgba(255,255,255,0.05)' }}>
           <div style={{ fontFamily:HUD, fontSize:10, color:'rgba(240,248,255,0.4)', marginBottom:8 }}>{T.subtitle2}</div>
-          <a href="/auth/login" style={{ display:'inline-block', fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'13px 32px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+          <a href="/login" style={{ display:'inline-block', fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'13px 32px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
             {T.try_free}
           </a>
         </div>

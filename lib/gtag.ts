@@ -19,7 +19,7 @@ function gtag(...args: unknown[]) {
 }
 
 // ── 1. INSCRIPTION (Lead) ──────────────────────────────────
-// Appelé dans app/auth/login/page.tsx après signup réussi
+// Appelé dans app/login/page.tsx après signup réussi
 // Label à créer dans Google Ads → Conversions → "Inscription"
 export function gtagLead() {
   // Événement Google Ads conversion

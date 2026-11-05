@@ -88,7 +88,7 @@ export default function Sidebar({ plan, locale }: Props) {
       })
     } catch (_) {}
     // Redirection forcée — replace empêche le retour arrière
-    window.location.replace('/auth/login')
+    window.location.replace('/login')
   }
 
   // ── Couleurs sidebar premium ────────────────────────────────
