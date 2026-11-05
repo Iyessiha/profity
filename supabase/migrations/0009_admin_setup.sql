@@ -53,6 +53,19 @@ begin
 end;
 $$;
 
+-- Ces fonctions modifient is_admin : elles ne doivent JAMAIS être appelables
+-- par l'API (anon / authenticated). Seul le SQL Editor (postgres) les utilise.
+revoke execute on function grant_admin(citext) from public;
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    revoke execute on function grant_admin(citext) from anon;
+  end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    revoke execute on function grant_admin(citext) from authenticated;
+  end if;
+end $$;
+
 -- Helper function to revoke admin by email
 create or replace function revoke_admin(target_email citext)
 returns void
@@ -67,3 +80,14 @@ begin
   end if;
 end;
 $$;
+
+revoke execute on function revoke_admin(citext) from public;
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    revoke execute on function revoke_admin(citext) from anon;
+  end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    revoke execute on function revoke_admin(citext) from authenticated;
+  end if;
+end $$;

@@ -23,8 +23,9 @@ GENIUSPAY_WEBHOOK_SECRET=your-webhook-secret
 # JWT
 JWT_SECRET=your-jwt-secret-at-least-32-chars
 
-# Brevo (Email)
-BREVO_API_KEY=your-brevo-api-key
+# Resend (Email)
+RESEND_API_KEY=re_xxxxxxxxx
+EMAIL_FROM=ProfityX <noreply@votre-domaine.com>
 ```
 
 ### Configuration Vercel

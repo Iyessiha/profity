@@ -133,7 +133,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           </Link>
           <div style={{ display:'flex', gap:16, alignItems:'center' }}>
             <Link href="/blog" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'rgba(240,248,255,0.45)', textDecoration:'none' }}>BLOG</Link>
-            <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 16px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+            <Link href="/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 16px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
               {post.lang === 'en' ? 'FREE TRIAL' : 'ESSAI GRATUIT'}
             </Link>
           </div>
@@ -175,7 +175,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
                 {post.lang === 'en' ? 'Entry · Stop Loss · Take Profit in 10 seconds' : 'Entrée · Stop Loss · Take Profit en 10 secondes'}
               </div>
             </div>
-            <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'10px 20px', borderRadius:4, textDecoration:'none', fontWeight:700, whiteSpace:'nowrap' }}>
+            <Link href="/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'10px 20px', borderRadius:4, textDecoration:'none', fontWeight:700, whiteSpace:'nowrap' }}>
               {ctaTxt}
             </Link>
           </div>
@@ -195,7 +195,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
                 ? 'Stop analyzing manually. Get your SMC signal in 10 seconds with AI. 10 free credits, no card needed.'
                 : 'Arrêtez d\'analyser manuellement. Obtenez votre signal SMC en 10 secondes avec l\'IA. 10 crédits gratuits, sans carte bancaire.'}
             </p>
-            <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'14px 36px', borderRadius:4, textDecoration:'none', fontWeight:700, boxShadow:'0 0 30px rgba(0,255,178,0.25)' }}>
+            <Link href="/login" style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'14px 36px', borderRadius:4, textDecoration:'none', fontWeight:700, boxShadow:'0 0 30px rgba(0,255,178,0.25)' }}>
               {ctaTxt} →
             </Link>
           </div>

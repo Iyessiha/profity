@@ -18,7 +18,7 @@ export default function WhatsAppAdmin() {
   useEffect(() => {
     ;(async () => {
       const { data:{ session } } = await supabasePublic.auth.getSession()
-      if (!session) { window.location.href='/auth/login'; return }
+      if (!session) { window.location.href='/login'; return }
       const { data:p } = await supabasePublic.from('profiles').select('is_admin').eq('id', session.user.id).single()
       if (!p?.is_admin) { window.location.href='/dashboard'; return }
       const { data } = await supabasePublic.from('whatsapp_leads').select('*').order('created_at', { ascending:false }).limit(100)

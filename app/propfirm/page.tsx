@@ -53,7 +53,7 @@ export default function PropFirmPage() {
   useEffect(() => {
     ;(async () => {
       const { data: { session } } = await supabasePublic.auth.getSession()
-      if (!session) { window.location.href = '/auth/login'; return }
+      if (!session) { window.location.href = '/login'; return }
       setToken(session.access_token)
       const { data: p } = await supabasePublic.from('profiles').select('*').eq('id', session.user.id).single()
       if (p) { setProfile(p); setPlan(p.user_plan as string || 'free'); setLocale(p.locale as string || 'fr') }

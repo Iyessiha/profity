@@ -1,6 +1,6 @@
 // ============================================================
 // PROFITYX — POST /api/auth/signup
-// Inscription sans vérification email + welcome Brevo
+// Inscription sans vérification email + welcome Resend
 // + séquence marketing automatique
 // ============================================================
 import { NextRequest, NextResponse } from 'next/server'
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
 
   await admin.from('email_sequences').insert(sequenceRows).select()
 
-  // 3. Email de bienvenue immédiat (J0) via Brevo
+  // 3. Email de bienvenue immédiat (J0) via Resend
   try {
     await sendEmail({ template: 'welcome', to: email, name: userName, locale: (locale === 'en' ? 'en' : 'fr') })
     // Marquer J0 comme envoyé

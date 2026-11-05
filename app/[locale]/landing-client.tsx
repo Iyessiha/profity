@@ -246,11 +246,11 @@ export default function LandingClient() {
             }}>EN</a>
           </div>
 
-          <a href="/auth/login" className="nav-desktop" style={{
+          <a href="/login" className="nav-desktop" style={{
             fontFamily: BODY, fontSize: 14, fontWeight: 500, color: 'rgba(240,248,255,0.5)',
             textDecoration: 'none', transition: 'color .2s',
           }}>{tn('connection')}</a>
-          <a href="/auth/login" className="cta-btn" style={{
+          <a href="/login" className="cta-btn" style={{
             fontFamily: HUD, fontSize: 11, letterSpacing: 1.5, color: '#020408',
             background: '#00FFB2', padding: '10px 22px', borderRadius: 8,
             textDecoration: 'none', fontWeight: 700, whiteSpace: 'nowrap',
@@ -275,14 +275,14 @@ export default function LandingClient() {
           padding: '2rem', display: 'flex', flexDirection: 'column', gap: 4,
           animation: 'slideDown .3s ease',
         }}>
-          {[['#how', tn('howItWorks')], ['#features', tn('features')], ['#pricing', tn('pricing')], ['/results', tn('results')], ['/blog', tn('blog')], ['/auth/login', tn('login')]].map(([href, label]) => (
+          {[['#how', tn('howItWorks')], ['#features', tn('features')], ['#pricing', tn('pricing')], ['/results', tn('results')], ['/blog', tn('blog')], ['/login', tn('login')]].map(([href, label]) => (
             <a key={href} href={href} onClick={() => setMenuOpen(false)} style={{
               fontFamily: BODY, fontSize: 16, fontWeight: 500, letterSpacing: 0.5,
               color: 'rgba(240,248,255,0.6)', textDecoration: 'none',
               padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.04)',
             }}>{label}</a>
           ))}
-          <a href="/auth/login" style={{
+          <a href="/login" style={{
             fontFamily: HUD, fontSize: 12, letterSpacing: 2, color: '#020408',
             background: '#00FFB2', padding: '16px', borderRadius: 8,
             textDecoration: 'none', fontWeight: 700, textAlign: 'center', marginTop: 16,
@@ -327,7 +327,7 @@ export default function LandingClient() {
 
         <Reveal delay={300}>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: '3.5rem' }}>
-            <a href="/auth/login" className="cta-primary" style={{ fontFamily: HUD, fontSize: 12, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '18px 40px', borderRadius: 10, textDecoration: 'none', fontWeight: 700, boxShadow: '0 0 50px rgba(0,255,178,0.25), 0 4px 20px rgba(0,255,178,0.15)', transition: 'transform .2s, box-shadow .2s' }}>
+            <a href="/login" className="cta-primary" style={{ fontFamily: HUD, fontSize: 12, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '18px 40px', borderRadius: 10, textDecoration: 'none', fontWeight: 700, boxShadow: '0 0 50px rgba(0,255,178,0.25), 0 4px 20px rgba(0,255,178,0.15)', transition: 'transform .2s, box-shadow .2s' }}>
               {t('cta')}
             </a>
             <a href="/results" className="cta-secondary" style={{ fontFamily: HUD, fontSize: 11, letterSpacing: 2, color: 'rgba(240,248,255,0.6)', border: '1px solid rgba(255,255,255,0.12)', padding: '18px 28px', borderRadius: 10, textDecoration: 'none', transition: 'all .2s', background: 'rgba(255,255,255,0.03)' }}>
@@ -522,7 +522,7 @@ export default function LandingClient() {
                       </div>
                     ))}
                   </div>
-                  <a href="/auth/login" className={plan.highlight ? 'cta-primary' : ''} style={{
+                  <a href="/login" className={plan.highlight ? 'cta-primary' : ''} style={{
                     display: 'block', textAlign: 'center', fontFamily: HUD, fontSize: 10, letterSpacing: 2,
                     textDecoration: 'none', padding: '14px', borderRadius: 10, fontWeight: 700,
                     background: plan.highlight ? '#00FFB2' : 'transparent',
@@ -581,7 +581,7 @@ export default function LandingClient() {
           </h2>
           <p style={{ fontFamily: BODY, fontSize: 17, color: 'rgba(240,248,255,0.45)', marginBottom: 36 }}
              dangerouslySetInnerHTML={{ __html: (t.raw('ctaFinalDesc') as string).replace('{users}', String(users)) }} />
-          <a href="/auth/login" className="cta-primary cta-glow" style={{ fontFamily: HUD, fontSize: 13, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '20px 52px', borderRadius: 12, textDecoration: 'none', fontWeight: 700, display: 'inline-block', boxShadow: '0 0 60px rgba(0,255,178,0.25), 0 0 120px rgba(0,255,178,0.1)', transition: 'transform .2s, box-shadow .2s' }}>
+          <a href="/login" className="cta-primary cta-glow" style={{ fontFamily: HUD, fontSize: 13, letterSpacing: 2, color: '#020408', background: '#00FFB2', padding: '20px 52px', borderRadius: 12, textDecoration: 'none', fontWeight: 700, display: 'inline-block', boxShadow: '0 0 60px rgba(0,255,178,0.25), 0 0 120px rgba(0,255,178,0.1)', transition: 'transform .2s, box-shadow .2s' }}>
             {t('ctaFinalButton')}
           </a>
           <p style={{ fontFamily: BODY, fontSize: 14, color: 'rgba(240,248,255,0.25)', marginTop: 18 }}>{t('ctaFinalSub')}</p>

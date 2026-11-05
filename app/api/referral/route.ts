@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
   ])
 
   const code     = profile?.public_id ?? ''
-  const ref_url       = `${appUrl}/auth/login?ref=${code}`
+  const ref_url       = `${appUrl}/login?ref=${code}`
   const public_profile = `${appUrl}/u/${code}`
   const wa_msg   = encodeURIComponent(`🚀 Rejoins ProfityX et reçois +10 crédits offerts !\nAnalyse tes charts avec l'IA en 3 secondes.\n\nMon lien : ${ref_url}`)
   const wa_url   = `https://wa.me/?text=${wa_msg}`

@@ -54,7 +54,7 @@ export default async function SharePage({ params }: { params: { id: string } }) 
   const hasResult = isWin || isLoss
   const traderName = (a.profiles as {full_name?: string})?.full_name?.split(' ')[0] ?? 'Un trader'
   const refCode    = (a.profiles as {public_id?: string})?.public_id ?? ''
-  const signupUrl  = `https://profity-x.com/auth/login${refCode ? `?ref=${refCode}` : ''}`
+  const signupUrl  = `https://profity-x.com/login${refCode ? `?ref=${refCode}` : ''}`
   const shareUrl   = `https://profity-x.com/share/${a.id}`
   const date       = new Date(a.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' })
 

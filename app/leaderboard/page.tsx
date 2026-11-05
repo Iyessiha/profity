@@ -53,7 +53,7 @@ export default function LeaderboardPage() {
         <Link href="/" style={{ textDecoration:'none' }}>
           <img src="/logos/profityx-logo.png" alt="ProfityX" style={{ height:32, objectFit:'contain' }} />
         </Link>
-        <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 18px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+        <Link href="/login" style={{ fontFamily:HUD, fontSize:8, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'8px 18px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
           JOINDRE
         </Link>
       </nav>
@@ -150,7 +150,7 @@ export default function LeaderboardPage() {
           <p style={{ fontFamily:BODY, fontSize:14, color:'rgba(240,248,255,0.5)', marginBottom:20 }}>
             Analysez vos charts avec l'IA SMC et bâtissez votre track record
           </p>
-          <Link href="/auth/login" style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'13px 28px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
+          <Link href="/login" style={{ fontFamily:HUD, fontSize:10, letterSpacing:2, color:'#020408', background:'#00FFB2', padding:'13px 28px', borderRadius:4, textDecoration:'none', fontWeight:700 }}>
             COMMENCER GRATUITEMENT
           </Link>
         </div>

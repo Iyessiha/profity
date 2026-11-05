@@ -259,7 +259,7 @@ export default function InstallPage() {
                     SUIVANT →
                   </button>
                 ) : (
-                  <Link href="/auth/login" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px', background: '#00FFB2', borderRadius: 7, color: '#020408', fontFamily: HUD, fontSize: 8, letterSpacing: 1, textDecoration: 'none', fontWeight: 700 }}>
+                  <Link href="/login" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px', background: '#00FFB2', borderRadius: 7, color: '#020408', fontFamily: HUD, fontSize: 8, letterSpacing: 1, textDecoration: 'none', fontWeight: 700 }}>
                     🚀 COMMENCER →
                   </Link>
                 )}
@@ -292,7 +292,7 @@ export default function InstallPage() {
           <p style={{ fontFamily: BODY, fontSize: 14, color: 'rgba(232,244,248,0.6)', margin: '0 0 1rem' }}>
             Connectez-vous pour accéder à vos analyses, votre journal et votre calculateur.
           </p>
-          <Link href="/auth/login" style={{ display: 'inline-block', background: 'linear-gradient(135deg, #00FFB2, #00D4FF)', color: '#020408', fontFamily: HUD, fontSize: 9, letterSpacing: 2, fontWeight: 700, padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>
+          <Link href="/login" style={{ display: 'inline-block', background: 'linear-gradient(135deg, #00FFB2, #00D4FF)', color: '#020408', fontFamily: HUD, fontSize: 9, letterSpacing: 2, fontWeight: 700, padding: '12px 28px', borderRadius: 6, textDecoration: 'none' }}>
             SE CONNECTER →
           </Link>
         </div>
@@ -302,7 +302,7 @@ export default function InstallPage() {
           <p style={{ fontFamily: BODY, fontSize: 12, color: 'rgba(232,244,248,0.3)', margin: '0 0 8px' }}>
             Pas encore de compte ?
           </p>
-          <Link href="/auth/login" style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 1, color: '#00D4FF', textDecoration: 'none' }}>
+          <Link href="/login" style={{ fontFamily: HUD, fontSize: 8, letterSpacing: 1, color: '#00D4FF', textDecoration: 'none' }}>
             CRÉER UN COMPTE GRATUIT — 10 CRÉDITS OFFERTS
           </Link>
         </div>

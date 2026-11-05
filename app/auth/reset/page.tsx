@@ -58,7 +58,7 @@ export default function ResetPasswordPage() {
         ) : !ready ? (
           <p style={{ color:'rgba(232,244,248,0.5)', textAlign:'center' }}>
             Vérification du lien… Si rien ne se passe, le lien a expiré :{' '}
-            <a href="/auth/login" style={{ color:'#00D4FF' }}>demandez-en un nouveau</a>.
+            <a href="/login" style={{ color:'#00D4FF' }}>demandez-en un nouveau</a>.
           </p>
         ) : (
           <>

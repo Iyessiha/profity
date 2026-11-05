@@ -89,7 +89,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const init = async () => {
       const { data: { session } } = await supabasePublic.auth.getSession()
-      if (!session) { router.push('/auth/login'); return }
+      if (!session) { router.push('/login'); return }
       setToken(session.access_token)
 
       const { data: p } = await supabasePublic
